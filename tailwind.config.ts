@@ -24,6 +24,14 @@ export default {
           foreground: "hsl(var(--primary-foreground))",
           hover: "hsl(var(--primary-hover))",
         },
+        yellow: {
+          400: "#facc15",
+          500: "#eab308",
+          600: "#ca8a04",
+        },
+        orange: {
+          500: "#f97316",
+        },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
