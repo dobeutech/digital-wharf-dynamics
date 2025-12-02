@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Calendar, Lock } from "lucide-react";
+import DOMPurify from "dompurify";
 
 interface NewsPost {
   id: string;
@@ -113,7 +114,7 @@ export default function Newsletter() {
                 </CardHeader>
                 <CardContent>
                   <div className="prose prose-sm max-w-none">
-                    <div dangerouslySetInnerHTML={{ __html: post.content }} />
+                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }} />
                   </div>
                 </CardContent>
               </Card>

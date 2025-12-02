@@ -5,11 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const NewsletterPopup = () => {
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [marketingConsent, setMarketingConsent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     // Show popup after 5 seconds if user hasn't seen it
@@ -22,17 +24,44 @@ export const NewsletterPopup = () => {
     }
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     if (!marketingConsent) {
       toast.error("Please consent to receive marketing emails");
       return;
     }
-    
-    // Store email and consent (would be sent to backend in production)
-    localStorage.setItem("newsletterPopupSeen", "true");
-    toast.success("Thank you for subscribing!");
-    setOpen(false);
+
+    if (!email.trim()) {
+      toast.error("Please enter your email address");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('newsletter-subscribe', {
+        body: { email: email.trim(), marketingConsent }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data?.error) {
+        toast.error(data.error);
+        return;
+      }
+
+      localStorage.setItem("newsletterPopupSeen", "true");
+      toast.success(data?.message || "Thank you for subscribing!");
+      setOpen(false);
+    } catch (error) {
+      console.error('Subscription error:', error);
+      toast.error("Failed to subscribe. Please try again later.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleClose = () => {
@@ -60,6 +89,7 @@ export const NewsletterPopup = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              maxLength={255}
               className="mt-1"
             />
           </div>
@@ -80,8 +110,8 @@ export const NewsletterPopup = () => {
           </div>
 
           <div className="flex gap-3">
-            <Button type="submit" className="flex-1 shadow-material">
-              Subscribe
+            <Button type="submit" className="flex-1 shadow-material" disabled={isSubmitting}>
+              {isSubmitting ? "Subscribing..." : "Subscribe"}
             </Button>
             <Button type="button" variant="outline" onClick={handleClose}>
               Maybe Later

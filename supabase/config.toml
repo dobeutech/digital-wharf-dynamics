@@ -5,3 +5,6 @@ verify_jwt = true
 
 [functions.create-checkout]
 verify_jwt = true
+
+[functions.newsletter-subscribe]
+verify_jwt = false
