@@ -20,195 +20,196 @@ Deno.serve(async (req) => {
     const services = [
       {
         name: 'Website Design & Development',
-        description: 'Professional website design and development with modern, responsive layouts that drive conversions and enhance user experience.',
-        category: 'website',
-        base_price: 3000,
+        description: 'Professional website design and development tailored to your business needs. Contact us for a custom project quote based on your specific requirements.',
+        category: 'Website',
+        base_price: 0,
         features: [
-          'Responsive design (mobile, tablet, desktop)',
-          'Up to 10 pages',
-          'SEO-optimized structure',
-          'Contact forms integration',
+          'Custom responsive design',
+          'Mobile optimization',
+          'Content management system',
+          'Basic SEO setup',
+          'Contact form integration',
           'Social media integration',
-          '1 month post-launch support',
-          'Google Analytics setup',
-          'Fast loading times'
+          'Google Analytics setup'
         ],
         add_ons: [
           {
-            name: 'SEO Optimization Package',
+            name: 'Advanced SEO Package',
             price: 500,
-            description: 'Comprehensive SEO audit and optimization'
+            description: 'Comprehensive SEO optimization'
           },
           {
-            name: 'Google Business & AdWords Setup',
+            name: 'Google Business Profile Setup',
             price: 300,
-            description: 'Complete Google Business profile and AdWords campaign setup'
+            description: 'Complete Google Business profile setup'
           },
           {
             name: 'E-commerce Integration',
             price: 1500,
-            description: 'Full shopping cart and payment gateway integration'
-          },
-          {
-            name: 'Content Management System',
-            price: 800,
-            description: 'Easy-to-use CMS for content updates'
+            description: 'Full shopping cart and payment gateway'
           }
         ],
         is_active: true
       },
       {
         name: 'Custom Software Development',
-        description: 'Tailored software solutions built from the ground up to meet your specific business needs and workflows.',
-        category: 'software',
-        base_price: 8000,
+        description: 'Build scalable software solutions for your business. Reach out to discuss your project scope and receive a tailored quote.',
+        category: 'Software',
+        base_price: 0,
         features: [
           'Custom application development',
-          'Database design and implementation',
-          'API development and integration',
-          'User authentication and authorization',
-          'Admin dashboard',
+          'Database design',
+          'API integration',
+          'User authentication',
+          'Deployment support',
           'Documentation',
-          '3 months maintenance',
-          'Deployment and hosting setup'
+          'Maintenance period included'
         ],
         add_ons: [
           {
             name: 'Mobile App Development',
-            price: 5000,
-            description: 'Native or cross-platform mobile application'
+            price: 3000,
+            description: 'Native or cross-platform mobile app'
           },
           {
             name: 'Advanced Analytics Dashboard',
             price: 2000,
-            description: 'Custom reporting and data visualization'
+            description: 'Custom reporting and visualizations'
           },
           {
-            name: 'Third-party API Integrations',
+            name: 'Third-party API Integration',
             price: 1000,
-            description: 'Integration with external services and APIs'
-          },
-          {
-            name: 'Automated Testing Suite',
-            price: 1500,
-            description: 'Comprehensive automated testing implementation'
+            description: 'Integration with external services'
           }
         ],
         is_active: true
       },
       {
-        name: 'Technology Training & Workshops',
-        description: 'Hands-on training sessions and workshops to upskill your team on modern technologies and best practices.',
-        category: 'learning',
-        base_price: 1500,
+        name: 'Technical Consulting',
+        description: 'Expert technical consulting at $250 per hour. Schedule a consultation to discuss your technology strategy, architecture, or implementation needs.',
+        category: 'Consulting',
+        base_price: 250,
         features: [
-          'Customized curriculum',
-          'Up to 20 participants',
-          '4-hour workshop session',
-          'Hands-on exercises',
-          'Training materials included',
-          'Certificate of completion',
-          'Post-training Q&A support (2 weeks)',
-          'Recording of session'
+          '$250 per hour consulting',
+          'Technology strategy & planning',
+          'Architecture review',
+          'Code review & optimization',
+          'Team training & mentorship',
+          'Project planning',
+          'Flexible scheduling'
         ],
         add_ons: [
           {
-            name: 'Additional Workshop Day',
-            price: 1200,
-            description: 'Extended training with additional topics'
+            name: 'Follow-up Session (1hr)',
+            price: 250,
+            description: 'Additional hour of consulting'
           },
           {
-            name: 'One-on-One Coaching',
-            price: 200,
-            description: 'Per hour individual coaching sessions'
-          },
-          {
-            name: 'Custom Learning Materials',
+            name: 'Documentation Package',
             price: 500,
-            description: 'Branded training guides and resources'
+            description: 'Comprehensive documentation of recommendations'
           },
           {
-            name: 'Follow-up Session',
-            price: 800,
-            description: '2-hour follow-up session after 30 days'
+            name: 'Implementation Support (5hrs)',
+            price: 1250,
+            description: 'Hands-on implementation assistance'
           }
         ],
         is_active: true
       },
       {
-        name: 'Technology Consulting',
-        description: 'Expert guidance on technology strategy, architecture decisions, and digital transformation initiatives.',
-        category: 'consulting',
-        base_price: 2500,
+        name: 'Learning & Training',
+        description: 'Personalized technical training sessions designed for your team. Contact us to create a custom learning plan that fits your needs.',
+        category: 'Learning',
+        base_price: 0,
         features: [
-          'Technology assessment and audit',
-          'Strategic roadmap development',
-          'Architecture review and recommendations',
-          'Vendor evaluation and selection',
-          'Risk assessment',
-          'Implementation planning',
-          '2 follow-up consultation sessions',
-          'Detailed report with actionable insights'
+          'One-on-one instruction',
+          'Hands-on projects',
+          'Custom curriculum',
+          'Progress tracking',
+          'Ongoing support',
+          'Training materials included'
         ],
         add_ons: [
           {
-            name: 'Ongoing Monthly Retainer',
-            price: 2000,
-            description: 'Monthly consulting services (10 hours)'
+            name: 'Group Training Session',
+            price: 400,
+            description: 'Training for up to 10 participants'
           },
           {
-            name: 'Emergency Support',
-            price: 300,
-            description: 'Per hour urgent consultation'
+            name: 'Recorded Session Access',
+            price: 100,
+            description: 'Recording of training sessions'
           },
           {
-            name: 'Team Workshops',
-            price: 1000,
-            description: 'Present findings and recommendations to your team'
-          },
-          {
-            name: 'Implementation Oversight',
-            price: 3000,
-            description: 'Project management during implementation phase'
+            name: 'Practice Project Review',
+            price: 200,
+            description: 'Detailed review of practice work'
           }
         ],
         is_active: true
       },
       {
         name: 'Strategic Planning & Optimization',
-        description: 'Comprehensive analysis and optimization of your digital operations to maximize efficiency and ROI.',
-        category: 'optimization',
-        base_price: 4000,
+        description: 'Comprehensive business and technology strategy services. Schedule a consultation to discuss how we can optimize your operations.',
+        category: 'Strategic Planning',
+        base_price: 0,
         features: [
-          'Business process analysis',
-          'Digital transformation strategy',
-          'Performance optimization recommendations',
-          'Cost-benefit analysis',
-          'Technology stack evaluation',
-          'Scalability planning',
+          'Business analysis',
+          'Technology roadmap',
+          'Process optimization',
           'Competitive analysis',
-          '90-day action plan'
+          'Implementation guidance',
+          'ROI analysis'
         ],
         add_ons: [
           {
-            name: 'Implementation Support',
-            price: 2500,
-            description: '6-week implementation assistance'
-          },
-          {
-            name: 'Monthly Performance Review',
+            name: 'Detailed Implementation Plan',
             price: 800,
-            description: 'Ongoing optimization and reporting'
+            description: 'Step-by-step implementation roadmap'
           },
           {
-            name: 'Team Training on New Processes',
+            name: 'Quarterly Strategy Review',
+            price: 1000,
+            description: 'Ongoing strategic guidance'
+          },
+          {
+            name: 'Executive Presentation',
+            price: 500,
+            description: 'Professional presentation of findings'
+          }
+        ],
+        is_active: true
+      },
+      {
+        name: 'Monthly Retainer',
+        description: 'Ongoing development and support with priority access to our team. Perfect for businesses needing consistent technical support and development.',
+        category: 'Retainer',
+        base_price: 4000,
+        features: [
+          '20 hours of development per month',
+          'Priority support & response',
+          'Regular progress updates',
+          'Flexible task management',
+          'Rollover of unused hours',
+          'Direct team access',
+          'Monthly strategy calls'
+        ],
+        add_ons: [
+          {
+            name: 'Additional 5 Hours',
+            price: 1000,
+            description: 'Extra development hours as needed'
+          },
+          {
+            name: 'Emergency Support Access',
+            price: 500,
+            description: 'After-hours support availability'
+          },
+          {
+            name: 'Dedicated Project Manager',
             price: 1500,
-            description: 'Training team on optimized workflows'
-          },
-          {
-            name: 'Automation Setup',
-            price: 2000,
-            description: 'Implement automation tools and workflows'
+            description: 'Dedicated PM for your projects'
           }
         ],
         is_active: true
