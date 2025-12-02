@@ -46,14 +46,17 @@ export const CookieConsentBanner = () => {
       <div className="text-foreground">
         <p className="text-sm mb-2">
           We use cookies to enhance your experience, analyze site traffic, and personalize content. 
-          We may share data with third parties for marketing and analytics purposes.
+          We may sell your data to third parties for marketing and advertising purposes.
         </p>
-        <div className="flex gap-4 text-xs">
+        <div className="flex flex-wrap gap-4 text-xs">
           <Link to="/privacy" className="text-primary hover:underline">
             Privacy Policy
           </Link>
           <Link to="/terms" className="text-primary hover:underline">
             Terms of Service
+          </Link>
+          <Link to="/ccpa-optout" className="text-primary hover:underline font-semibold">
+            Do Not Sell My Data
           </Link>
         </div>
       </div>

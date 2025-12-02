@@ -8,6 +8,7 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { NavLink } from "@/components/NavLink";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -101,8 +102,9 @@ export function Navbar() {
             )}
           </div>
 
-          {/* Auth Buttons */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Auth Buttons & Theme Toggle */}
+          <div className="hidden md:flex items-center gap-2">
+            <ThemeToggle />
             {user ? (
               <Button onClick={handleLogout} variant="outline" size="sm">
                 Logout
@@ -220,13 +222,14 @@ export function Navbar() {
                 </NavLink>
               </>
             )}
-            <div className="pt-4 border-t">
+            <div className="pt-4 border-t flex items-center justify-between gap-4">
+              <ThemeToggle />
               {user ? (
-                <Button onClick={handleLogout} variant="outline" size="sm" className="w-full">
+                <Button onClick={handleLogout} variant="outline" size="sm" className="flex-1">
                   Logout
                 </Button>
               ) : (
-                <Button asChild size="sm" className="w-full">
+                <Button asChild size="sm" className="flex-1">
                   <Link to="/auth">Sign In</Link>
                 </Button>
               )}

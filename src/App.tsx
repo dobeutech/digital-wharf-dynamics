@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -18,6 +19,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import CCPAOptOut from "./pages/CCPAOptOut";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
@@ -36,92 +38,96 @@ import { BrandKit } from "@/components/brand/BrandKit";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Analytics />
-          <div className="flex flex-col min-h-screen">
-            <Navbar />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/services" element={<Services />} />
-                <Route path="/pricing" element={<Pricing />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/privacy" element={<Privacy />} />
-                <Route path="/terms" element={<Terms />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/news" element={<News />} />
-                <Route path="/dashboard" element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } />
-                <Route path="/dashboard/projects" element={
-                  <ProtectedRoute>
-                    <Projects />
-                  </ProtectedRoute>
-                } />
-                <Route path="/dashboard/shop" element={
-                  <ProtectedRoute>
-                    <Shop />
-                  </ProtectedRoute>
-                } />
-                <Route path="/dashboard/files" element={
-                  <ProtectedRoute>
-                    <Files />
-                  </ProtectedRoute>
-                } />
-                <Route path="/newsletter" element={
-                  <ProtectedRoute>
-                    <Newsletter />
-                  </ProtectedRoute>
-                } />
-                <Route path="/brand" element={
-                  <ProtectedRoute>
-                    <BrandKit />
-                  </ProtectedRoute>
-                } />
-                <Route path="/admin" element={
-                  <AdminRoute>
-                    <AdminDashboard />
-                  </AdminRoute>
-                } />
-                <Route path="/admin/services" element={
-                  <AdminRoute>
-                    <AdminServices />
-                  </AdminRoute>
-                } />
-                <Route path="/admin/projects" element={
-                  <AdminRoute>
-                    <AdminProjects />
-                  </AdminRoute>
-                } />
-                <Route path="/admin/users" element={
-                  <AdminRoute>
-                    <AdminUsers />
-                  </AdminRoute>
-                } />
-                <Route path="/admin/newsletter" element={
-                  <AdminRoute>
-                    <AdminNewsletter />
-                  </AdminRoute>
-                } />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </main>
-            <Footer />
-          </div>
-          <CookieConsentBanner />
-          <NewsletterPopup />
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <Analytics />
+            <div className="flex flex-col min-h-screen">
+              <Navbar />
+              <main className="flex-grow">
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/services" element={<Services />} />
+                  <Route path="/pricing" element={<Pricing />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/terms" element={<Terms />} />
+                  <Route path="/tos" element={<Terms />} />
+                  <Route path="/ccpa-optout" element={<CCPAOptOut />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/news" element={<News />} />
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/projects" element={
+                    <ProtectedRoute>
+                      <Projects />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/shop" element={
+                    <ProtectedRoute>
+                      <Shop />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/dashboard/files" element={
+                    <ProtectedRoute>
+                      <Files />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/newsletter" element={
+                    <ProtectedRoute>
+                      <Newsletter />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/brand" element={
+                    <ProtectedRoute>
+                      <BrandKit />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/admin" element={
+                    <AdminRoute>
+                      <AdminDashboard />
+                    </AdminRoute>
+                  } />
+                  <Route path="/admin/services" element={
+                    <AdminRoute>
+                      <AdminServices />
+                    </AdminRoute>
+                  } />
+                  <Route path="/admin/projects" element={
+                    <AdminRoute>
+                      <AdminProjects />
+                    </AdminRoute>
+                  } />
+                  <Route path="/admin/users" element={
+                    <AdminRoute>
+                      <AdminUsers />
+                    </AdminRoute>
+                  } />
+                  <Route path="/admin/newsletter" element={
+                    <AdminRoute>
+                      <AdminNewsletter />
+                    </AdminRoute>
+                  } />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </main>
+              <Footer />
+            </div>
+            <CookieConsentBanner />
+            <NewsletterPopup />
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ThemeProvider>
 );
 
 export default App;
