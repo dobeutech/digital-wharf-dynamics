@@ -4,8 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 import { Analytics } from "@/components/Analytics";
 import { CookieConsentBanner } from "@/components/CookieConsent";
 import { NewsletterPopup } from "@/components/NewsletterPopup";
@@ -18,6 +18,7 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
+import { BrandKit } from "@/components/brand/BrandKit";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +31,7 @@ const App = () => (
         <AuthProvider>
           <Analytics />
           <div className="flex flex-col min-h-screen">
-            <Navigation />
+            <Navbar />
             <main className="flex-grow">
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -41,6 +42,7 @@ const App = () => (
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/terms" element={<Terms />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/brand" element={<BrandKit />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
