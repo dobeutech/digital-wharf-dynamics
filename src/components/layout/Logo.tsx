@@ -10,11 +10,11 @@ export function Logo({ variant = "default", className }: LogoProps) {
   
   return (
     <svg
-      viewBox="0 0 200 60"
+      viewBox="0 0 240 60"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={cn("h-8 w-auto", className)}
-      aria-label="DBE Logo"
+      aria-label="DOBEU Logo"
     >
       <text
         x="10"
@@ -24,9 +24,9 @@ export function Logo({ variant = "default", className }: LogoProps) {
         fontWeight="700"
         fontFamily="system-ui, -apple-system, sans-serif"
       >
-        DBE
+        DOBEU
       </text>
-      <circle cx="180" cy="30" r="8" fill={fillColor} opacity="0.6" />
+      <circle cx="220" cy="30" r="8" fill={fillColor} opacity="0.6" />
     </svg>
   );
 }
