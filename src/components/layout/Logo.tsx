@@ -26,7 +26,6 @@ export function Logo({ variant = "default", className }: LogoProps) {
       >
         DOBEU
       </text>
-      <circle cx="220" cy="30" r="8" fill={fillColor} opacity="0.6" />
     </svg>
   );
 }
