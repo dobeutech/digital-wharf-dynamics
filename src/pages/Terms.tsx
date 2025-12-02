@@ -4,12 +4,12 @@ export default function Terms() {
       <div className="container mx-auto max-w-4xl">
         <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
         <div className="prose prose-lg max-w-none space-y-6 text-muted-foreground">
-          <p className="text-sm text-muted-foreground">Last Updated: December 1, 2025</p>
+          <p className="text-sm text-muted-foreground">Last Updated: December 2, 2025</p>
 
           <section>
             <h2 className="text-2xl font-bold text-foreground mb-4">1. Acceptance of Terms</h2>
             <p>
-              By accessing or using DOBEU's services, you agree to be bound by these Terms of Service. 
+              By accessing or using Dobeu Tech Solutions ("DOBEU") services, you agree to be bound by these Terms of Service. 
               If you do not agree to these terms, please do not use our services.
             </p>
           </section>
@@ -65,21 +65,61 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-foreground mb-4">7. Communication Consent</h2>
-            <p>
-              <strong>Email Communications:</strong> By signing up, you consent to receive 
-              transactional and, if opted-in, marketing emails.
+            <h2 className="text-2xl font-bold text-foreground mb-4">7. Marketing Communications & Consent</h2>
+            <p className="mb-4">
+              <strong>Email Marketing Opt-In:</strong> By checking the "I consent to receive marketing emails" 
+              checkbox during signup or subscription, you expressly opt-in to receive promotional emails, 
+              newsletters, special offers, and targeted marketing communications from DOBEU. These communications 
+              may be personalized based on your usage patterns, preferences, and data we collect about you.
+            </p>
+            <p className="mb-4">
+              <strong>SMS/Text Message Opt-In:</strong> By providing your phone number and checking the SMS opt-in 
+              checkbox, you expressly consent to receive SMS and text messages from DOBEU. This includes:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Project updates and status notifications</li>
+              <li>Appointment and deadline reminders</li>
+              <li>Promotional offers and marketing messages</li>
+              <li>Account-related alerts</li>
+            </ul>
+            <p className="mb-4">
+              Message frequency varies. Message and data rates may apply. You can opt-out at any time by 
+              replying STOP to any message or updating your preferences in your account settings.
             </p>
             <p>
-              <strong>SMS Communications:</strong> By providing your phone number and checking 
-              the SMS opt-in box, you expressly consent to receive SMS messages from DOBEU. 
-              This includes project updates, reminders, and promotional messages. Message and 
-              data rates may apply. You can opt-out at any time by replying STOP.
+              <strong>Withdrawal of Consent:</strong> You may withdraw your consent to marketing communications 
+              at any time by clicking the unsubscribe link in emails, replying STOP to SMS messages, or 
+              contacting us at privacy@dobeu.cloud.
             </p>
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-foreground mb-4">8. Service Modifications</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">8. Data Usage & Third-Party Sharing</h2>
+            <p className="mb-4">
+              <strong>Consent to Data Use:</strong> By using our services and accepting these Terms, you 
+              acknowledge and consent that DOBEU may use your data (including but not limited to usage 
+              patterns, preferences, and behavioral data) to:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 mb-4">
+              <li>Personalize and improve your experience on our website</li>
+              <li>Tailor content, features, and recommendations to your interests</li>
+              <li>Develop and improve our services and offerings</li>
+              <li>Train machine learning models and algorithms to enhance our platform</li>
+            </ul>
+            <p className="mb-4">
+              <strong>Consent to Data Sales:</strong> You acknowledge and consent that DOBEU reserves the 
+              right to sell, license, or share your data (in anonymized, aggregated, or identifiable form) 
+              to third parties for marketing, advertising, research, and commercial purposes. This may include 
+              sharing your information with advertising networks, data brokers, and business partners.
+            </p>
+            <p>
+              California residents have additional rights under the CCPA, including the right to opt-out 
+              of data sales. See our Privacy Policy for details on exercising these rights.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold text-foreground mb-4">9. Service Modifications</h2>
             <p>
               We reserve the right to modify or discontinue services with reasonable notice. 
               We are not liable for any modifications, suspensions, or discontinuations.
@@ -87,7 +127,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-foreground mb-4">9. Limitation of Liability</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">10. Limitation of Liability</h2>
             <p>
               DOBEU shall not be liable for any indirect, incidental, special, consequential, 
               or punitive damages resulting from your use of our services.
@@ -95,7 +135,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-foreground mb-4">10. Termination</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">11. Termination</h2>
             <p>
               We may terminate or suspend access to our services immediately, without prior 
               notice, for any reason, including breach of these Terms.
@@ -103,7 +143,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-foreground mb-4">11. Governing Law</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">12. Governing Law</h2>
             <p>
               These Terms are governed by the laws of the State of California, USA, without 
               regard to its conflict of law provisions.
@@ -111,13 +151,11 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-2xl font-bold text-foreground mb-4">12. Contact Information</h2>
+            <h2 className="text-2xl font-bold text-foreground mb-4">13. Contact Information</h2>
             <p>
               For questions about these Terms, contact us at:
               <br />
               Email: legal@dobeu.cloud
-              <br />
-              Address: [Your Business Address]
             </p>
           </section>
         </div>
