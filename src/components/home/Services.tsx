@@ -1,86 +1,102 @@
-import { motion } from "motion/react";
-import { useInView } from "motion/react";
 import { useRef } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion, useInView } from "motion/react";
+import { Code, Smartphone, Cloud, Briefcase, TrendingUp, GraduationCap, ArrowRight } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Code, Palette, Brain, TrendingUp, ShoppingCart, Server } from "lucide-react";
 
 const services = [
   {
     icon: Code,
-    title: "Website Development",
-    description: "Custom websites built with modern frameworks, optimized for performance and SEO.",
-    link: "/services#website",
+    title: "Web Development",
+    description: "Custom websites and web applications built with modern frameworks and best practices",
+    link: "/services",
   },
   {
-    icon: Server,
+    icon: Smartphone,
     title: "Software Solutions",
-    description: "Enterprise-grade applications tailored to your business needs.",
-    link: "/services#software",
+    description: "Scalable software systems designed to streamline your business operations",
+    link: "/services",
   },
   {
-    icon: Brain,
-    title: "Learning & Training",
-    description: "Upskill your team with our expert-led training programs.",
-    link: "/services#learning",
+    icon: Cloud,
+    title: "Cloud Integration",
+    description: "Seamless cloud infrastructure setup and deployment for maximum reliability",
+    link: "/services",
+  },
+  {
+    icon: Briefcase,
+    title: "Consulting",
+    description: "Strategic technology guidance to help you make informed decisions",
+    link: "/services",
   },
   {
     icon: TrendingUp,
-    title: "Consulting",
-    description: "Strategic guidance to help you navigate digital transformation.",
-    link: "/services#consulting",
+    title: "Growth & Optimization",
+    description: "Data-driven strategies to maximize your digital presence and ROI",
+    link: "/services",
   },
   {
-    icon: Palette,
-    title: "Strategic Planning",
-    description: "Data-driven strategies to optimize your digital presence.",
-    link: "/services#planning",
-  },
-  {
-    icon: ShoppingCart,
-    title: "E-Commerce",
-    description: "Complete e-commerce solutions from design to deployment.",
-    link: "/services#ecommerce",
+    icon: GraduationCap,
+    title: "Training & Support",
+    description: "Comprehensive training programs and ongoing technical support",
+    link: "/services",
   },
 ];
 
 export function Services() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="py-24 bg-background">
-      <div className="container mx-auto px-4">
+    <section className="relative py-24 md:py-32">
+      <div className="container px-4 mx-auto">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          ref={ref}
+          initial={{ opacity: 0, y: 40 }}
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
           transition={{ duration: 0.6 }}
           className="max-w-3xl mx-auto text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold mb-4">Our Services</h2>
-          <p className="text-xl text-muted-foreground">
-            Comprehensive digital solutions to help your business thrive in the modern world.
+          <h2 className="text-4xl md:text-6xl font-bold mb-6">
+            What We{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-500">
+              Deliver
+            </span>
+          </h2>
+          <p className="text-lg md:text-xl text-muted-foreground font-light">
+            End-to-end digital solutions tailored to your unique business needs
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
           {services.map((service, index) => (
             <motion.div
               key={service.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
+              initial={{ opacity: 0, y: 40 }}
+              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+              transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="h-full hover:shadow-lg transition-shadow">
+              <Card className="h-full bg-card/50 backdrop-blur-sm border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 group cursor-pointer">
                 <CardHeader>
-                  <service.icon className="h-12 w-12 text-primary mb-4" />
-                  <CardTitle>{service.title}</CardTitle>
-                  <CardDescription>{service.description}</CardDescription>
+                  <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary/10 group-hover:bg-primary/20 transition-colors mb-4">
+                    <service.icon className="w-7 h-7 text-primary" />
+                  </div>
+                  <CardTitle className="text-2xl">{service.title}</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <Button asChild variant="link" className="px-0">
-                    <Link to={service.link}>Learn More →</Link>
+                <CardContent className="space-y-4">
+                  <p className="text-muted-foreground leading-relaxed">
+                    {service.description}
+                  </p>
+                  <Button 
+                    asChild
+                    variant="ghost" 
+                    className="text-primary hover:text-primary-hover hover:bg-primary/10 p-0 h-auto font-semibold group/btn"
+                  >
+                    <Link to={service.link}>
+                      Learn More
+                      <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover/btn:translate-x-1" />
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>
@@ -90,11 +106,15 @@ export function Services() {
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
           transition={{ duration: 0.6, delay: 0.8 }}
-          className="text-center"
+          className="text-center mt-16"
         >
-          <Button asChild size="lg">
+          <Button 
+            asChild
+            size="lg"
+            className="bg-primary hover:bg-primary-hover text-primary-foreground font-bold px-10 py-6 text-lg shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all hover:scale-105"
+          >
             <Link to="/services">View All Services</Link>
           </Button>
         </motion.div>
