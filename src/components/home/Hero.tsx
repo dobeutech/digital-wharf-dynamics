@@ -5,54 +5,47 @@ import { ArrowRight } from "lucide-react";
 
 export function Hero() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
-      {/* Modern gradient overlay with radial effect */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(234,179,8,0.15),transparent_50%)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(234,179,8,0.1),transparent_50%)]" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Modern gradient background with subtle glow */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-card" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.15),transparent_50%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,hsl(var(--primary)/0.08),transparent_60%)]" />
       
-      {/* Subtle grid pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
-      
-      <div className="container mx-auto px-4 z-10">
+      <div className="container relative z-10 px-4 py-32 mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="max-w-5xl mx-auto text-center"
+          className="max-w-5xl mx-auto text-center space-y-8"
         >
-          <motion.h1
-            className="text-6xl md:text-8xl font-bold mb-6 text-foreground leading-tight"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            Tech is your{" "}
-            <span className="text-primary">best friend.</span>
-          </motion.h1>
+          <h1 className="text-6xl md:text-8xl font-bold tracking-tight leading-none">
+            Build Your{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-yellow-400 to-orange-500 animate-gradient-x">
+              Digital Future
+            </span>
+          </h1>
           
-          <motion.p
-            className="text-lg md:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-relaxed"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-          >
-            Empowering small to midsized-size projects + tech solutions. It's worth doing. We make the corporate obsolete.
-          </motion.p>
+          <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-light">
+            Premium web solutions engineered for growth, performance, and innovation
+          </p>
           
-          <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-          >
-            <Button asChild size="lg" className="text-base px-8 py-6 h-auto font-semibold">
-              <Link to="/contact">
-                Get Started Today
-                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
+            <Button
+              asChild
+              size="lg"
+              className="bg-primary hover:bg-primary-hover text-primary-foreground font-bold px-10 py-7 text-lg shadow-lg shadow-primary/20 transition-all hover:scale-105 hover:shadow-xl hover:shadow-primary/30"
+            >
+              <Link to="/contact">Start Your Project</Link>
             </Button>
-          </motion.div>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-2 border-border bg-background/50 backdrop-blur-sm hover:bg-card hover:border-primary/50 font-semibold px-10 py-7 text-lg transition-all hover:scale-105"
+            >
+              <Link to="/services">Explore Services</Link>
+            </Button>
+          </div>
         </motion.div>
       </div>
       
