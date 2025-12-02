@@ -10,6 +10,7 @@ import { Analytics } from "@/components/Analytics";
 import { CookieConsentBanner } from "@/components/CookieConsent";
 import { NewsletterPopup } from "@/components/NewsletterPopup";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { AdminRoute } from "@/components/AdminRoute";
 import Home from "./pages/Home";
 import Services from "./pages/Services";
 import Pricing from "./pages/Pricing";
@@ -25,6 +26,8 @@ import Shop from "./pages/Shop";
 import Files from "./pages/Files";
 import News from "./pages/News";
 import Newsletter from "./pages/Newsletter";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminServices from "./pages/admin/AdminServices";
 import { BrandKit } from "@/components/brand/BrandKit";
 
 const queryClient = new QueryClient();
@@ -79,6 +82,16 @@ const App = () => (
                   <ProtectedRoute>
                     <BrandKit />
                   </ProtectedRoute>
+                } />
+                <Route path="/admin" element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                } />
+                <Route path="/admin/services" element={
+                  <AdminRoute>
+                    <AdminServices />
+                  </AdminRoute>
                 } />
                 <Route path="*" element={<NotFound />} />
               </Routes>

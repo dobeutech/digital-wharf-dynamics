@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "./Logo";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAdmin } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { NavLink } from "@/components/NavLink";
@@ -12,6 +13,7 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user } = useAuth();
+  const { isAdmin } = useAdmin();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -54,6 +56,11 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-8">
             {user ? (
               <>
+                {isAdmin && (
+                  <NavLink to="/admin" className="text-sm font-medium hover:text-primary transition-colors">
+                    Admin
+                  </NavLink>
+                )}
                 <NavLink to="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
                   Dashboard
                 </NavLink>
@@ -122,6 +129,15 @@ export function Navbar() {
           <div className="md:hidden py-4 space-y-4 border-t">
             {user ? (
               <>
+                {isAdmin && (
+                  <NavLink
+                    to="/admin"
+                    className="block text-sm font-medium hover:text-primary transition-colors"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Admin
+                  </NavLink>
+                )}
                 <NavLink
                   to="/dashboard"
                   className="block text-sm font-medium hover:text-primary transition-colors"
