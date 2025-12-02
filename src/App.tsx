@@ -28,6 +28,9 @@ import News from "./pages/News";
 import Newsletter from "./pages/Newsletter";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminServices from "./pages/admin/AdminServices";
+import AdminProjects from "./pages/admin/AdminProjects";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminNewsletter from "./pages/admin/AdminNewsletter";
 import { BrandKit } from "@/components/brand/BrandKit";
 
 const queryClient = new QueryClient();
@@ -91,6 +94,21 @@ const App = () => (
                 <Route path="/admin/services" element={
                   <AdminRoute>
                     <AdminServices />
+                  </AdminRoute>
+                } />
+                <Route path="/admin/projects" element={
+                  <AdminRoute>
+                    <AdminProjects />
+                  </AdminRoute>
+                } />
+                <Route path="/admin/users" element={
+                  <AdminRoute>
+                    <AdminUsers />
+                  </AdminRoute>
+                } />
+                <Route path="/admin/newsletter" element={
+                  <AdminRoute>
+                    <AdminNewsletter />
                   </AdminRoute>
                 } />
                 <Route path="*" element={<NotFound />} />
