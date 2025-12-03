@@ -306,8 +306,8 @@ export default function Contact() {
                   <Mail className="w-6 h-6 text-primary mt-1 shrink-0" aria-hidden="true" />
                   <div>
                     <h2 className="font-semibold mb-1">Email</h2>
-                    <a href="mailto:hello@dobeu.cloud" className="text-muted-foreground hover:text-primary transition-colors">
-                      hello@dobeu.cloud
+                    <a href="mailto:devops@dobeu.cloud" className="text-muted-foreground hover:text-primary transition-colors">
+                      devops@dobeu.cloud
                     </a>
                   </div>
                 </div>
@@ -320,8 +320,8 @@ export default function Contact() {
                   <Phone className="w-6 h-6 text-primary mt-1 shrink-0" aria-hidden="true" />
                   <div>
                     <h2 className="font-semibold mb-1">Phone</h2>
-                    <a href="tel:+15551234567" className="text-muted-foreground hover:text-primary transition-colors">
-                      (555) 123-4567
+                    <a href="tel:+12153705332" className="text-muted-foreground hover:text-primary transition-colors">
+                      (215) 370-5332
                     </a>
                   </div>
                 </div>
@@ -335,7 +335,7 @@ export default function Contact() {
                   <div>
                     <h2 className="font-semibold mb-1">Location</h2>
                     <p className="text-muted-foreground">
-                      San Francisco, CA<br />
+                      NJ, USA<br />
                       Serving clients worldwide
                     </p>
                   </div>
