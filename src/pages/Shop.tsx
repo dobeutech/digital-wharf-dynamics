@@ -7,7 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Check, ShoppingCart } from "lucide-react";
 import { ServiceDetailModal } from "@/components/shop/ServiceDetailModal";
-import { trackEvent, MIXPANEL_EVENTS } from "@/lib/mixpanel";
+import { trackEvent, MIXPANEL_EVENTS, trackFunnelStep } from "@/lib/mixpanel";
+import { trackFunnelStep as trackPostHogFunnel, FUNNEL_STEPS } from "@/lib/posthog";
 
 interface Service {
   id: string;
@@ -30,6 +31,9 @@ export default function Shop() {
 
   useEffect(() => {
     fetchServices();
+    // Track funnel: Shop Viewed
+    trackFunnelStep('FUNNEL_SHOP_VIEWED');
+    trackPostHogFunnel(FUNNEL_STEPS.SHOP_VIEWED);
   }, []);
 
   const fetchServices = async () => {
@@ -70,6 +74,16 @@ export default function Shop() {
       base_price: service.base_price,
     });
     
+    // Track funnel: Service Detail Viewed
+    trackFunnelStep('FUNNEL_SERVICE_DETAIL_VIEWED', {
+      service_id: service.id,
+      service_name: service.name,
+    });
+    trackPostHogFunnel(FUNNEL_STEPS.SERVICE_DETAIL_VIEWED, {
+      service_id: service.id,
+      service_name: service.name,
+    });
+    
     setSelectedService(service);
     setIsModalOpen(true);
   };
@@ -97,6 +111,16 @@ export default function Shop() {
         total_amount: totalAmount,
         add_ons_count: selectedAddOns.length,
         is_subscription: isSubscription,
+      });
+      
+      // Track funnel: Checkout Initiated
+      trackFunnelStep('FUNNEL_CHECKOUT_INITIATED', {
+        service_id: serviceId,
+        total_amount: totalAmount,
+      });
+      trackPostHogFunnel(FUNNEL_STEPS.CHECKOUT_INITIATED, {
+        service_id: serviceId,
+        total_amount: totalAmount,
       });
 
       const { data, error } = await supabase.functions.invoke("create-checkout", {
