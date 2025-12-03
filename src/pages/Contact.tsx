@@ -289,7 +289,10 @@ export default function Contact() {
                             />
                           </FormControl>
                           <FormDescription>
-                            {field.value?.length || 0}/2000 characters {field.value?.length > 0 && field.value.length < 10 && '(minimum 10 characters)'}
+                            {field.value?.length || 0}/2000 characters
+                            {field.value?.length > 0 && field.value.length < 10 ? (
+                              <span className="text-muted-foreground"> (minimum 10 characters)</span>
+                            ) : null}
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
