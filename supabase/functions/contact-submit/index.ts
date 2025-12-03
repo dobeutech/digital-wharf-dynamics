@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.86.0";
+import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -104,6 +105,70 @@ function validateInput(data: unknown): { valid: boolean; errors: string[]; sanit
   return { valid: true, errors: [], sanitized };
 }
 
+async function sendEmails(resend: Resend, sanitized: Record<string, unknown>) {
+  try {
+    // Send confirmation email to submitter
+    await resend.emails.send({
+      from: 'Dobeu Tech Solutions <hello@updates.dobeu.cloud>',
+      to: [sanitized.email as string],
+      subject: 'We received your message - Dobeu Tech Solutions',
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"></head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #EAB308;">Thank You for Reaching Out!</h1>
+          <p>Dear ${sanitized.name},</p>
+          <p>We have received your message and appreciate you contacting Dobeu Tech Solutions. Our team will review your inquiry and get back to you as soon as possible.</p>
+          <div style="background: #f4f4f4; padding: 16px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 8px 0;"><strong>Your Message:</strong></p>
+            <p style="margin: 8px 0; white-space: pre-wrap;">${sanitized.message}</p>
+          </div>
+          <p>In the meantime, feel free to explore our <a href="https://dobeu.cloud/services" style="color: #EAB308;">services</a> or check out our latest <a href="https://dobeu.cloud/news" style="color: #EAB308;">news and updates</a>.</p>
+          <p>Best regards,<br><strong>The Dobeu Team</strong></p>
+          <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+          <p style="color: #666; font-size: 12px;">Dobeu Tech Solutions<br>This is an automated message. Please do not reply directly to this email.</p>
+        </body>
+        </html>
+      `,
+    });
+    console.log(`Confirmation email sent to ${sanitized.email}`);
+
+    // Send admin notification
+    await resend.emails.send({
+      from: 'Dobeu System <system@updates.dobeu.cloud>',
+      to: ['contact@dobeu.cloud'],
+      subject: `New Contact Form Submission from ${sanitized.name}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"></head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #EAB308;">New Contact Form Submission</h1>
+          <div style="background: #f4f4f4; padding: 16px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 8px 0;"><strong>Name:</strong> ${sanitized.name}</p>
+            <p style="margin: 8px 0;"><strong>Email:</strong> <a href="mailto:${sanitized.email}">${sanitized.email}</a></p>
+            <p style="margin: 8px 0;"><strong>Phone:</strong> ${sanitized.phone || 'Not provided'}</p>
+            <p style="margin: 8px 0;"><strong>SMS Consent:</strong> ${sanitized.smsConsent ? 'Yes' : 'No'}</p>
+            <p style="margin: 8px 0;"><strong>Marketing Consent:</strong> ${sanitized.marketingConsent ? 'Yes' : 'No'}</p>
+          </div>
+          <div style="background: #fff; border: 1px solid #ddd; padding: 16px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 0 0 8px 0;"><strong>Message:</strong></p>
+            <p style="margin: 0; white-space: pre-wrap;">${sanitized.message}</p>
+          </div>
+          <p><a href="https://dobeu.cloud/admin/contacts" style="display: inline-block; background: #EAB308; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">View in Admin Dashboard</a></p>
+          <p><a href="mailto:${sanitized.email}?subject=Re: Your inquiry to Dobeu Tech Solutions" style="display: inline-block; background: #333; color: #fff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; margin-left: 8px;">Reply Directly</a></p>
+        </body>
+        </html>
+      `,
+    });
+    console.log(`Admin notification sent for contact from ${sanitized.email}`);
+  } catch (emailError) {
+    console.error('Error sending emails:', emailError);
+    // Don't fail the request if emails fail - the DB record is already created
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -185,6 +250,15 @@ serve(async (req) => {
     }
 
     console.log(`Contact form submitted successfully from: ${sanitized!.email}`);
+
+    // Send email notifications
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    if (resendApiKey) {
+      const resend = new Resend(resendApiKey);
+      await sendEmails(resend, sanitized!);
+    } else {
+      console.warn('RESEND_API_KEY not configured - skipping email notifications');
+    }
 
     return new Response(
       JSON.stringify({ 

@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.86.0";
+import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -119,6 +120,81 @@ function validateInput(data: unknown): { valid: boolean; errors: string[]; sanit
   return { valid: true, errors: [], sanitized };
 }
 
+async function sendEmails(resend: Resend, sanitized: Record<string, unknown>, referenceId: string, responseDeadline: Date) {
+  const requestTypeLabels: Record<string, string> = {
+    'opt-out': 'Do Not Sell My Personal Information',
+    'delete': 'Delete My Personal Information',
+    'access': 'Access My Personal Information',
+    'correction': 'Correct My Personal Information'
+  };
+  
+  const requestTypesFormatted = (sanitized.requestTypes as string[])
+    .map(t => requestTypeLabels[t] || t)
+    .join(', ');
+
+  try {
+    // Send confirmation email to requester
+    await resend.emails.send({
+      from: 'Dobeu Privacy <privacy@updates.dobeu.cloud>',
+      to: [sanitized.email as string],
+      subject: `CCPA Request Received - Reference: ${referenceId}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"></head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #EAB308;">Privacy Request Confirmed</h1>
+          <p>Dear ${sanitized.fullName},</p>
+          <p>We have received your California Consumer Privacy Act (CCPA) request. Here are the details:</p>
+          <div style="background: #f4f4f4; padding: 16px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 8px 0;"><strong>Reference ID:</strong> ${referenceId}</p>
+            <p style="margin: 8px 0;"><strong>Request Type(s):</strong> ${requestTypesFormatted}</p>
+            <p style="margin: 8px 0;"><strong>Response Deadline:</strong> ${responseDeadline.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          </div>
+          <p>As required by California law, we will respond to your request within 45 days. Please save your reference ID for future correspondence.</p>
+          <p>If you have any questions, please contact us at <a href="mailto:privacy@dobeu.cloud">privacy@dobeu.cloud</a>.</p>
+          <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
+          <p style="color: #666; font-size: 12px;">Dobeu Tech Solutions<br>This is an automated message. Please do not reply directly to this email.</p>
+        </body>
+        </html>
+      `,
+    });
+    console.log(`Confirmation email sent to ${sanitized.email}`);
+
+    // Send admin notification
+    await resend.emails.send({
+      from: 'Dobeu System <system@updates.dobeu.cloud>',
+      to: ['privacy@dobeu.cloud'],
+      subject: `[ACTION REQUIRED] New CCPA Request - ${referenceId}`,
+      html: `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="utf-8"></head>
+        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #EAB308;">New CCPA Request Received</h1>
+          <div style="background: #f4f4f4; padding: 16px; border-radius: 8px; margin: 20px 0;">
+            <p style="margin: 8px 0;"><strong>Reference ID:</strong> ${referenceId}</p>
+            <p style="margin: 8px 0;"><strong>Name:</strong> ${sanitized.fullName}</p>
+            <p style="margin: 8px 0;"><strong>Email:</strong> ${sanitized.email}</p>
+            <p style="margin: 8px 0;"><strong>Phone:</strong> ${sanitized.phone || 'Not provided'}</p>
+            <p style="margin: 8px 0;"><strong>Address:</strong> ${sanitized.address || 'Not provided'}</p>
+            <p style="margin: 8px 0;"><strong>Request Type(s):</strong> ${requestTypesFormatted}</p>
+            <p style="margin: 8px 0;"><strong>Additional Info:</strong> ${sanitized.additionalInfo || 'None'}</p>
+            <p style="margin: 8px 0;"><strong>Response Deadline:</strong> ${responseDeadline.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          </div>
+          <p style="color: #dc2626;"><strong>Action Required:</strong> Please review and process this request within the legal timeframe.</p>
+          <p><a href="https://dobeu.cloud/admin/ccpa" style="display: inline-block; background: #EAB308; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold;">View in Admin Dashboard</a></p>
+        </body>
+        </html>
+      `,
+    });
+    console.log(`Admin notification sent for ${referenceId}`);
+  } catch (emailError) {
+    console.error('Error sending emails:', emailError);
+    // Don't fail the request if emails fail - the DB record is already created
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -189,6 +265,15 @@ serve(async (req) => {
     }
 
     console.log(`CCPA request submitted successfully: ${referenceId}`);
+
+    // Send email notifications
+    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    if (resendApiKey) {
+      const resend = new Resend(resendApiKey);
+      await sendEmails(resend, sanitized!, referenceId, responseDeadline);
+    } else {
+      console.warn('RESEND_API_KEY not configured - skipping email notifications');
+    }
 
     return new Response(
       JSON.stringify({ 

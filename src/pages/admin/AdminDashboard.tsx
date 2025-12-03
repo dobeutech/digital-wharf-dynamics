@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { ShoppingBag, FolderOpen, Users, Newspaper, FileText } from "lucide-react";
+import { ShoppingBag, FolderOpen, Users, Newspaper, FileText, Shield, MessageSquare } from "lucide-react";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -11,15 +11,23 @@ export default function AdminDashboard() {
     totalProjects: 0,
     totalUsers: 0,
     totalPosts: 0,
+    totalCCPARequests: 0,
+    totalContactSubmissions: 0,
+    pendingCCPA: 0,
+    newContacts: 0,
   });
 
   useEffect(() => {
     const fetchStats = async () => {
-      const [servicesRes, projectsRes, profilesRes, postsRes] = await Promise.all([
+      const [servicesRes, projectsRes, profilesRes, postsRes, ccpaRes, contactsRes, pendingCCPARes, newContactsRes] = await Promise.all([
         supabase.from("services").select("id", { count: "exact" }),
         supabase.from("projects").select("id", { count: "exact" }),
         supabase.from("profiles").select("id", { count: "exact" }),
         supabase.from("newsletter_posts").select("id", { count: "exact" }),
+        supabase.from("ccpa_requests").select("id", { count: "exact" }),
+        supabase.from("contact_submissions").select("id", { count: "exact" }),
+        supabase.from("ccpa_requests").select("id", { count: "exact" }).eq("status", "pending"),
+        supabase.from("contact_submissions").select("id", { count: "exact" }).eq("status", "new"),
       ]);
 
       setStats({
@@ -27,6 +35,10 @@ export default function AdminDashboard() {
         totalProjects: projectsRes.count || 0,
         totalUsers: profilesRes.count || 0,
         totalPosts: postsRes.count || 0,
+        totalCCPARequests: ccpaRes.count || 0,
+        totalContactSubmissions: contactsRes.count || 0,
+        pendingCCPA: pendingCCPARes.count || 0,
+        newContacts: newContactsRes.count || 0,
       });
     };
 
@@ -41,7 +53,7 @@ export default function AdminDashboard() {
           <p className="text-xl text-muted-foreground">Manage your platform</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <Card className="shadow-material">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -103,6 +115,52 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+          <Card className="shadow-material border-l-4 border-l-yellow-500">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Shield className="h-5 w-5 text-yellow-500" />
+                CCPA Requests
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-3xl font-bold text-primary">{stats.totalCCPARequests}</span>
+                {stats.pendingCCPA > 0 && (
+                  <span className="text-sm text-yellow-500 font-medium">
+                    ({stats.pendingCCPA} pending)
+                  </span>
+                )}
+              </div>
+              <Button asChild variant="link" className="p-0">
+                <Link to="/admin/ccpa">Manage CCPA Requests →</Link>
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="shadow-material border-l-4 border-l-blue-500">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <MessageSquare className="h-5 w-5 text-blue-500" />
+                Contact Submissions
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-3xl font-bold text-primary">{stats.totalContactSubmissions}</span>
+                {stats.newContacts > 0 && (
+                  <span className="text-sm text-blue-500 font-medium">
+                    ({stats.newContacts} new)
+                  </span>
+                )}
+              </div>
+              <Button asChild variant="link" className="p-0">
+                <Link to="/admin/contacts">View Submissions →</Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card className="shadow-material">
             <CardHeader>
@@ -123,9 +181,15 @@ export default function AdminDashboard() {
                 </Link>
               </Button>
               <Button asChild variant="outline" className="w-full justify-start">
-                <Link to="/admin/projects">
-                  <FolderOpen className="mr-2 h-4 w-4" />
-                  View All Projects
+                <Link to="/admin/ccpa">
+                  <Shield className="mr-2 h-4 w-4" />
+                  Review CCPA Requests
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full justify-start">
+                <Link to="/admin/contacts">
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  View Contact Messages
                 </Link>
               </Button>
             </CardContent>
@@ -148,6 +212,10 @@ export default function AdminDashboard() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-foreground/80">Functions</span>
+                  <span className="text-green-500 font-semibold">✓ Online</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-foreground/80">Email Service</span>
                   <span className="text-green-500 font-semibold">✓ Online</span>
                 </div>
               </div>
