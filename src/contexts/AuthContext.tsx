@@ -45,6 +45,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      
+      // Identify user in Mixpanel if session exists
+      if (session?.user) {
+        identifyUser(session.user.id, { 
+          email: session.user.email,
+          created_at: session.user.created_at,
+        });
+      }
     });
 
     return () => subscription.unsubscribe();

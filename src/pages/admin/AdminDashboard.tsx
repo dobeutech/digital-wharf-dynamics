@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { ShoppingBag, FolderOpen, Users, Newspaper, FileText, Shield, MessageSquare, ClipboardList } from "lucide-react";
+import { ShoppingBag, FolderOpen, Users, Newspaper, FileText, Shield, MessageSquare, ClipboardList, BarChart3 } from "lucide-react";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -210,6 +210,12 @@ export default function AdminDashboard() {
                 <Link to="/admin/audit-logs">
                   <ClipboardList className="mr-2 h-4 w-4" />
                   View Audit Logs
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="w-full justify-start">
+                <Link to="/admin/analytics">
+                  <BarChart3 className="mr-2 h-4 w-4" />
+                  View Analytics
                 </Link>
               </Button>
             </CardContent>

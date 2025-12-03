@@ -40,6 +40,7 @@ import AdminNewsletter from "./pages/admin/AdminNewsletter";
 import AdminCCPA from "./pages/admin/AdminCCPA";
 import AdminContacts from "./pages/admin/AdminContacts";
 import AdminAuditLogs from "./pages/admin/AdminAuditLogs";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import { BrandKit } from "@/components/brand/BrandKit";
 
 const queryClient = new QueryClient();
@@ -140,6 +141,11 @@ const App = () => (
                   <Route path="/admin/audit-logs" element={
                     <AdminRoute>
                       <AdminAuditLogs />
+                    </AdminRoute>
+                  } />
+                  <Route path="/admin/analytics" element={
+                    <AdminRoute>
+                      <AdminAnalytics />
                     </AdminRoute>
                   } />
                   <Route path="*" element={<NotFound />} />
