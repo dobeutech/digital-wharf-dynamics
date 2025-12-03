@@ -1,44 +1,113 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { toast } from "sonner";
-import { Mail, Phone, MapPin, ExternalLink, AlertCircle, CheckCircle } from "lucide-react";
+import { Mail, Phone, MapPin, ExternalLink, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+
+const contactFormSchema = z.object({
+  name: z.string()
+    .trim()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must be less than 100 characters"),
+  email: z.string()
+    .trim()
+    .email("Please enter a valid email address")
+    .max(255, "Email must be less than 255 characters"),
+  phone: z.string()
+    .trim()
+    .max(20, "Phone must be less than 20 characters")
+    .optional()
+    .or(z.literal("")),
+  message: z.string()
+    .trim()
+    .min(10, "Message must be at least 10 characters")
+    .max(2000, "Message must be less than 2000 characters"),
+  smsConsent: z.boolean().default(false),
+  marketingConsent: z.boolean().default(false),
+}).refine(
+  (data) => {
+    // If phone is provided, smsConsent must be true
+    if (data.phone && data.phone.length > 0) {
+      return data.smsConsent === true;
+    }
+    return true;
+  },
+  {
+    message: "SMS consent is required when providing a phone number",
+    path: ["smsConsent"],
+  }
+);
+
+type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: "",
-    smsConsent: false,
-    marketingConsent: false
-  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.smsConsent && formData.phone) {
-      toast.error("Please consent to SMS communication if providing a phone number");
-      setFormStatus('error');
-      return;
-    }
-
-    // Would send to backend in production
-    setFormStatus('success');
-    toast.success("Thank you! We'll be in touch soon.");
-    setFormData({
+  const form = useForm<ContactFormValues>({
+    resolver: zodResolver(contactFormSchema),
+    defaultValues: {
       name: "",
       email: "",
       phone: "",
       message: "",
       smsConsent: false,
-      marketingConsent: false
-    });
+      marketingConsent: false,
+    },
+  });
+
+  const watchPhone = form.watch("phone");
+
+  const onSubmit = async (data: ContactFormValues) => {
+    setIsSubmitting(true);
+    setFormStatus('idle');
+
+    try {
+      const { data: response, error } = await supabase.functions.invoke('contact-submit', {
+        body: {
+          name: data.name,
+          email: data.email,
+          phone: data.phone || null,
+          message: data.message,
+          smsConsent: data.smsConsent,
+          marketingConsent: data.marketingConsent,
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Failed to submit message');
+      }
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to submit message');
+      }
+
+      setFormStatus('success');
+      toast.success("Thank you! We'll be in touch soon.");
+      form.reset();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      setFormStatus('error');
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -83,94 +152,149 @@ export default function Contact() {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6" noValidate>
-                  <div>
-                    <Label htmlFor="name">Name <span className="text-destructive" aria-hidden="true">*</span></Label>
-                    <Input
-                      id="name"
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      required
-                      aria-required="true"
-                      className="mt-1 min-h-[44px]"
-                      autoComplete="name"
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 sm:space-y-6">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name <span className="text-destructive" aria-hidden="true">*</span></FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              autoComplete="name"
+                              className="min-h-[44px]"
+                              maxLength={100}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </div>
 
-                  <div>
-                    <Label htmlFor="email">Email <span className="text-destructive" aria-hidden="true">*</span></Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      required
-                      aria-required="true"
-                      className="mt-1 min-h-[44px]"
-                      autoComplete="email"
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email <span className="text-destructive" aria-hidden="true">*</span></FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="email"
+                              autoComplete="email"
+                              className="min-h-[44px]"
+                              maxLength={255}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </div>
 
-                  <div>
-                    <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="mt-1 min-h-[44px]"
-                      autoComplete="tel"
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Phone Number</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="tel"
+                              autoComplete="tel"
+                              className="min-h-[44px]"
+                              maxLength={20}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </div>
 
-                  <div>
-                    <Label htmlFor="message">Message <span className="text-destructive" aria-hidden="true">*</span></Label>
-                    <Textarea
-                      id="message"
-                      value={formData.message}
-                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                      required
-                      aria-required="true"
-                      rows={5}
-                      className="mt-1"
+                    <FormField
+                      control={form.control}
+                      name="message"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Message <span className="text-destructive" aria-hidden="true">*</span></FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              rows={5}
+                              maxLength={2000}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            {field.value?.length || 0}/2000 characters
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
                     />
-                  </div>
 
-                  {formData.phone && (
-                    <div className="flex items-start space-x-3 p-4 bg-muted rounded-lg">
-                      <Checkbox
-                        id="sms"
-                        checked={formData.smsConsent}
-                        onCheckedChange={(checked) => 
-                          setFormData({ ...formData, smsConsent: checked as boolean })
-                        }
-                        className="mt-0.5"
+                    {watchPhone && watchPhone.length > 0 && (
+                      <FormField
+                        control={form.control}
+                        name="smsConsent"
+                        render={({ field }) => (
+                          <FormItem className="flex items-start space-x-3 space-y-0 p-4 bg-muted rounded-lg">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                className="mt-0.5"
+                              />
+                            </FormControl>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="cursor-pointer text-sm font-normal text-muted-foreground leading-relaxed">
+                                I consent to receive SMS messages from DOBEU regarding my inquiry and project updates. 
+                                Message and data rates may apply. Reply STOP to opt out anytime. <span className="text-destructive">*</span>
+                              </FormLabel>
+                              <FormMessage />
+                            </div>
+                          </FormItem>
+                        )}
                       />
-                      <label htmlFor="sms" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
-                        I consent to receive SMS messages from DOBEU regarding my inquiry and project updates. 
-                        Message and data rates may apply. Reply STOP to opt out anytime.
-                      </label>
-                    </div>
-                  )}
+                    )}
 
-                  <div className="flex items-start space-x-3">
-                    <Checkbox
-                      id="marketing"
-                      checked={formData.marketingConsent}
-                      onCheckedChange={(checked) => 
-                        setFormData({ ...formData, marketingConsent: checked as boolean })
-                      }
-                      className="mt-0.5"
+                    <FormField
+                      control={form.control}
+                      name="marketingConsent"
+                      render={({ field }) => (
+                        <FormItem className="flex items-start space-x-3 space-y-0">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="mt-0.5"
+                            />
+                          </FormControl>
+                          <FormLabel className="cursor-pointer text-sm font-normal text-muted-foreground leading-relaxed">
+                            I'd like to receive marketing emails about services, tips, and special offers.
+                          </FormLabel>
+                        </FormItem>
+                      )}
                     />
-                    <label htmlFor="marketing" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
-                      I'd like to receive marketing emails about services, tips, and special offers.
-                    </label>
-                  </div>
 
-                  <Button type="submit" className="w-full shadow-material min-h-[44px]" size="lg">
-                    Send Message
-                  </Button>
-                </form>
+                    <Button 
+                      type="submit" 
+                      className="w-full shadow-material min-h-[44px]" 
+                      size="lg"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        "Send Message"
+                      )}
+                    </Button>
+                  </form>
+                </Form>
               </CardContent>
             </Card>
           </div>

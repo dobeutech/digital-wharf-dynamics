@@ -17,14 +17,33 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, CheckCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const ccpaFormSchema = z.object({
-  fullName: z.string().min(2, "Name must be at least 2 characters").max(100),
-  email: z.string().email("Please enter a valid email address").max(255),
-  phone: z.string().optional(),
-  address: z.string().optional(),
-  requestType: z.array(z.string()).min(1, "Please select at least one request type"),
-  additionalInfo: z.string().max(1000).optional(),
+  fullName: z.string()
+    .trim()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must be less than 100 characters"),
+  email: z.string()
+    .trim()
+    .email("Please enter a valid email address")
+    .max(255, "Email must be less than 255 characters"),
+  phone: z.string()
+    .trim()
+    .max(20, "Phone must be less than 20 characters")
+    .optional()
+    .or(z.literal("")),
+  address: z.string()
+    .trim()
+    .max(500, "Address must be less than 500 characters")
+    .optional()
+    .or(z.literal("")),
+  requestTypes: z.array(z.string()).min(1, "Please select at least one request type"),
+  additionalInfo: z.string()
+    .trim()
+    .max(1000, "Additional information must be less than 1000 characters")
+    .optional()
+    .or(z.literal("")),
   confirmIdentity: z.boolean().refine((val) => val === true, {
     message: "You must confirm your identity to submit this request",
   }),
@@ -35,6 +54,8 @@ type CCPAFormValues = z.infer<typeof ccpaFormSchema>;
 export default function CCPAOptOut() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [referenceId, setReferenceId] = useState<string>("");
+  const [responseDeadline, setResponseDeadline] = useState<string>("");
   const { toast } = useToast();
 
   const form = useForm<CCPAFormValues>({
@@ -44,34 +65,62 @@ export default function CCPAOptOut() {
       email: "",
       phone: "",
       address: "",
-      requestType: [],
+      requestTypes: [],
       additionalInfo: "",
       confirmIdentity: false,
     },
   });
 
   const requestTypes = [
-    { id: "do-not-sell", label: "Do Not Sell My Personal Information" },
-    { id: "delete-data", label: "Delete My Personal Information" },
-    { id: "access-data", label: "Access My Personal Information" },
-    { id: "correct-data", label: "Correct My Personal Information" },
+    { id: "opt-out", label: "Do Not Sell My Personal Information" },
+    { id: "delete", label: "Delete My Personal Information" },
+    { id: "access", label: "Access My Personal Information" },
+    { id: "correction", label: "Correct My Personal Information" },
   ];
 
   const onSubmit = async (data: CCPAFormValues) => {
     setIsSubmitting(true);
     
-    // Simulate API call - in production, this would send to a backend
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    
-    console.log("CCPA Request submitted:", data);
-    
-    toast({
-      title: "Request Submitted",
-      description: "We will process your request within 45 days as required by law.",
-    });
-    
-    setIsSubmitted(true);
-    setIsSubmitting(false);
+    try {
+      const { data: response, error } = await supabase.functions.invoke('ccpa-request', {
+        body: {
+          fullName: data.fullName,
+          email: data.email,
+          phone: data.phone || null,
+          address: data.address || null,
+          requestTypes: data.requestTypes,
+          additionalInfo: data.additionalInfo || null,
+          confirmIdentity: data.confirmIdentity,
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message || 'Failed to submit request');
+      }
+
+      if (!response.success) {
+        throw new Error(response.error || 'Failed to submit request');
+      }
+
+      setReferenceId(response.referenceId);
+      setResponseDeadline(response.responseDeadline);
+      
+      toast({
+        title: "Request Submitted",
+        description: "We will process your request within 45 days as required by law.",
+      });
+      
+      setIsSubmitted(true);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      toast({
+        title: "Submission Failed",
+        description: message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSubmitted) {
@@ -85,9 +134,16 @@ export default function CCPAOptOut() {
             your request within 45 days as required by California law. You will receive a
             confirmation email at the address you provided.
           </p>
-          <p className="text-sm text-muted-foreground">
-            Reference ID: {Date.now().toString(36).toUpperCase()}
-          </p>
+          <div className="bg-card border border-border rounded-lg p-4 inline-block">
+            <p className="text-sm text-muted-foreground mb-1">Reference ID</p>
+            <p className="font-mono text-lg font-semibold text-primary">{referenceId}</p>
+            {responseDeadline && (
+              <>
+                <p className="text-sm text-muted-foreground mt-3 mb-1">Response Deadline</p>
+                <p className="font-medium">{new Date(responseDeadline).toLocaleDateString()}</p>
+              </>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -126,7 +182,7 @@ export default function CCPAOptOut() {
                 <FormItem>
                   <FormLabel>Full Legal Name *</FormLabel>
                   <FormControl>
-                    <Input placeholder="John Doe" {...field} />
+                    <Input placeholder="John Doe" maxLength={100} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -140,7 +196,7 @@ export default function CCPAOptOut() {
                 <FormItem>
                   <FormLabel>Email Address *</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="john@example.com" {...field} />
+                    <Input type="email" placeholder="john@example.com" maxLength={255} {...field} />
                   </FormControl>
                   <FormDescription>
                     We'll use this to verify your identity and send confirmation
@@ -157,7 +213,7 @@ export default function CCPAOptOut() {
                 <FormItem>
                   <FormLabel>Phone Number (Optional)</FormLabel>
                   <FormControl>
-                    <Input type="tel" placeholder="+1 (555) 123-4567" {...field} />
+                    <Input type="tel" placeholder="+1 (555) 123-4567" maxLength={20} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -171,7 +227,7 @@ export default function CCPAOptOut() {
                 <FormItem>
                   <FormLabel>California Address (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="123 Main St, Los Angeles, CA 90001" {...field} />
+                    <Input placeholder="123 Main St, Los Angeles, CA 90001" maxLength={500} {...field} />
                   </FormControl>
                   <FormDescription>
                     Helps verify California residency
@@ -183,7 +239,7 @@ export default function CCPAOptOut() {
 
             <FormField
               control={form.control}
-              name="requestType"
+              name="requestTypes"
               render={() => (
                 <FormItem>
                   <FormLabel>Request Type *</FormLabel>
@@ -195,7 +251,7 @@ export default function CCPAOptOut() {
                       <FormField
                         key={type.id}
                         control={form.control}
-                        name="requestType"
+                        name="requestTypes"
                         render={({ field }) => (
                           <FormItem className="flex items-center space-x-3 space-y-0">
                             <FormControl>
@@ -232,9 +288,13 @@ export default function CCPAOptOut() {
                     <Textarea
                       placeholder="Any additional details about your request..."
                       className="min-h-[100px]"
+                      maxLength={1000}
                       {...field}
                     />
                   </FormControl>
+                  <FormDescription>
+                    {field.value?.length || 0}/1000 characters
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}

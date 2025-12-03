@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      ccpa_requests: {
+        Row: {
+          additional_info: string | null
+          address: string | null
+          created_at: string | null
+          email: string
+          full_name: string
+          id: string
+          ip_address: string | null
+          notes: string | null
+          phone: string | null
+          processed_at: string | null
+          reference_id: string
+          request_types: string[]
+          response_deadline: string | null
+          status: string
+          submitted_at: string | null
+          updated_at: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          additional_info?: string | null
+          address?: string | null
+          created_at?: string | null
+          email: string
+          full_name: string
+          id?: string
+          ip_address?: string | null
+          notes?: string | null
+          phone?: string | null
+          processed_at?: string | null
+          reference_id: string
+          request_types: string[]
+          response_deadline?: string | null
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          additional_info?: string | null
+          address?: string | null
+          created_at?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          ip_address?: string | null
+          notes?: string | null
+          phone?: string | null
+          processed_at?: string | null
+          reference_id?: string
+          request_types?: string[]
+          response_deadline?: string | null
+          status?: string
+          submitted_at?: string | null
+          updated_at?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       client_files: {
         Row: {
           created_at: string
@@ -63,6 +123,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      contact_submissions: {
+        Row: {
+          created_at: string | null
+          email: string
+          id: string
+          ip_address: string | null
+          marketing_consent: boolean | null
+          message: string
+          name: string
+          notes: string | null
+          phone: string | null
+          responded_at: string | null
+          sms_consent: boolean | null
+          status: string
+          submitted_at: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email: string
+          id?: string
+          ip_address?: string | null
+          marketing_consent?: boolean | null
+          message: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          responded_at?: string | null
+          sms_consent?: boolean | null
+          status?: string
+          submitted_at?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string
+          id?: string
+          ip_address?: string | null
+          marketing_consent?: boolean | null
+          message?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          responded_at?: string | null
+          sms_consent?: boolean | null
+          status?: string
+          submitted_at?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
       }
       conversation_members: {
         Row: {
