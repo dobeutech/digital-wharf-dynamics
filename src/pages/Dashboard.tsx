@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { FolderOpen, ShoppingBag, FileText, Newspaper } from "lucide-react";
+import { PageLayout } from "@/components/layout/PageLayout";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -35,8 +36,7 @@ export default function Dashboard() {
   }, [user]);
 
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4">
-      <div className="container mx-auto max-w-6xl">
+    <PageLayout maxWidth="2xl">
         <div className="mb-12">
           <h1 className="text-4xl font-bold mb-4">Welcome Back</h1>
           <p className="text-xl text-muted-foreground">Manage your projects and services</p>
@@ -142,7 +142,6 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
-      </div>
-    </div>
+    </PageLayout>
   );
 }

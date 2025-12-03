@@ -5,7 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "./contexts/AuthContext";
-import { Navbar } from "@/components/layout/Navbar";
+import { NavigationProvider } from "./contexts/NavigationContext";
+import { EnhancedNavbar } from "@/components/navigation/EnhancedNavbar";
 import { Footer } from "@/components/layout/Footer";
 import { Analytics } from "@/components/Analytics";
 import { CookieConsentBanner } from "@/components/CookieConsent";
@@ -53,11 +54,12 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
-            <Analytics />
-            <PageTracker />
-            <SkipLink />
-            <div className="flex flex-col min-h-screen">
-              <Navbar />
+            <NavigationProvider>
+              <Analytics />
+              <PageTracker />
+              <SkipLink />
+              <div className="flex flex-col min-h-screen">
+                <EnhancedNavbar />
               <main id="main-content" className="flex-grow" tabIndex={-1}>
                 <Routes>
                   <Route path="/" element={<Home />} />
@@ -153,8 +155,9 @@ const App = () => (
               </main>
               <Footer />
             </div>
-            <CookieConsentBanner />
-            <NewsletterPopup />
+              <CookieConsentBanner />
+              <NewsletterPopup />
+            </NavigationProvider>
           </AuthProvider>
         </BrowserRouter>
       </TooltipProvider>
