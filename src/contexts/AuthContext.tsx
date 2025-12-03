@@ -11,7 +11,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, username: string) => Promise<{ error: AuthError | null }>;
   signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
-  resendVerificationEmail: () => Promise<{ error: AuthError | null }>;
+  resendVerificationEmail: () => Promise<{ error: AuthError | Error | null }>;
   loading: boolean;
 }
 
@@ -144,8 +144,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const resendVerificationEmail = async () => {
     if (!user?.email) {
-      // Return a properly typed error when email is missing
-      return { error: { name: 'EmailNotFoundError', message: 'No email address found', status: 400 } as AuthError };
+      return { error: new Error('No email address found') };
     }
 
     const { error } = await supabase.auth.resend({
