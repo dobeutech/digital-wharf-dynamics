@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { RippleGrid } from "@/components/layout/RippleGrid";
 
 export function Hero() {
   return (
@@ -10,6 +10,9 @@ export function Hero() {
       <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-card" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.15),transparent_50%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,hsl(var(--primary)/0.08),transparent_60%)]" />
+      
+      {/* Animated ripple dot grid */}
+      <RippleGrid className="z-0" />
       
       <div className="container relative z-10 px-4 py-32 mx-auto">
         <motion.div
