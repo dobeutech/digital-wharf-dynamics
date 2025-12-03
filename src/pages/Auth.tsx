@@ -12,6 +12,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { supabase } from '@/integrations/supabase/client';
+import { PasswordStrength } from '@/components/auth/PasswordStrength';
+import { Eye, EyeOff } from 'lucide-react';
 
 const loginSchema = z.object({
   email: z.string()
@@ -61,6 +63,8 @@ export default function Auth() {
   const navigate = useNavigate();
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const [forgotPasswordCooldown, setForgotPasswordCooldown] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showSignupPassword, setShowSignupPassword] = useState(false);
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -71,6 +75,8 @@ export default function Auth() {
     resolver: zodResolver(signupSchema),
     defaultValues: { username: '', email: '', password: '' },
   });
+
+  const watchSignupPassword = signupForm.watch('password');
 
   const forgotPasswordForm = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(forgotPasswordSchema),
@@ -177,7 +183,7 @@ export default function Auth() {
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">Welcome</CardTitle>
           <CardDescription className="text-center">
-            Sign in to your account or create a new one
+            Access your account or create one in seconds
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -268,11 +274,28 @@ export default function Auth() {
                           </Dialog>
                         </div>
                         <FormControl>
-                          <Input
-                            type="password"
-                            autoComplete="current-password"
-                            {...field}
-                          />
+                          <div className="relative">
+                            <Input
+                              type={showPassword ? "text" : "password"}
+                              autoComplete="current-password"
+                              {...field}
+                              className="pr-10"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                              onClick={() => setShowPassword(!showPassword)}
+                              aria-label={showPassword ? "Hide password" : "Show password"}
+                            >
+                              {showPassword ? (
+                                <EyeOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                              ) : (
+                                <Eye className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                              )}
+                            </Button>
+                          </div>
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -368,16 +391,31 @@ export default function Auth() {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input
-                            type="password"
-                            autoComplete="new-password"
-                            {...field}
-                          />
+                          <div className="relative">
+                            <Input
+                              type={showSignupPassword ? "text" : "password"}
+                              autoComplete="new-password"
+                              {...field}
+                              className="pr-10"
+                            />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                              onClick={() => setShowSignupPassword(!showSignupPassword)}
+                              aria-label={showSignupPassword ? "Hide password" : "Show password"}
+                            >
+                              {showSignupPassword ? (
+                                <EyeOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                              ) : (
+                                <Eye className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                              )}
+                            </Button>
+                          </div>
                         </FormControl>
                         <FormMessage />
-                        <p className="text-xs text-muted-foreground">
-                          At least 8 characters with uppercase, lowercase, and a number
-                        </p>
+                        {watchSignupPassword && <PasswordStrength password={watchSignupPassword} />}
                       </FormItem>
                     )}
                   />

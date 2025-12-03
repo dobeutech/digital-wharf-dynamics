@@ -2,13 +2,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Globe, Code2, BookOpen, MessageSquare, TrendingUp } from "lucide-react";
+import { PageMeta } from "@/components/seo/PageMeta";
 
 export default function Services() {
   const services = [
     {
       icon: Globe,
       title: "Website Design & Development",
-      description: "Custom, responsive websites built with modern technologies",
+      description: "We create fast, mobile-friendly websites that look great and convert visitors into customers",
       features: [
         "Custom design tailored to your brand",
         "Responsive across all devices",
@@ -19,7 +20,7 @@ export default function Services() {
     {
       icon: Code2,
       title: "Software Development",
-      description: "Full-stack applications and custom software solutions",
+      description: "Custom software that automates your workflows and helps you work more efficiently",
       features: [
         "Web and mobile applications",
         "API development and integration",
@@ -30,7 +31,7 @@ export default function Services() {
     {
       icon: BookOpen,
       title: "Learning & Training",
-      description: "Technical training and knowledge transfer",
+      description: "Hands-on training to help your team master new technologies and best practices",
       features: [
         "Team training sessions",
         "Best practices workshops",
@@ -41,7 +42,7 @@ export default function Services() {
     {
       icon: MessageSquare,
       title: "Consulting",
-      description: "Expert guidance for your technology decisions",
+      description: "Strategic advice to help you choose the right technology for your goals",
       features: [
         "Technology stack selection",
         "Architecture review",
@@ -52,7 +53,7 @@ export default function Services() {
     {
       icon: TrendingUp,
       title: "Strategic Planning & Optimization",
-      description: "Long-term technology strategy and growth planning",
+      description: "Build a technology roadmap that supports your business growth for years to come",
       features: [
         "Digital transformation roadmap",
         "Process optimization",
@@ -63,14 +64,20 @@ export default function Services() {
   ];
 
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4">
+    <>
+      <PageMeta
+        title="Services"
+        description="Web design, custom software, consulting, training, and strategic planning. Complete technology services to help your business succeed and grow."
+        keywords="web design services, software development services, technology consulting, team training, strategic planning, custom applications"
+      />
+      <div className="min-h-screen pt-24 pb-20 px-4">
       <div className="container mx-auto">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold mb-6 gradient-primary bg-clip-text text-transparent">
             Our Services
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Comprehensive technology solutions tailored to your business needs
+            Complete technology services designed to help your business succeed
           </p>
         </div>
 
@@ -103,5 +110,6 @@ export default function Services() {
         </div>
       </div>
     </div>
+    </>
   );
 }

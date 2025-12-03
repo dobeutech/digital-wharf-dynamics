@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { ShoppingBag, FolderOpen, Users, Newspaper, FileText, Shield, MessageSquare, ClipboardList, BarChart3 } from "lucide-react";
+import { AdminLayout } from "@/components/layout/AdminLayout";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -49,12 +50,11 @@ export default function AdminDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4">
-      <div className="container mx-auto max-w-7xl">
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold mb-4">Admin Dashboard</h1>
-          <p className="text-xl text-muted-foreground">Manage your platform</p>
-        </div>
+    <AdminLayout>
+      <div className="mb-12">
+        <h1 className="text-4xl font-bold mb-4">Admin Dashboard</h1>
+        <p className="text-xl text-muted-foreground">Manage your platform</p>
+      </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <Card className="shadow-material">
@@ -247,8 +247,7 @@ export default function AdminDashboard() {
               </div>
             </CardContent>
           </Card>
-        </div>
       </div>
-    </div>
+    </AdminLayout>
   );
 }

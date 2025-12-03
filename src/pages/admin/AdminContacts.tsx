@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { MessageSquare, Eye, Mail, Archive, CheckCircle } from "lucide-react";
+import { MessageSquare, Mail, Archive } from "lucide-react";
 import { format } from "date-fns";
+import { AccessibleContactsTable } from "@/components/admin/AccessibleContactsTable";
 
 interface ContactSubmission {
   id: string;
@@ -119,10 +119,6 @@ export default function AdminContacts() {
     }
   };
 
-  const truncateMessage = (message: string, maxLength: number = 80) => {
-    if (message.length <= maxLength) return message;
-    return message.substring(0, maxLength) + "...";
-  };
 
   return (
     <div className="min-h-screen pt-24 pb-20 px-4">
@@ -157,56 +153,11 @@ export default function AdminContacts() {
             </div>
           </CardHeader>
           <CardContent>
-            {loading ? (
-              <div className="text-center py-8 text-muted-foreground">Loading...</div>
-            ) : submissions.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">No contact submissions found</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Phone</TableHead>
-                      <TableHead className="max-w-[200px]">Message</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Submitted</TableHead>
-                      <TableHead>Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {submissions.map((submission) => (
-                      <TableRow key={submission.id} className={submission.status === "new" ? "bg-primary/5" : ""}>
-                        <TableCell className="font-medium">{submission.name}</TableCell>
-                        <TableCell>{submission.email}</TableCell>
-                        <TableCell>{submission.phone || "-"}</TableCell>
-                        <TableCell className="max-w-[200px]">
-                          <span className="text-sm text-muted-foreground">
-                            {truncateMessage(submission.message)}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={statusColors[submission.status] || ""}>
-                            {submission.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {submission.submitted_at 
-                            ? format(new Date(submission.submitted_at), "MMM d, yyyy")
-                            : "-"}
-                        </TableCell>
-                        <TableCell>
-                          <Button variant="ghost" size="sm" onClick={() => openDetails(submission)}>
-                            <Eye className="h-4 w-4 mr-1" /> View
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            )}
+            <AccessibleContactsTable
+              submissions={submissions}
+              onViewDetails={openDetails}
+              loading={loading}
+            />
           </CardContent>
         </Card>
 

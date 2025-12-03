@@ -20,7 +20,7 @@ export const FUNNEL_STEPS = {
 // Track funnel event in PostHog
 export const trackFunnelStep = (
   step: string, 
-  properties?: Record<string, any>
+  properties?: Record<string, unknown>
 ) => {
   posthog.capture(step, {
     funnel: 'signup_to_purchase',
@@ -32,7 +32,7 @@ export const trackFunnelStep = (
 // Identify user in PostHog
 export const identifyPostHogUser = (
   userId: string, 
-  properties?: Record<string, any>
+  properties?: Record<string, unknown>
 ) => {
   posthog.identify(userId, properties);
 };
@@ -51,8 +51,8 @@ export const getFeatureFlag = (flagKey: string): string | boolean | undefined =>
   return posthog.getFeatureFlag(flagKey);
 };
 
-export const getFeatureFlagPayload = (flagKey: string): Record<string, any> | undefined => {
-  return posthog.getFeatureFlagPayload(flagKey) as Record<string, any> | undefined;
+export const getFeatureFlagPayload = (flagKey: string): Record<string, unknown> | undefined => {
+  return posthog.getFeatureFlagPayload(flagKey) as Record<string, unknown> | undefined;
 };
 
 // Reload feature flags (useful after login/signup)
@@ -85,7 +85,7 @@ export const setGroup = (groupType: string, groupKey: string) => {
 // Custom event tracking
 export const trackPostHogEvent = (
   event: string, 
-  properties?: Record<string, any>
+  properties?: Record<string, unknown>
 ) => {
   posthog.capture(event, properties);
 };

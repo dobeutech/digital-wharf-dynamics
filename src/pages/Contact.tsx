@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { Mail, Phone, MapPin, ExternalLink, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent, MIXPANEL_EVENTS } from "@/lib/mixpanel";
+import { PageMeta } from "@/components/seo/PageMeta";
 
 const contactFormSchema = z.object({
   name: z.string()
@@ -60,6 +61,7 @@ type ContactFormValues = z.infer<typeof contactFormSchema>;
 export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [showPhoneField, setShowPhoneField] = useState(false);
 
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
@@ -74,6 +76,35 @@ export default function Contact() {
   });
 
   const watchPhone = form.watch("phone");
+  const watchMessage = form.watch("message");
+
+  useEffect(() => {
+    const savedDraft = localStorage.getItem('contact-form-draft');
+    if (savedDraft) {
+      try {
+        const draft = JSON.parse(savedDraft);
+        if (draft.name) form.setValue('name', draft.name);
+        if (draft.email) form.setValue('email', draft.email);
+        if (draft.message) form.setValue('message', draft.message);
+        if (draft.phone) {
+          form.setValue('phone', draft.phone);
+          setShowPhoneField(true);
+        }
+      } catch (e) {
+        console.error('Failed to load draft', e);
+      }
+    }
+  }, [form]);
+
+  useEffect(() => {
+    const values = form.getValues();
+    if (values.name || values.email || values.message) {
+      const timer = setTimeout(() => {
+        localStorage.setItem('contact-form-draft', JSON.stringify(values));
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [watchMessage, form]);
 
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
@@ -107,7 +138,9 @@ export default function Contact() {
 
       setFormStatus('success');
       toast.success("Thank you! We'll be in touch soon.");
+      localStorage.removeItem('contact-form-draft');
       form.reset();
+      setShowPhoneField(false);
     } catch (error) {
       const message = error instanceof Error ? error.message : 'An unexpected error occurred';
       setFormStatus('error');
@@ -118,14 +151,20 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8">
+    <>
+      <PageMeta
+        title="Contact Us"
+        description="Get in touch with DOBEU for your next project. We respond within 24 hours. Call (215) 370-5332 or email devops@dobeu.cloud."
+        keywords="contact dobeu, web development inquiry, software project, free consultation, get quote"
+      />
+      <div className="min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8">
       <div className="container mx-auto max-w-6xl">
         <header className="text-center mb-12 md:mb-16">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4 sm:mb-6 gradient-primary bg-clip-text text-transparent">
             Get In Touch
           </h1>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-            Let's discuss how we can help bring your vision to life
+            Have a project in mind? We typically respond within 24 hours
           </p>
         </header>
 
@@ -135,7 +174,7 @@ export default function Contact() {
               <CardHeader>
                 <CardTitle className="text-xl sm:text-2xl">Send Us a Message</CardTitle>
                 <CardDescription>
-                  Fill out the form below and we'll get back to you within 24 hours
+                  Tell us about your project and we'll reach out soon
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -200,25 +239,40 @@ export default function Contact() {
                       )}
                     />
 
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Phone Number</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              type="tel"
-                              autoComplete="tel"
-                              className="min-h-[44px]"
-                              maxLength={20}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                    {!showPhoneField && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowPhoneField(true)}
+                        className="text-primary hover:text-primary/80"
+                      >
+                        + Add phone number for faster response
+                      </Button>
+                    )}
+
+                    {showPhoneField && (
+                      <FormField
+                        control={form.control}
+                        name="phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Phone Number (Optional)</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                type="tel"
+                                autoComplete="tel"
+                                className="min-h-[44px]"
+                                placeholder="(555) 123-4567"
+                                maxLength={20}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    )}
 
                     <FormField
                       control={form.control}
@@ -231,10 +285,14 @@ export default function Contact() {
                               {...field}
                               rows={5}
                               maxLength={2000}
+                              placeholder="Tell us about your project, timeline, and goals..."
                             />
                           </FormControl>
                           <FormDescription>
                             {field.value?.length || 0}/2000 characters
+                            {field.value?.length > 0 && field.value.length < 10 ? (
+                              <span className="text-muted-foreground"> (minimum 10 characters)</span>
+                            ) : null}
                           </FormDescription>
                           <FormMessage />
                         </FormItem>
@@ -256,8 +314,7 @@ export default function Contact() {
                             </FormControl>
                             <div className="space-y-1 leading-none">
                               <FormLabel className="cursor-pointer text-sm font-normal text-muted-foreground leading-relaxed">
-                                I consent to receive SMS messages from DOBEU regarding my inquiry and project updates. 
-                                Message and data rates may apply. Reply STOP to opt out anytime. <span className="text-destructive">*</span>
+                                I agree to receive SMS updates about my project. Reply STOP to opt out. <span className="text-destructive">*</span>
                               </FormLabel>
                               <FormMessage />
                             </div>
@@ -279,7 +336,7 @@ export default function Contact() {
                             />
                           </FormControl>
                           <FormLabel className="cursor-pointer text-sm font-normal text-muted-foreground leading-relaxed">
-                            I'd like to receive marketing emails about services, tips, and special offers.
+                            Send me helpful tips and updates about web development.
                           </FormLabel>
                         </FormItem>
                       )}
@@ -398,5 +455,6 @@ export default function Contact() {
         </div>
       </div>
     </div>
+    </>
   );
 }
