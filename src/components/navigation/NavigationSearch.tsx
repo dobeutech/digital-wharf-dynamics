@@ -25,7 +25,10 @@ export function NavigationSearch() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
-  const isMac = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform);
+  const isMac = typeof navigator !== 'undefined' && 
+    (navigator.userAgent.indexOf('Mac') !== -1 || 
+     navigator.userAgent.indexOf('iPhone') !== -1 || 
+     navigator.userAgent.indexOf('iPad') !== -1);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
