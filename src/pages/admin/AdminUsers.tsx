@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Shield, ShieldCheck, User } from "lucide-react";
 import { toast } from "sonner";
+import { useAuditLog } from "@/hooks/useAuditLog";
 
 interface Profile {
   id: string;
@@ -22,6 +23,7 @@ export default function AdminUsers() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [userRoles, setUserRoles] = useState<Map<string, string[]>>(new Map());
   const [loading, setLoading] = useState(true);
+  const { logAction } = useAuditLog();
 
   useEffect(() => {
     fetchUsers();
@@ -68,6 +70,14 @@ export default function AdminUsers() {
         toast.error("Failed to remove role");
         console.error(error);
       } else {
+        // Audit log for role removal
+        await logAction({
+          action: "ROLE_CHANGE",
+          entityType: "user_role",
+          entityId: userId,
+          oldValues: { role },
+          newValues: null,
+        });
         toast.success("Role removed successfully");
         fetchUsers();
       }
@@ -80,6 +90,14 @@ export default function AdminUsers() {
         toast.error("Failed to add role");
         console.error(error);
       } else {
+        // Audit log for role addition
+        await logAction({
+          action: "ROLE_CHANGE",
+          entityType: "user_role",
+          entityId: userId,
+          oldValues: null,
+          newValues: { role },
+        });
         toast.success("Role added successfully");
         fetchUsers();
       }
