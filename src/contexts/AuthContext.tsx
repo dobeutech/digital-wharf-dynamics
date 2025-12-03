@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-
+import { trackEvent, identifyUser, resetUser, MIXPANEL_EVENTS } from '@/lib/mixpanel';
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -65,6 +65,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     });
 
     if (!error && data.user) {
+      // Track signup event
+      trackEvent(MIXPANEL_EVENTS.SIGN_UP, {
+        user_id: data.user.id,
+        email: email,
+        username: username,
+      });
+      identifyUser(data.user.id, { email, username });
+
       // Create profile entry
       const { error: profileError } = await supabase
         .from('profiles')
@@ -82,14 +90,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+    
+    if (!error && data.user) {
+      trackEvent(MIXPANEL_EVENTS.SIGN_IN, { email });
+      identifyUser(data.user.id, { email });
+    }
+    
     return { error };
   };
 
   const signInWithGoogle = async () => {
+    trackEvent(MIXPANEL_EVENTS.SIGN_IN_GOOGLE);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -100,6 +115,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   const signOut = async () => {
+    trackEvent(MIXPANEL_EVENTS.SIGN_OUT);
+    resetUser();
     await supabase.auth.signOut();
     navigate('/auth');
   };

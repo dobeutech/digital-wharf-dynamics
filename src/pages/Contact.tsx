@@ -19,6 +19,7 @@ import {
 import { toast } from "sonner";
 import { Mail, Phone, MapPin, ExternalLink, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { trackEvent, MIXPANEL_EVENTS } from "@/lib/mixpanel";
 
 const contactFormSchema = z.object({
   name: z.string()
@@ -97,6 +98,12 @@ export default function Contact() {
       if (!response.success) {
         throw new Error(response.error || 'Failed to submit message');
       }
+
+      // Track successful contact form submission
+      trackEvent(MIXPANEL_EVENTS.CONTACT_FORM_SUBMITTED, {
+        has_phone: !!data.phone,
+        marketing_consent: data.marketingConsent,
+      });
 
       setFormStatus('success');
       toast.success("Thank you! We'll be in touch soon.");

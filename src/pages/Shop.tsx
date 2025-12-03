@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Check, ShoppingCart } from "lucide-react";
 import { ServiceDetailModal } from "@/components/shop/ServiceDetailModal";
+import { trackEvent, MIXPANEL_EVENTS } from "@/lib/mixpanel";
 
 interface Service {
   id: string;
@@ -60,6 +61,15 @@ export default function Shop() {
       });
       return;
     }
+    
+    // Track service view
+    trackEvent(MIXPANEL_EVENTS.SERVICE_VIEWED, {
+      service_id: service.id,
+      service_name: service.name,
+      category: service.category,
+      base_price: service.base_price,
+    });
+    
     setSelectedService(service);
     setIsModalOpen(true);
   };
@@ -80,6 +90,15 @@ export default function Shop() {
     });
 
     try {
+      // Track checkout started
+      trackEvent(MIXPANEL_EVENTS.CHECKOUT_STARTED, {
+        service_id: serviceId,
+        service_name: serviceName,
+        total_amount: totalAmount,
+        add_ons_count: selectedAddOns.length,
+        is_subscription: isSubscription,
+      });
+
       const { data, error } = await supabase.functions.invoke("create-checkout", {
         body: {
           serviceId,
