@@ -22,14 +22,14 @@ export function Hero() {
           className="max-w-5xl mx-auto text-center space-y-6 sm:space-y-8"
         >
           <h1 id="hero-heading" className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold tracking-tight leading-[1.1]">
-            Build Your{" "}
+            Transform Your Business With{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-yellow-400 to-orange-500 animate-gradient-x">
-              Digital Future
+              Custom Web Solutions
             </span>
           </h1>
-          
+
           <p className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-light px-4">
-            Premium web solutions engineered for growth, performance, and innovation
+            We build websites and software that help your business grow faster and serve customers better
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4 sm:pt-8 px-4">

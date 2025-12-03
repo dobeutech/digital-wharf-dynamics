@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Shield, ShieldCheck, User } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuditLog } from "@/hooks/useAuditLog";
+import { AccessibleUsersTable } from "@/components/admin/AccessibleUsersTable";
 
 interface Profile {
   id: string;
@@ -104,16 +103,6 @@ export default function AdminUsers() {
     }
   };
 
-  const getRoleIcon = (role: string) => {
-    switch (role) {
-      case "admin":
-        return <ShieldCheck className="h-4 w-4" />;
-      case "moderator":
-        return <Shield className="h-4 w-4" />;
-      default:
-        return <User className="h-4 w-4" />;
-    }
-  };
 
   if (loading) {
     return (
@@ -133,63 +122,19 @@ export default function AdminUsers() {
           </p>
         </div>
 
-        <div className="grid gap-6">
-          {profiles.map((profile) => {
-            const roles = userRoles.get(profile.auth_user_id) || [];
-            return (
-              <Card key={profile.id} className="shadow-material">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">{profile.username}</CardTitle>
-                    <div className="flex gap-2">
-                      {roles.map((role) => (
-                        <Badge key={role} variant="outline" className="gap-1">
-                          {getRoleIcon(role)}
-                          {role}
-                        </Badge>
-                      ))}
-                      {roles.length === 0 && (
-                        <Badge variant="outline" className="gap-1">
-                          <User className="h-4 w-4" />
-                          user
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex gap-2">
-                    <Button
-                      variant={roles.includes("admin") ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => toggleRole(profile.auth_user_id, "admin")}
-                    >
-                      {roles.includes("admin") ? "Remove" : "Make"} Admin
-                    </Button>
-                    <Button
-                      variant={roles.includes("moderator") ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => toggleRole(profile.auth_user_id, "moderator")}
-                    >
-                      {roles.includes("moderator") ? "Remove" : "Make"} Moderator
-                    </Button>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-4">
-                    Joined: {new Date(profile.created_at).toLocaleDateString()}
-                  </p>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        {profiles.length === 0 && (
-          <Card className="shadow-material">
-            <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground">No users found</p>
-            </CardContent>
-          </Card>
-        )}
+        <Card className="shadow-material">
+          <CardHeader>
+            <CardTitle>All Users</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <AccessibleUsersTable
+              profiles={profiles}
+              userRoles={userRoles}
+              onToggleRole={toggleRole}
+              loading={loading}
+            />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
