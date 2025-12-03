@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { trackEvent, MIXPANEL_EVENTS } from "@/lib/mixpanel";
 
 export const NewsletterPopup = () => {
   const [open, setOpen] = useState(false);
@@ -52,6 +53,11 @@ export const NewsletterPopup = () => {
         toast.error(data.error);
         return;
       }
+
+      // Track successful newsletter subscription
+      trackEvent(MIXPANEL_EVENTS.NEWSLETTER_SUBSCRIBED, {
+        source: 'popup',
+      });
 
       localStorage.setItem("newsletterPopupSeen", "true");
       toast.success(data?.message || "Thank you for subscribing!");

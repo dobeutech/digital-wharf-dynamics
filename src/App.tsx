@@ -10,6 +10,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Analytics } from "@/components/Analytics";
 import { CookieConsentBanner } from "@/components/CookieConsent";
 import { NewsletterPopup } from "@/components/NewsletterPopup";
+import { PageTracker } from "@/components/PageTracker";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { AdminRoute } from "@/components/AdminRoute";
 import { SkipLink } from "@/components/SkipLink";
@@ -52,6 +53,7 @@ const App = () => (
         <BrowserRouter>
           <AuthProvider>
             <Analytics />
+            <PageTracker />
             <SkipLink />
             <div className="flex flex-col min-h-screen">
               <Navbar />

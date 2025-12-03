@@ -52,4 +52,16 @@ export const MIXPANEL_EVENTS = {
   
   // Newsletter events
   NEWSLETTER_SUBSCRIBED: 'Newsletter Subscribed',
+  
+  // Page view events
+  PAGE_VIEW: 'Page Viewed',
 } as const;
+
+// Track page view
+export const trackPageView = (path: string, title?: string) => {
+  trackEvent(MIXPANEL_EVENTS.PAGE_VIEW, {
+    path,
+    title: title || document.title,
+    referrer: document.referrer,
+  });
+};
