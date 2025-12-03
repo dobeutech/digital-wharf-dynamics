@@ -9,9 +9,9 @@ interface RippleGridProps {
 
 export function RippleGrid({ 
   className = "", 
-  dotColor = "hsl(var(--muted-foreground))",
-  dotSize = 4,
-  gap = 24
+  dotColor = "hsl(var(--foreground))",
+  dotSize = 6,
+  gap = 16
 }: RippleGridProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
@@ -45,21 +45,23 @@ export function RippleGrid({
           const x = i * gap;
           const y = j * gap;
 
-          // Wave calculation - creates ripple from center
-          const centerX = rect.width / 2;
-          const centerY = rect.height / 2;
-          const distFromCenter = Math.sqrt(
-            Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
-          );
-
-          // Multiple wave sources for complex pattern
-          const wave1 = Math.sin(distFromCenter * 0.02 - time * 0.8) * 0.5 + 0.5;
-          const wave2 = Math.sin(x * 0.03 + time * 0.5) * 0.3;
-          const wave3 = Math.sin(y * 0.025 - time * 0.6) * 0.3;
-
-          const combinedWave = wave1 + wave2 + wave3;
-          const opacity = Math.max(0.08, Math.min(0.5, combinedWave * 0.3 + 0.1));
-          const scale = 0.6 + combinedWave * 0.4;
+          // Wave calculation - synchronized diagonal wave like gifted.ai
+          const diagonalPos = (x + y) * 0.015;
+          const verticalWave = Math.sin(y * 0.025 - time * 1.2);
+          const horizontalWave = Math.sin(x * 0.02 - time * 0.8);
+          
+          // Primary synchronized wave moving diagonally
+          const primaryWave = Math.sin(diagonalPos - time * 1.5);
+          
+          // Combine waves for organic movement
+          const combinedWave = (primaryWave * 0.6 + verticalWave * 0.25 + horizontalWave * 0.15);
+          
+          // Higher contrast opacity range
+          const normalizedWave = (combinedWave + 1) / 2; // 0 to 1
+          const opacity = 0.1 + normalizedWave * 0.7;
+          
+          // Size variation for depth effect
+          const scale = 0.4 + normalizedWave * 0.8;
 
           ctx.beginPath();
           ctx.arc(x, y, (dotSize / 2) * scale, 0, Math.PI * 2);
@@ -68,7 +70,7 @@ export function RippleGrid({
         }
       }
 
-      time += 0.03;
+      time += 0.025;
       animationRef.current = requestAnimationFrame(draw);
     };
 
@@ -89,7 +91,6 @@ export function RippleGrid({
     <canvas
       ref={canvasRef}
       className={`absolute inset-0 w-full h-full pointer-events-none ${className}`}
-      style={{ opacity: 0.6 }}
     />
   );
 }
