@@ -30,6 +30,7 @@ import Files from "./pages/Files";
 import News from "./pages/News";
 import Newsletter from "./pages/Newsletter";
 import ResetPassword from "./pages/ResetPassword";
+import VerifyEmail from "./pages/VerifyEmail";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminServices from "./pages/admin/AdminServices";
 import AdminProjects from "./pages/admin/AdminProjects";
@@ -67,6 +68,7 @@ const App = () => (
                   <Route path="/ccpa-optout" element={<CCPAOptOut />} />
                   <Route path="/auth" element={<Auth />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/verify-email" element={<VerifyEmail />} />
                   <Route path="/news" element={<News />} />
                   <Route path="/dashboard" element={
                     <ProtectedRoute>

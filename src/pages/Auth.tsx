@@ -1,16 +1,17 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { supabase } from '@/integrations/supabase/client';
 
 const loginSchema = z.object({
   email: z.string()
@@ -42,13 +43,24 @@ const signupSchema = z.object({
     .regex(/[0-9]/, "Password must contain at least one number"),
 });
 
+const forgotPasswordSchema = z.object({
+  email: z.string()
+    .trim()
+    .min(1, "Email is required")
+    .email("Please enter a valid email")
+    .max(255, "Email must be less than 255 characters"),
+});
+
 type LoginFormData = z.infer<typeof loginSchema>;
 type SignupFormData = z.infer<typeof signupSchema>;
+type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 export default function Auth() {
   const { signIn, signUp, signInWithGoogle, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
+  const [forgotPasswordCooldown, setForgotPasswordCooldown] = useState(0);
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -60,11 +72,24 @@ export default function Auth() {
     defaultValues: { username: '', email: '', password: '' },
   });
 
+  const forgotPasswordForm = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: { email: '' },
+  });
+
   useEffect(() => {
     if (user) {
       navigate('/');
     }
   }, [user, navigate]);
+
+  // Cooldown timer for forgot password
+  useEffect(() => {
+    if (forgotPasswordCooldown > 0) {
+      const timer = setTimeout(() => setForgotPasswordCooldown(forgotPasswordCooldown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [forgotPasswordCooldown]);
 
   const handleLogin = async (data: LoginFormData) => {
     const { error } = await signIn(data.email, data.password);
@@ -105,6 +130,7 @@ export default function Auth() {
         title: 'Account created!',
         description: 'Please check your email to verify your account.',
       });
+      navigate('/verify-email');
     }
   };
 
@@ -117,6 +143,31 @@ export default function Auth() {
         title: 'Google sign-in failed',
         description: error.message,
       });
+    }
+  };
+
+  const handleForgotPassword = async (data: ForgotPasswordFormData) => {
+    try {
+      const response = await supabase.functions.invoke('reset-password', {
+        body: { email: data.email },
+      });
+
+      // Always show generic success message to prevent email enumeration
+      toast({
+        title: 'Check your email',
+        description: 'If an account exists with this email, you will receive a password reset link.',
+      });
+      
+      setForgotPasswordCooldown(60);
+      setForgotPasswordOpen(false);
+      forgotPasswordForm.reset();
+    } catch (error) {
+      toast({
+        title: 'Check your email',
+        description: 'If an account exists with this email, you will receive a password reset link.',
+      });
+      setForgotPasswordCooldown(60);
+      setForgotPasswordOpen(false);
     }
   };
 
@@ -162,7 +213,60 @@ export default function Auth() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <div className="flex items-center justify-between">
+                          <FormLabel>Password</FormLabel>
+                          <Dialog open={forgotPasswordOpen} onOpenChange={setForgotPasswordOpen}>
+                            <DialogTrigger asChild>
+                              <Button
+                                type="button"
+                                variant="link"
+                                className="px-0 h-auto font-normal text-xs text-muted-foreground hover:text-primary"
+                                disabled={forgotPasswordCooldown > 0}
+                              >
+                                {forgotPasswordCooldown > 0 
+                                  ? `Wait ${forgotPasswordCooldown}s` 
+                                  : 'Forgot Password?'}
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Reset Password</DialogTitle>
+                                <DialogDescription>
+                                  Enter your email address and we'll send you a link to reset your password.
+                                </DialogDescription>
+                              </DialogHeader>
+                              <Form {...forgotPasswordForm}>
+                                <form onSubmit={forgotPasswordForm.handleSubmit(handleForgotPassword)} className="space-y-4">
+                                  <FormField
+                                    control={forgotPasswordForm.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <FormLabel>Email</FormLabel>
+                                        <FormControl>
+                                          <Input
+                                            type="email"
+                                            placeholder="you@example.com"
+                                            autoComplete="email"
+                                            {...field}
+                                          />
+                                        </FormControl>
+                                        <FormMessage />
+                                      </FormItem>
+                                    )}
+                                  />
+                                  <Button 
+                                    type="submit" 
+                                    className="w-full"
+                                    disabled={forgotPasswordForm.formState.isSubmitting}
+                                  >
+                                    {forgotPasswordForm.formState.isSubmitting ? 'Sending...' : 'Send Reset Link'}
+                                  </Button>
+                                </form>
+                              </Form>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
                         <FormControl>
                           <Input
                             type="password"

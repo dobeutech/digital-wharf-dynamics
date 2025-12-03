@@ -10,6 +10,7 @@ interface AuthContextType {
   signUp: (email: string, password: string, username: string) => Promise<{ error: any }>;
   signInWithGoogle: () => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  resendVerificationEmail: () => Promise<{ error: any }>;
   loading: boolean;
 }
 
@@ -29,7 +30,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(session?.user ?? null);
         
         if (event === 'SIGNED_IN' && session) {
-          navigate('/');
+          // Check if email is verified before redirecting
+          if (session.user.email_confirmed_at) {
+            navigate('/');
+          } else {
+            navigate('/verify-email');
+          }
         }
       }
     );
@@ -98,8 +104,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     navigate('/auth');
   };
 
+  const resendVerificationEmail = async () => {
+    if (!user?.email) {
+      return { error: { message: 'No email address found' } };
+    }
+
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: user.email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/`
+      }
+    });
+
+    return { error };
+  };
+
   return (
-    <AuthContext.Provider value={{ user, session, signIn, signUp, signInWithGoogle, signOut, loading }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      session, 
+      signIn, 
+      signUp, 
+      signInWithGoogle, 
+      signOut, 
+      resendVerificationEmail,
+      loading 
+    }}>
       {children}
     </AuthContext.Provider>
   );
