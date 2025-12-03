@@ -4,23 +4,23 @@
 declare global {
   interface Window {
     mixpanel: {
-      track: (event: string, properties?: Record<string, any>) => void;
+      track: (event: string, properties?: Record<string, unknown>) => void;
       identify: (userId: string) => void;
       people: {
-        set: (properties: Record<string, any>) => void;
+        set: (properties: Record<string, unknown>) => void;
       };
       reset: () => void;
     };
   }
 }
 
-export const trackEvent = (event: string, properties?: Record<string, any>) => {
+export const trackEvent = (event: string, properties?: Record<string, unknown>) => {
   if (typeof window !== 'undefined' && window.mixpanel) {
     window.mixpanel.track(event, properties);
   }
 };
 
-export const identifyUser = (userId: string, properties?: Record<string, any>) => {
+export const identifyUser = (userId: string, properties?: Record<string, unknown>) => {
   if (typeof window !== 'undefined' && window.mixpanel) {
     window.mixpanel.identify(userId);
     if (properties) {
@@ -77,7 +77,7 @@ export const trackPageView = (path: string, title?: string) => {
 // Track funnel step with both Mixpanel
 export const trackFunnelStep = (
   step: keyof typeof MIXPANEL_EVENTS,
-  properties?: Record<string, any>
+  properties?: Record<string, unknown>
 ) => {
   trackEvent(MIXPANEL_EVENTS[step], {
     funnel: 'signup_to_purchase',

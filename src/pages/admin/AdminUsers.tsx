@@ -83,7 +83,7 @@ export default function AdminUsers() {
     } else {
       const { error } = await supabase
         .from("user_roles")
-        .insert({ user_id: userId, role: role as any });
+        .insert({ user_id: userId, role: role });
 
       if (error) {
         toast.error("Failed to add role");

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
+import { User, Session, AuthError } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { trackEvent, identifyUser, resetUser, MIXPANEL_EVENTS, trackFunnelStep } from '@/lib/mixpanel';
@@ -7,11 +7,11 @@ import { identifyPostHogUser, resetPostHogUser, trackFunnelStep as trackPostHogF
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, username: string) => Promise<{ error: any }>;
-  signInWithGoogle: () => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
+  signUp: (email: string, password: string, username: string) => Promise<{ error: AuthError | null }>;
+  signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
-  resendVerificationEmail: () => Promise<{ error: any }>;
+  resendVerificationEmail: () => Promise<{ error: AuthError | Error | null }>;
   loading: boolean;
 }
 
@@ -144,7 +144,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const resendVerificationEmail = async () => {
     if (!user?.email) {
-      return { error: { message: 'No email address found' } };
+      return { error: new Error('No email address found') };
     }
 
     const { error } = await supabase.auth.resend({

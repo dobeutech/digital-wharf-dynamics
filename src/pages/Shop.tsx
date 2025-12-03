@@ -16,8 +16,8 @@ interface Service {
   description: string;
   category: string;
   base_price: number;
-  features: any;
-  add_ons: any;
+  features: Record<string, unknown>;
+  add_ons: Record<string, unknown>;
   is_active: boolean;
 }
 
@@ -88,7 +88,7 @@ export default function Shop() {
     setIsModalOpen(true);
   };
 
-  const handlePurchase = async (serviceId: string, totalAmount: number, selectedAddOns: any[], serviceName: string, isSubscription: boolean) => {
+  const handlePurchase = async (serviceId: string, totalAmount: number, selectedAddOns: Array<Record<string, unknown>>, serviceName: string, isSubscription: boolean) => {
     if (!user) {
       toast({
         title: "Authentication Required",
@@ -140,11 +140,11 @@ export default function Shop() {
       } else {
         throw new Error("No checkout URL returned");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Checkout error:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to create checkout. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to create checkout. Please try again.",
         variant: "destructive",
       });
     }
