@@ -91,6 +91,8 @@ export function RippleGrid({
     <canvas
       ref={canvasRef}
       className={`absolute inset-0 w-full h-full pointer-events-none ${className}`}
+      role="presentation"
+      aria-hidden="true"
     />
   );
 }

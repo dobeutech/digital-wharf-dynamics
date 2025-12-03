@@ -1,3 +1,4 @@
+# https://www.robotstxt.org/robotstxt.html
 User-agent: Googlebot
 Allow: /
 
@@ -12,3 +13,11 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: https://app.dobeu.cloud/sitemap.xml
+
+# Disallow admin and protected routes from indexing
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /auth

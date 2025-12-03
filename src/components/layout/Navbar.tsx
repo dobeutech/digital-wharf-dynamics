@@ -25,6 +25,17 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Close mobile menu on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isMobileMenuOpen]);
+
   const handleLogout = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
@@ -46,15 +57,17 @@ export function Navbar() {
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled ? "bg-background/80 backdrop-blur-lg shadow-sm" : "bg-transparent"
       }`}
+      role="navigation"
+      aria-label="Main navigation"
     >
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex items-center" aria-label="DOBEU Home">
             <Logo className="h-8" />
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6 lg:gap-8">
             {user ? (
               <>
                 {isAdmin && (
@@ -106,79 +119,95 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-2">
             <ThemeToggle />
             {user ? (
-              <Button onClick={handleLogout} variant="outline" size="sm">
+              <Button onClick={handleLogout} variant="outline" size="sm" className="min-h-[44px] min-w-[44px]">
                 Logout
               </Button>
             ) : (
-              <Button asChild size="sm">
+              <Button asChild size="sm" className="min-h-[44px]">
                 <Link to="/auth">Sign In</Link>
               </Button>
             )}
           </div>
 
           {/* Mobile Menu Button */}
-          <button
-            className="md:hidden"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </button>
+          <div className="flex md:hidden items-center gap-2">
+            <ThemeToggle />
+            <button
+              className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md hover:bg-muted transition-colors"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
+            >
+              {isMobileMenuOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden py-4 space-y-4 border-t">
+          <div 
+            id="mobile-menu"
+            className="md:hidden py-4 space-y-1 border-t animate-fade-in"
+            role="menu"
+          >
             {user ? (
               <>
                 {isAdmin && (
                   <NavLink
                     to="/admin"
-                    className="block text-sm font-medium hover:text-primary transition-colors"
+                    className="block px-3 py-3 text-sm font-medium hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]"
                     onClick={() => setIsMobileMenuOpen(false)}
+                    role="menuitem"
                   >
                     Admin
                   </NavLink>
                 )}
                 <NavLink
                   to="/dashboard"
-                  className="block text-sm font-medium hover:text-primary transition-colors"
+                  className="block px-3 py-3 text-sm font-medium hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]"
                   onClick={() => setIsMobileMenuOpen(false)}
+                  role="menuitem"
                 >
                   Dashboard
                 </NavLink>
                 <NavLink
                   to="/dashboard/projects"
-                  className="block text-sm font-medium hover:text-primary transition-colors"
+                  className="block px-3 py-3 text-sm font-medium hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]"
                   onClick={() => setIsMobileMenuOpen(false)}
+                  role="menuitem"
                 >
                   Projects
                 </NavLink>
                 <NavLink
                   to="/dashboard/shop"
-                  className="block text-sm font-medium hover:text-primary transition-colors"
+                  className="block px-3 py-3 text-sm font-medium hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]"
                   onClick={() => setIsMobileMenuOpen(false)}
+                  role="menuitem"
                 >
                   Shop
                 </NavLink>
                 <NavLink
                   to="/dashboard/files"
-                  className="block text-sm font-medium hover:text-primary transition-colors"
+                  className="block px-3 py-3 text-sm font-medium hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]"
                   onClick={() => setIsMobileMenuOpen(false)}
+                  role="menuitem"
                 >
                   Files
                 </NavLink>
                 <NavLink
                   to="/newsletter"
-                  className="block text-sm font-medium hover:text-primary transition-colors"
+                  className="block px-3 py-3 text-sm font-medium hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]"
                   onClick={() => setIsMobileMenuOpen(false)}
+                  role="menuitem"
                 >
                   Newsletter
                 </NavLink>
                 <NavLink
                   to="/brand"
-                  className="block text-sm font-medium hover:text-primary transition-colors"
+                  className="block px-3 py-3 text-sm font-medium hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]"
                   onClick={() => setIsMobileMenuOpen(false)}
+                  role="menuitem"
                 >
                   Brand Kit
                 </NavLink>
@@ -187,49 +216,53 @@ export function Navbar() {
               <>
                 <NavLink
                   to="/services"
-                  className="block text-sm font-medium hover:text-primary transition-colors"
+                  className="block px-3 py-3 text-sm font-medium hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]"
                   onClick={() => setIsMobileMenuOpen(false)}
+                  role="menuitem"
                 >
                   Services
                 </NavLink>
                 <NavLink
                   to="/pricing"
-                  className="block text-sm font-medium hover:text-primary transition-colors"
+                  className="block px-3 py-3 text-sm font-medium hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]"
                   onClick={() => setIsMobileMenuOpen(false)}
+                  role="menuitem"
                 >
                   Pricing
                 </NavLink>
                 <NavLink
                   to="/about"
-                  className="block text-sm font-medium hover:text-primary transition-colors"
+                  className="block px-3 py-3 text-sm font-medium hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]"
                   onClick={() => setIsMobileMenuOpen(false)}
+                  role="menuitem"
                 >
                   About
                 </NavLink>
                 <NavLink
                   to="/contact"
-                  className="block text-sm font-medium hover:text-primary transition-colors"
+                  className="block px-3 py-3 text-sm font-medium hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]"
                   onClick={() => setIsMobileMenuOpen(false)}
+                  role="menuitem"
                 >
                   Contact
                 </NavLink>
                 <NavLink
                   to="/news"
-                  className="block text-sm font-medium hover:text-primary transition-colors"
+                  className="block px-3 py-3 text-sm font-medium hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]"
                   onClick={() => setIsMobileMenuOpen(false)}
+                  role="menuitem"
                 >
                   News
                 </NavLink>
               </>
             )}
-            <div className="pt-4 border-t flex items-center justify-between gap-4">
-              <ThemeToggle />
+            <div className="pt-4 mt-4 border-t">
               {user ? (
-                <Button onClick={handleLogout} variant="outline" size="sm" className="flex-1">
+                <Button onClick={handleLogout} variant="outline" size="sm" className="w-full min-h-[44px]">
                   Logout
                 </Button>
               ) : (
-                <Button asChild size="sm" className="flex-1">
+                <Button asChild size="sm" className="w-full min-h-[44px]">
                   <Link to="/auth">Sign In</Link>
                 </Button>
               )}

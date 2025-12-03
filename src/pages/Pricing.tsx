@@ -22,7 +22,7 @@ export default function Pricing() {
     {
       name: "Hourly Consulting",
       description: "Flexible support when you need it",
-      price: "$150",
+      price: "$250",
       period: "/hour",
       features: [
         "Pay only for time used",

@@ -37,7 +37,7 @@ const pricingOptions = [
   },
   {
     title: "Hourly Consulting",
-    price: "$150",
+    price: "$250",
     period: "/hour",
     description: "Flexible support for specific needs",
     features: [

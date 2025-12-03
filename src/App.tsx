@@ -12,6 +12,7 @@ import { CookieConsentBanner } from "@/components/CookieConsent";
 import { NewsletterPopup } from "@/components/NewsletterPopup";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { AdminRoute } from "@/components/AdminRoute";
+import { SkipLink } from "@/components/SkipLink";
 import Home from "./pages/Home";
 import Services from "./pages/Services";
 import Pricing from "./pages/Pricing";
@@ -46,9 +47,10 @@ const App = () => (
         <BrowserRouter>
           <AuthProvider>
             <Analytics />
+            <SkipLink />
             <div className="flex flex-col min-h-screen">
               <Navbar />
-              <main className="flex-grow">
+              <main id="main-content" className="flex-grow" tabIndex={-1}>
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/services" element={<Services />} />
