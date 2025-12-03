@@ -1,10 +1,13 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdmin } from "@/hooks/useAdmin";
+import { useSessionTimeout } from "@/hooks/useSessionTimeout";
+import { SessionWarningDialog } from "@/components/SessionWarningDialog";
 
 export function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdmin();
+  const { showWarning, timeRemaining, extendSession, logoutNow } = useSessionTimeout();
 
   if (authLoading || adminLoading) {
     return (
@@ -22,5 +25,15 @@ export function AdminRoute({ children }: { children: React.ReactNode }) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+      <SessionWarningDialog
+        open={showWarning}
+        timeRemaining={timeRemaining}
+        onExtend={extendSession}
+        onLogout={logoutNow}
+      />
+    </>
+  );
 }

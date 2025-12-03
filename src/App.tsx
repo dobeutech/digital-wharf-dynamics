@@ -29,6 +29,7 @@ import Shop from "./pages/Shop";
 import Files from "./pages/Files";
 import News from "./pages/News";
 import Newsletter from "./pages/Newsletter";
+import ResetPassword from "./pages/ResetPassword";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminServices from "./pages/admin/AdminServices";
 import AdminProjects from "./pages/admin/AdminProjects";
@@ -36,6 +37,7 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import AdminNewsletter from "./pages/admin/AdminNewsletter";
 import AdminCCPA from "./pages/admin/AdminCCPA";
 import AdminContacts from "./pages/admin/AdminContacts";
+import AdminAuditLogs from "./pages/admin/AdminAuditLogs";
 import { BrandKit } from "@/components/brand/BrandKit";
 
 const queryClient = new QueryClient();
@@ -64,6 +66,7 @@ const App = () => (
                   <Route path="/tos" element={<Terms />} />
                   <Route path="/ccpa-optout" element={<CCPAOptOut />} />
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/news" element={<News />} />
                   <Route path="/dashboard" element={
                     <ProtectedRoute>
@@ -128,6 +131,11 @@ const App = () => (
                   <Route path="/admin/contacts" element={
                     <AdminRoute>
                       <AdminContacts />
+                    </AdminRoute>
+                  } />
+                  <Route path="/admin/audit-logs" element={
+                    <AdminRoute>
+                      <AdminAuditLogs />
                     </AdminRoute>
                   } />
                   <Route path="*" element={<NotFound />} />

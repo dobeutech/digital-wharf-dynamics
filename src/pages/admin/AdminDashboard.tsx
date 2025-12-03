@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { ShoppingBag, FolderOpen, Users, Newspaper, FileText, Shield, MessageSquare } from "lucide-react";
+import { ShoppingBag, FolderOpen, Users, Newspaper, FileText, Shield, MessageSquare, ClipboardList } from "lucide-react";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -13,13 +13,14 @@ export default function AdminDashboard() {
     totalPosts: 0,
     totalCCPARequests: 0,
     totalContactSubmissions: 0,
+    totalAuditLogs: 0,
     pendingCCPA: 0,
     newContacts: 0,
   });
 
   useEffect(() => {
     const fetchStats = async () => {
-      const [servicesRes, projectsRes, profilesRes, postsRes, ccpaRes, contactsRes, pendingCCPARes, newContactsRes] = await Promise.all([
+      const [servicesRes, projectsRes, profilesRes, postsRes, ccpaRes, contactsRes, pendingCCPARes, newContactsRes, auditRes] = await Promise.all([
         supabase.from("services").select("id", { count: "exact" }),
         supabase.from("projects").select("id", { count: "exact" }),
         supabase.from("profiles").select("id", { count: "exact" }),
@@ -28,6 +29,7 @@ export default function AdminDashboard() {
         supabase.from("contact_submissions").select("id", { count: "exact" }),
         supabase.from("ccpa_requests").select("id", { count: "exact" }).eq("status", "pending"),
         supabase.from("contact_submissions").select("id", { count: "exact" }).eq("status", "new"),
+        supabase.from("audit_logs").select("id", { count: "exact" }),
       ]);
 
       setStats({
@@ -37,6 +39,7 @@ export default function AdminDashboard() {
         totalPosts: postsRes.count || 0,
         totalCCPARequests: ccpaRes.count || 0,
         totalContactSubmissions: contactsRes.count || 0,
+        totalAuditLogs: auditRes.count || 0,
         pendingCCPA: pendingCCPARes.count || 0,
         newContacts: newContactsRes.count || 0,
       });
@@ -115,7 +118,7 @@ export default function AdminDashboard() {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <Card className="shadow-material border-l-4 border-l-yellow-500">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
@@ -159,6 +162,23 @@ export default function AdminDashboard() {
               </Button>
             </CardContent>
           </Card>
+
+          <Card className="shadow-material border-l-4 border-l-purple-500">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <ClipboardList className="h-5 w-5 text-purple-500" />
+                Audit Logs
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-3xl font-bold text-primary">{stats.totalAuditLogs}</span>
+              </div>
+              <Button asChild variant="link" className="p-0">
+                <Link to="/admin/audit-logs">View Audit Logs →</Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -187,9 +207,9 @@ export default function AdminDashboard() {
                 </Link>
               </Button>
               <Button asChild variant="outline" className="w-full justify-start">
-                <Link to="/admin/contacts">
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  View Contact Messages
+                <Link to="/admin/audit-logs">
+                  <ClipboardList className="mr-2 h-4 w-4" />
+                  View Audit Logs
                 </Link>
               </Button>
             </CardContent>
