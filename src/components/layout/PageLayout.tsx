@@ -6,7 +6,7 @@ interface PageLayoutProps {
   children: ReactNode;
   className?: string;
   showBreadcrumbs?: boolean;
-  maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "full";
+  maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "7xl" | "full";
 }
 
 export function PageLayout({
@@ -21,6 +21,7 @@ export function PageLayout({
     lg: "max-w-lg",
     xl: "max-w-xl",
     "2xl": "max-w-2xl",
+    "7xl": "max-w-7xl",
     full: "max-w-full",
   };
 
