@@ -46,6 +46,7 @@ export const MIXPANEL_EVENTS = {
   // Purchase events
   CHECKOUT_STARTED: 'Checkout Started',
   SERVICE_VIEWED: 'Service Viewed',
+  PURCHASE_COMPLETE: 'Purchase Complete',
   
   // Contact events
   CONTACT_FORM_SUBMITTED: 'Contact Form Submitted',
@@ -55,6 +56,13 @@ export const MIXPANEL_EVENTS = {
   
   // Page view events
   PAGE_VIEW: 'Page Viewed',
+  
+  // Funnel events (for conversion tracking)
+  FUNNEL_SIGNUP_COMPLETE: 'Funnel: Signup Complete',
+  FUNNEL_SHOP_VIEWED: 'Funnel: Shop Viewed',
+  FUNNEL_SERVICE_DETAIL_VIEWED: 'Funnel: Service Detail Viewed',
+  FUNNEL_CHECKOUT_INITIATED: 'Funnel: Checkout Initiated',
+  FUNNEL_PURCHASE_COMPLETE: 'Funnel: Purchase Complete',
 } as const;
 
 // Track page view
@@ -63,5 +71,16 @@ export const trackPageView = (path: string, title?: string) => {
     path,
     title: title || document.title,
     referrer: document.referrer,
+  });
+};
+
+// Track funnel step with both Mixpanel
+export const trackFunnelStep = (
+  step: keyof typeof MIXPANEL_EVENTS,
+  properties?: Record<string, any>
+) => {
+  trackEvent(MIXPANEL_EVENTS[step], {
+    funnel: 'signup_to_purchase',
+    ...properties,
   });
 };

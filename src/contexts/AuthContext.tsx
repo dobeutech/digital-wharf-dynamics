@@ -2,7 +2,8 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { trackEvent, identifyUser, resetUser, MIXPANEL_EVENTS } from '@/lib/mixpanel';
+import { trackEvent, identifyUser, resetUser, MIXPANEL_EVENTS, trackFunnelStep } from '@/lib/mixpanel';
+import { identifyPostHogUser, resetPostHogUser, trackFunnelStep as trackPostHogFunnel, FUNNEL_STEPS, reloadFeatureFlags } from '@/lib/posthog';
 interface AuthContextType {
   user: User | null;
   session: Session | null;
@@ -46,12 +47,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setUser(session?.user ?? null);
       setLoading(false);
       
-      // Identify user in Mixpanel if session exists
+      // Identify user in Mixpanel and PostHog if session exists
       if (session?.user) {
         identifyUser(session.user.id, { 
           email: session.user.email,
           created_at: session.user.created_at,
         });
+        identifyPostHogUser(session.user.id, {
+          email: session.user.email,
+          created_at: session.user.created_at,
+        });
+        reloadFeatureFlags();
       }
     });
 
@@ -80,6 +86,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         username: username,
       });
       identifyUser(data.user.id, { email, username });
+      
+      // Track funnel: Signup Complete
+      trackFunnelStep('FUNNEL_SIGNUP_COMPLETE', { user_id: data.user.id });
+      trackPostHogFunnel(FUNNEL_STEPS.SIGNUP_COMPLETE, { user_id: data.user.id });
+      identifyPostHogUser(data.user.id, { email, username });
+      reloadFeatureFlags();
 
       // Create profile entry
       const { error: profileError } = await supabase
@@ -125,6 +137,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const signOut = async () => {
     trackEvent(MIXPANEL_EVENTS.SIGN_OUT);
     resetUser();
+    resetPostHogUser();
     await supabase.auth.signOut();
     navigate('/auth');
   };
