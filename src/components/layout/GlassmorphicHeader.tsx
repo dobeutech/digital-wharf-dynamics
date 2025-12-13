@@ -106,14 +106,16 @@ export function GlassmorphicHeader() {
         role="navigation"
         aria-label="Main navigation"
       >
-        {/* Gradient border at bottom */}
+        {/* Animated gradient border at bottom - uses all brand colors */}
         <div 
           className={cn(
             "absolute bottom-0 left-0 right-0 h-[1px] transition-opacity duration-500",
             isScrolled ? "opacity-100" : "opacity-0"
           )}
           style={{
-            background: "linear-gradient(90deg, transparent, hsla(48, 96%, 53%, 0.3), transparent)",
+            background: "linear-gradient(90deg, transparent, #FACC15, #EC4899, #A855F7, #3B82F6, transparent)",
+            backgroundSize: "200% 100%",
+            animation: "gradient-x 5s ease infinite",
           }}
         />
         
@@ -156,9 +158,9 @@ export function GlassmorphicHeader() {
                         className={cn(
                           "relative text-sm font-medium px-4 py-2 rounded-full",
                           "transition-all duration-300",
-                          "hover:text-primary hover:bg-primary/10",
+                          "hover:text-yellow-400 hover:bg-gradient-to-r hover:from-yellow-400/10 hover:via-pink-500/10 hover:to-purple-500/10",
                           "after:absolute after:bottom-0 after:left-1/2 after:w-0 after:h-0.5",
-                          "after:bg-gradient-to-r after:from-primary after:to-orange-500",
+                          "after:bg-gradient-to-r after:from-yellow-400 after:via-pink-500 after:to-purple-500",
                           "after:transition-all after:duration-300 after:-translate-x-1/2",
                           "hover:after:w-1/2"
                         )}
@@ -255,13 +257,16 @@ export function GlassmorphicHeader() {
                   asChild 
                   size="sm" 
                   className={cn(
-                    "min-h-[44px] rounded-full px-6",
-                    "bg-primary/90 hover:bg-primary",
-                    "shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30",
-                    "transition-all duration-300 hover:scale-105"
+                    "relative min-h-[44px] rounded-full px-6 overflow-hidden",
+                    "bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500",
+                    "text-white font-semibold",
+                    "shadow-lg hover:shadow-xl",
+                    "transition-all duration-300 hover:scale-105",
+                    "before:absolute before:inset-0 before:bg-gradient-to-r before:from-purple-500 before:via-pink-500 before:to-yellow-400",
+                    "before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100"
                   )}
                 >
-                  <Link to="/auth">Sign In</Link>
+                  <Link to="/auth" className="relative z-10">Sign In</Link>
                 </Button>
               )}
             </motion.div>

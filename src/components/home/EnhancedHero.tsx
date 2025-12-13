@@ -86,13 +86,28 @@ export function EnhancedHero() {
           initial="hidden"
           animate="visible"
         >
-          {/* Badge */}
+          {/* Badge with gradient border */}
           <motion.div
             variants={itemVariants}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium"
+            className="relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium overflow-hidden"
+            style={{
+              background: "linear-gradient(135deg, hsla(48, 96%, 53%, 0.1), hsla(330, 81%, 60%, 0.1), hsla(271, 81%, 56%, 0.1))",
+            }}
           >
-            <Sparkles className="w-4 h-4" />
-            <span>Premium Digital Solutions</span>
+            {/* Animated gradient border */}
+            <span 
+              className="absolute inset-0 rounded-full p-[1px]"
+              style={{
+                background: "linear-gradient(135deg, #FACC15, #EC4899, #A855F7, #3B82F6)",
+                backgroundSize: "300% 300%",
+                animation: "gradient-x 5s ease infinite",
+                WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                WebkitMaskComposite: "xor",
+                maskComposite: "exclude",
+              }}
+            />
+            <Sparkles className="w-4 h-4 text-yellow-400" />
+            <span className="gradient-text-full">Premium Digital Solutions</span>
           </motion.div>
 
           {/* Main headline with letter animation */}
@@ -124,18 +139,18 @@ export function EnhancedHero() {
                 <span 
                   className="text-transparent bg-clip-text"
                   style={{
-                    backgroundImage: "linear-gradient(135deg, hsl(48, 96%, 53%) 0%, hsl(40, 100%, 50%) 50%, hsl(25, 95%, 53%) 100%)",
+                    backgroundImage: "linear-gradient(135deg, #FACC15 0%, #EC4899 50%, #A855F7 100%)",
                     backgroundSize: "200% 200%",
                     animation: "gradient-shift 5s ease infinite",
                   }}
                 >
                   {highlightText}
                 </span>
-                {/* Animated underline */}
+                {/* Animated underline with full brand gradient */}
                 <motion.span
-                  className="absolute -bottom-2 left-0 h-1 rounded-full"
+                  className="absolute -bottom-2 left-0 h-1.5 rounded-full"
                   style={{
-                    background: "linear-gradient(90deg, hsl(48, 96%, 53%), hsl(25, 95%, 53%))",
+                    background: "linear-gradient(90deg, #FACC15, #EC4899, #A855F7, #3B82F6)",
                   }}
                   initial={{ width: 0 }}
                   animate={{ width: "100%" }}
@@ -211,21 +226,21 @@ export function EnhancedHero() {
             </motion.div>
           </motion.div>
 
-          {/* Trust indicators */}
+          {/* Trust indicators with brand colors */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-wrap items-center justify-center gap-8 pt-8 text-sm text-muted-foreground"
+            className="flex flex-wrap items-center justify-center gap-6 sm:gap-8 pt-8 text-sm text-muted-foreground"
           >
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
               <span>Available for new projects</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-primary font-semibold">50+</span>
+              <span className="font-semibold text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(135deg, #FACC15, #EC4899)" }}>50+</span>
               <span>Projects delivered</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-primary font-semibold">100%</span>
+              <span className="font-semibold text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(135deg, #A855F7, #3B82F6)" }}>100%</span>
               <span>Client satisfaction</span>
             </div>
           </motion.div>

@@ -49,11 +49,13 @@ export function FloatingFooter() {
         className="relative bg-card/50 backdrop-blur-sm border-t border-border/50"
         role="contentinfo"
       >
-        {/* Gradient border at top */}
+        {/* Animated gradient border at top - full brand colors */}
         <div 
           className="absolute top-0 left-0 right-0 h-[1px]"
           style={{
-            background: "linear-gradient(90deg, transparent, hsla(48, 96%, 53%, 0.3), transparent)",
+            background: "linear-gradient(90deg, transparent, #FACC15, #EC4899, #A855F7, #3B82F6, transparent)",
+            backgroundSize: "200% 100%",
+            animation: "gradient-x 5s ease infinite",
           }}
         />
 
@@ -67,7 +69,14 @@ export function FloatingFooter() {
           <div className="max-w-4xl mx-auto text-center space-y-6 pb-16 border-b border-border/50">
             <h2 className="text-3xl md:text-5xl font-bold">
               Ready to{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-orange-500">
+              <span 
+                className="text-transparent bg-clip-text"
+                style={{
+                  backgroundImage: "linear-gradient(135deg, #FACC15, #EC4899, #A855F7)",
+                  backgroundSize: "200% 200%",
+                  animation: "gradient-x 5s ease infinite",
+                }}
+              >
                 get started
               </span>
               ?
@@ -80,7 +89,7 @@ export function FloatingFooter() {
                 <Button
                   asChild
                   size="lg"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-8 py-6 text-lg rounded-full shadow-lg shadow-primary/20"
+                  className="relative overflow-hidden bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 text-white font-bold px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-shadow"
                 >
                   <Link to="/contact" className="flex items-center gap-2">
                     Start a Project
@@ -93,7 +102,12 @@ export function FloatingFooter() {
                   asChild
                   size="lg"
                   variant="outline"
-                  className="border-2 hover:bg-primary/10 hover:border-primary/50 font-semibold px-8 py-6 text-lg rounded-full"
+                  className="border-2 border-transparent font-semibold px-8 py-6 text-lg rounded-full relative overflow-hidden"
+                  style={{
+                    backgroundImage: "linear-gradient(hsl(var(--background)), hsl(var(--background))), linear-gradient(135deg, #FACC15, #EC4899, #A855F7)",
+                    backgroundOrigin: "border-box",
+                    backgroundClip: "padding-box, border-box",
+                  }}
                 >
                   <Link to="/pricing">View Pricing</Link>
                 </Button>

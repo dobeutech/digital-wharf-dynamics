@@ -8,22 +8,34 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Dobeu Brand Colors - Light Mode */
-    --background: 0 0% 98%; /* Off-white */
-    --foreground: 0 0% 9%; /* Near black */
+    /* ===== DOBEU BRAND COLOR SYSTEM ===== */
+    
+    /* Core Brand Colors (from Brand Kit) */
+    --brand-electric-lemon: 48 96% 53%;      /* #FACC15 - Primary Yellow */
+    --brand-void-black: 0 0% 0%;             /* #000000 */
+    --brand-stark-white: 0 0% 100%;          /* #FFFFFF */
+    --brand-azure-tech: 217 91% 60%;         /* #3B82F6 - Tech Blue */
+    --brand-neon-rose: 330 81% 60%;          /* #EC4899 - Pink */
+    --brand-deep-violet: 271 81% 56%;        /* #A855F7 - Purple */
+    --brand-graphite: 0 0% 9%;               /* #171717 */
+    --brand-muted-metal: 220 9% 46%;         /* #6B7280 */
+    
+    /* Light Mode Theme */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 9%;
 
-    --card: 0 0% 100%; /* White for cards */
+    --card: 0 0% 100%;
     --card-foreground: 0 0% 9%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 9%;
 
-    /* Yellow Brand Color #EAB308 */
-    --primary: 48 96% 45%; /* Slightly darker for better contrast on light */
-    --primary-foreground: 0 0% 100%; /* White text on yellow */
+    /* Electric Lemon as Primary */
+    --primary: 48 96% 45%;
+    --primary-foreground: 0 0% 100%;
     --primary-hover: 45 93% 40%;
     
-    /* Light gray - Secondary */
+    /* Secondary */
     --secondary: 0 0% 92%;
     --secondary-foreground: 0 0% 9%;
     --secondary-hover: 0 0% 88%;
@@ -31,7 +43,6 @@ All colors MUST be HSL.
     --muted: 0 0% 94%;
     --muted-foreground: 0 0% 40%;
 
-    /* Yellow Accent */
     --accent: 48 96% 45%;
     --accent-foreground: 0 0% 100%;
 
@@ -40,20 +51,29 @@ All colors MUST be HSL.
 
     --border: 0 0% 85%;
     --input: 0 0% 85%;
-    --ring: 48 96% 45%; /* Yellow ring */
+    --ring: 48 96% 45%;
 
     --radius: 0.5rem;
 
-    /* Gradients - Yellow to Orange brand gradient */
-    --gradient-primary: linear-gradient(135deg, hsl(48 96% 45%), hsl(25 95% 50%));
+    /* Extended Brand Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(48 96% 53%), hsl(25 95% 53%));
     --gradient-secondary: linear-gradient(135deg, hsl(0 0% 95%), hsl(0 0% 90%));
     --gradient-hero: linear-gradient(180deg, hsl(0 0% 98%), hsl(0 0% 94%));
+    --gradient-electric: linear-gradient(135deg, hsl(48 96% 53%), hsl(330 81% 60%));
+    --gradient-tech: linear-gradient(135deg, hsl(217 91% 60%), hsl(271 81% 56%));
+    --gradient-neon: linear-gradient(135deg, hsl(330 81% 60%), hsl(271 81% 56%));
+    --gradient-sunset: linear-gradient(135deg, hsl(48 96% 53%), hsl(25 95% 53%), hsl(330 81% 60%));
+    --gradient-aurora: linear-gradient(135deg, hsl(217 91% 60%), hsl(271 81% 56%), hsl(330 81% 60%));
     
-    /* Shadows for light mode */
+    /* Shadows */
     --shadow-sm: 0 1px 3px hsl(0 0% 0% / 0.1);
     --shadow-md: 0 4px 6px hsl(0 0% 0% / 0.1), 0 2px 4px hsl(48 96% 45% / 0.05);
     --shadow-lg: 0 10px 15px hsl(0 0% 0% / 0.1), 0 4px 6px hsl(48 96% 45% / 0.08);
     --shadow-xl: 0 20px 25px hsl(0 0% 0% / 0.15), 0 8px 10px hsl(48 96% 45% / 0.1);
+    --shadow-glow-yellow: 0 0 30px hsl(48 96% 53% / 0.3);
+    --shadow-glow-pink: 0 0 30px hsl(330 81% 60% / 0.3);
+    --shadow-glow-blue: 0 0 30px hsl(217 91% 60% / 0.3);
+    --shadow-glow-purple: 0 0 30px hsl(271 81% 56% / 0.3);
     
     /* Transitions */
     --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -62,22 +82,21 @@ All colors MUST be HSL.
   }
 
   .dark {
-    /* Dark mode - Original Dobeu brand colors */
-    --background: 0 0% 0%; /* Black */
-    --foreground: 0 0% 100%; /* White */
+    /* ===== DARK MODE - DOBEU BRAND ===== */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
 
-    --card: 0 0% 5%; /* Near black for cards */
+    --card: 0 0% 5%;
     --card-foreground: 0 0% 100%;
 
     --popover: 0 0% 5%;
     --popover-foreground: 0 0% 100%;
 
-    /* Yellow Brand Color #EAB308 */
+    /* Electric Lemon Primary */
     --primary: 48 96% 53%;
-    --primary-foreground: 0 0% 0%; /* Black text on yellow */
+    --primary-foreground: 0 0% 0%;
     --primary-hover: 45 93% 47%;
 
-    /* Dark gray - Secondary */
     --secondary: 0 0% 15%;
     --secondary-foreground: 0 0% 100%;
     --secondary-hover: 0 0% 20%;
@@ -85,7 +104,6 @@ All colors MUST be HSL.
     --muted: 0 0% 15%;
     --muted-foreground: 0 0% 64%;
 
-    /* Yellow Accent */
     --accent: 48 96% 53%;
     --accent-foreground: 0 0% 0%;
 
@@ -96,15 +114,24 @@ All colors MUST be HSL.
     --input: 0 0% 20%;
     --ring: 48 96% 53%;
 
-    /* Gradients for dark mode */
+    /* Dark Mode Gradients */
     --gradient-primary: linear-gradient(135deg, hsl(48 96% 53%), hsl(25 95% 53%));
     --gradient-secondary: linear-gradient(135deg, hsl(0 0% 10%), hsl(0 0% 20%));
     --gradient-hero: linear-gradient(180deg, hsl(0 0% 0%), hsl(0 0% 5%));
+    --gradient-electric: linear-gradient(135deg, hsl(48 96% 53%), hsl(330 81% 60%));
+    --gradient-tech: linear-gradient(135deg, hsl(217 91% 60%), hsl(271 81% 56%));
+    --gradient-neon: linear-gradient(135deg, hsl(330 81% 60%), hsl(271 81% 56%));
+    --gradient-sunset: linear-gradient(135deg, hsl(48 96% 53%), hsl(25 95% 53%), hsl(330 81% 60%));
+    --gradient-aurora: linear-gradient(135deg, hsl(217 91% 60%), hsl(271 81% 56%), hsl(330 81% 60%));
     
     --shadow-sm: 0 1px 3px hsl(0 0% 0% / 0.3);
     --shadow-md: 0 4px 6px hsl(0 0% 0% / 0.25), 0 2px 4px hsl(48 96% 53% / 0.05);
     --shadow-lg: 0 10px 15px hsl(0 0% 0% / 0.3), 0 4px 6px hsl(48 96% 53% / 0.1);
     --shadow-xl: 0 20px 25px hsl(0 0% 0% / 0.4), 0 8px 10px hsl(48 96% 53% / 0.15);
+    --shadow-glow-yellow: 0 0 40px hsl(48 96% 53% / 0.4);
+    --shadow-glow-pink: 0 0 40px hsl(330 81% 60% / 0.4);
+    --shadow-glow-blue: 0 0 40px hsl(217 91% 60% / 0.4);
+    --shadow-glow-purple: 0 0 40px hsl(271 81% 56% / 0.4);
   }
 }
 
@@ -363,6 +390,210 @@ All colors MUST be HSL.
   .card-glow:hover::after {
     opacity: 1;
   }
+
+  /* ===== DOBEU BRAND COLOR UTILITIES ===== */
+  
+  /* Brand gradient utilities */
+  .gradient-electric {
+    background: linear-gradient(135deg, #FACC15, #EC4899);
+  }
+
+  .gradient-tech {
+    background: linear-gradient(135deg, #3B82F6, #A855F7);
+  }
+
+  .gradient-neon {
+    background: linear-gradient(135deg, #EC4899, #A855F7);
+  }
+
+  .gradient-sunset {
+    background: linear-gradient(135deg, #FACC15, #F97316, #EC4899);
+  }
+
+  .gradient-aurora {
+    background: linear-gradient(135deg, #3B82F6, #A855F7, #EC4899);
+  }
+
+  .gradient-full-brand {
+    background: linear-gradient(135deg, #FACC15, #EC4899, #A855F7, #3B82F6);
+    background-size: 300% 300%;
+  }
+
+  /* Animated gradients */
+  .gradient-animate {
+    background-size: 200% 200%;
+    animation: gradient-x 5s ease infinite;
+  }
+
+  .gradient-animate-slow {
+    background-size: 300% 300%;
+    animation: gradient-x 10s ease infinite;
+  }
+
+  /* Brand gradient text variants */
+  .gradient-text-electric {
+    background: linear-gradient(135deg, #FACC15, #EC4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-tech {
+    background: linear-gradient(135deg, #3B82F6, #A855F7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-neon {
+    background: linear-gradient(135deg, #EC4899, #A855F7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-aurora {
+    background: linear-gradient(135deg, #3B82F6, #A855F7, #EC4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .gradient-text-full {
+    background: linear-gradient(135deg, #FACC15, #EC4899, #A855F7, #3B82F6);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-x 8s ease infinite;
+  }
+
+  /* Brand glow effects */
+  .glow-yellow {
+    box-shadow: 0 0 30px hsla(48, 96%, 53%, 0.4);
+  }
+
+  .glow-pink {
+    box-shadow: 0 0 30px hsla(330, 81%, 60%, 0.4);
+  }
+
+  .glow-blue {
+    box-shadow: 0 0 30px hsla(217, 91%, 60%, 0.4);
+  }
+
+  .glow-purple {
+    box-shadow: 0 0 30px hsla(271, 81%, 56%, 0.4);
+  }
+
+  .glow-multi {
+    box-shadow: 
+      0 0 30px hsla(48, 96%, 53%, 0.2),
+      0 0 60px hsla(330, 81%, 60%, 0.15),
+      0 0 90px hsla(271, 81%, 56%, 0.1);
+  }
+
+  /* Brand border gradients */
+  .border-gradient-electric {
+    border: 2px solid transparent;
+    background-image: linear-gradient(hsl(var(--background)), hsl(var(--background))), 
+                      linear-gradient(135deg, #FACC15, #EC4899);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+
+  .border-gradient-tech {
+    border: 2px solid transparent;
+    background-image: linear-gradient(hsl(var(--background)), hsl(var(--background))), 
+                      linear-gradient(135deg, #3B82F6, #A855F7);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+
+  .border-gradient-aurora {
+    border: 2px solid transparent;
+    background-image: linear-gradient(hsl(var(--background)), hsl(var(--background))), 
+                      linear-gradient(135deg, #3B82F6, #A855F7, #EC4899);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+  }
+
+  /* Pulsing brand glow animations */
+  @keyframes pulse-glow-pink {
+    0%, 100% { box-shadow: 0 0 20px hsla(330, 81%, 60%, 0.3); }
+    50% { box-shadow: 0 0 40px hsla(330, 81%, 60%, 0.5); }
+  }
+
+  @keyframes pulse-glow-blue {
+    0%, 100% { box-shadow: 0 0 20px hsla(217, 91%, 60%, 0.3); }
+    50% { box-shadow: 0 0 40px hsla(217, 91%, 60%, 0.5); }
+  }
+
+  @keyframes pulse-glow-purple {
+    0%, 100% { box-shadow: 0 0 20px hsla(271, 81%, 56%, 0.3); }
+    50% { box-shadow: 0 0 40px hsla(271, 81%, 56%, 0.5); }
+  }
+
+  @keyframes pulse-glow-multi {
+    0%, 100% { 
+      box-shadow: 
+        0 0 20px hsla(48, 96%, 53%, 0.2),
+        0 0 40px hsla(330, 81%, 60%, 0.15);
+    }
+    50% { 
+      box-shadow: 
+        0 0 40px hsla(48, 96%, 53%, 0.35),
+        0 0 80px hsla(330, 81%, 60%, 0.25);
+    }
+  }
+
+  .animate-glow-pink {
+    animation: pulse-glow-pink 3s ease-in-out infinite;
+  }
+
+  .animate-glow-blue {
+    animation: pulse-glow-blue 3s ease-in-out infinite;
+  }
+
+  .animate-glow-purple {
+    animation: pulse-glow-purple 3s ease-in-out infinite;
+  }
+
+  .animate-glow-multi {
+    animation: pulse-glow-multi 4s ease-in-out infinite;
+  }
+
+  /* Color shift animation */
+  @keyframes color-shift {
+    0%, 100% { filter: hue-rotate(0deg); }
+    33% { filter: hue-rotate(60deg); }
+    66% { filter: hue-rotate(-60deg); }
+  }
+
+  .animate-color-shift {
+    animation: color-shift 10s ease infinite;
+  }
+
+  /* Brand accent backgrounds */
+  .bg-brand-yellow { background-color: #FACC15; }
+  .bg-brand-pink { background-color: #EC4899; }
+  .bg-brand-blue { background-color: #3B82F6; }
+  .bg-brand-purple { background-color: #A855F7; }
+  .bg-brand-graphite { background-color: #171717; }
+  .bg-brand-metal { background-color: #6B7280; }
+
+  /* Brand text colors */
+  .text-brand-yellow { color: #FACC15; }
+  .text-brand-pink { color: #EC4899; }
+  .text-brand-blue { color: #3B82F6; }
+  .text-brand-purple { color: #A855F7; }
+  .text-brand-graphite { color: #171717; }
+  .text-brand-metal { color: #6B7280; }
+
+  /* Brand border colors */
+  .border-brand-yellow { border-color: #FACC15; }
+  .border-brand-pink { border-color: #EC4899; }
+  .border-brand-blue { border-color: #3B82F6; }
+  .border-brand-purple { border-color: #A855F7; }
 }
 
 /* Accessibility Settings Styles */

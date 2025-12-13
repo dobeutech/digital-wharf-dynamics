@@ -9,6 +9,7 @@ interface Particle {
   size: number;
   opacity: number;
   pulseOffset: number;
+  colorIndex: number; // Index for brand color
 }
 
 interface DigitalBackgroundProps {
@@ -55,6 +56,14 @@ export function DigitalBackground({
       setDimensions({ width: rect.width, height: rect.height });
     };
 
+    // Brand colors: Electric Lemon, Neon Rose, Azure Tech, Deep Violet
+    const brandColors = [
+      { h: 48, s: 96, l: 53 },   // Electric Lemon (#FACC15)
+      { h: 330, s: 81, l: 60 },  // Neon Rose (#EC4899)
+      { h: 217, s: 91, l: 60 },  // Azure Tech (#3B82F6)
+      { h: 271, s: 81, l: 56 },  // Deep Violet (#A855F7)
+    ];
+
     // Initialize particles
     const initParticles = () => {
       particlesRef.current = [];
@@ -67,6 +76,7 @@ export function DigitalBackground({
           size: Math.random() * 3 + 1,
           opacity: Math.random() * 0.5 + 0.2,
           pulseOffset: Math.random() * Math.PI * 2,
+          colorIndex: Math.floor(Math.random() * brandColors.length),
         });
       }
     };
@@ -85,15 +95,17 @@ export function DigitalBackground({
       const rect = container.getBoundingClientRect();
       ctx.clearRect(0, 0, rect.width, rect.height);
 
-      // Draw animated grid
+      // Draw animated grid with color-shifting effect
       if (showGrid) {
         const gridSize = 40;
         const gridOpacity = 0.03 + Math.sin(time * 0.5) * 0.01;
-        ctx.strokeStyle = `hsla(48, 96%, 53%, ${gridOpacity})`;
-        ctx.lineWidth = 1;
-
-        // Vertical lines with wave effect
+        
+        // Vertical lines with wave effect - shifting through brand colors
         for (let x = 0; x <= rect.width; x += gridSize) {
+          const colorIdx = Math.floor((x / gridSize + time * 0.3) % brandColors.length);
+          const color = brandColors[colorIdx];
+          ctx.strokeStyle = `hsla(${color.h}, ${color.s}%, ${color.l}%, ${gridOpacity})`;
+          ctx.lineWidth = 1;
           ctx.beginPath();
           const waveOffset = Math.sin(time + x * 0.01) * 5;
           ctx.moveTo(x + waveOffset, 0);
@@ -103,6 +115,10 @@ export function DigitalBackground({
 
         // Horizontal lines with wave effect
         for (let y = 0; y <= rect.height; y += gridSize) {
+          const colorIdx = Math.floor((y / gridSize + time * 0.2) % brandColors.length);
+          const color = brandColors[colorIdx];
+          ctx.strokeStyle = `hsla(${color.h}, ${color.s}%, ${color.l}%, ${gridOpacity})`;
+          ctx.lineWidth = 1;
           ctx.beginPath();
           const waveOffset = Math.sin(time + y * 0.01) * 5;
           ctx.moveTo(0, y + waveOffset);
@@ -138,13 +154,16 @@ export function DigitalBackground({
 
         // Pulsing opacity
         const pulseOpacity = particle.opacity * (0.7 + Math.sin(time * 2 + particle.pulseOffset) * 0.3);
+        
+        // Get particle's brand color
+        const pColor = brandColors[particle.colorIndex];
 
         // Draw particle glow
         const gradient = ctx.createRadialGradient(
           particle.x, particle.y, 0,
           particle.x, particle.y, particle.size * 4
         );
-        gradient.addColorStop(0, `hsla(48, 96%, 53%, ${pulseOpacity})`);
+        gradient.addColorStop(0, `hsla(${pColor.h}, ${pColor.s}%, ${pColor.l}%, ${pulseOpacity})`);
         gradient.addColorStop(1, "transparent");
         ctx.fillStyle = gradient;
         ctx.beginPath();
@@ -152,7 +171,7 @@ export function DigitalBackground({
         ctx.fill();
 
         // Draw particle core
-        ctx.fillStyle = `hsla(48, 96%, 70%, ${pulseOpacity * 1.5})`;
+        ctx.fillStyle = `hsla(${pColor.h}, ${pColor.s}%, ${pColor.l + 17}%, ${pulseOpacity * 1.5})`;
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fill();
@@ -165,7 +184,12 @@ export function DigitalBackground({
             const dist = Math.sqrt(dx * dx + dy * dy);
             if (dist < 120) {
               const lineOpacity = (1 - dist / 120) * 0.15;
-              ctx.strokeStyle = `hsla(48, 96%, 53%, ${lineOpacity})`;
+              // Gradient connection line between two particle colors
+              const oColor = brandColors[other.colorIndex];
+              const midH = (pColor.h + oColor.h) / 2;
+              const midS = (pColor.s + oColor.s) / 2;
+              const midL = (pColor.l + oColor.l) / 2;
+              ctx.strokeStyle = `hsla(${midH}, ${midS}%, ${midL}%, ${lineOpacity})`;
               ctx.lineWidth = 0.5;
               ctx.beginPath();
               ctx.moveTo(particle.x, particle.y);
@@ -176,15 +200,17 @@ export function DigitalBackground({
         }
       });
 
-      // Floating code/digital elements
-      const codeSymbols = ["0", "1", "<", ">", "/", "{", "}", "="];
-      ctx.font = "12px monospace";
-      for (let i = 0; i < 15; i++) {
+      // Floating code/digital elements with brand colors
+      const codeSymbols = ["0", "1", "<", ">", "/", "{", "}", "=", "•", "→", "λ", "∞"];
+      ctx.font = "14px monospace";
+      for (let i = 0; i < 20; i++) {
         const x = (Math.sin(time * 0.3 + i * 0.7) * 0.5 + 0.5) * rect.width;
         const y = ((time * 20 + i * 100) % (rect.height + 100)) - 50;
         const symbol = codeSymbols[i % codeSymbols.length];
-        const symbolOpacity = 0.08 + Math.sin(time + i) * 0.03;
-        ctx.fillStyle = `hsla(48, 96%, 53%, ${symbolOpacity})`;
+        const symbolOpacity = 0.1 + Math.sin(time + i) * 0.04;
+        const colorIdx = i % brandColors.length;
+        const symColor = brandColors[colorIdx];
+        ctx.fillStyle = `hsla(${symColor.h}, ${symColor.s}%, ${symColor.l}%, ${symbolOpacity})`;
         ctx.fillText(symbol, x, y);
       }
 
@@ -218,10 +244,17 @@ export function DigitalBackground({
       {/* Base gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-background" />
       
-      {/* Radial glow effects */}
+      {/* Multi-color radial glow effects - Brand Colors */}
+      {/* Electric Lemon glow - top center */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsla(48,96%,53%,0.15),transparent)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_100%,hsla(25,95%,50%,0.08),transparent)]" />
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,hsla(48,96%,53%,0.05),transparent_40%)]" />
+      {/* Neon Rose glow - bottom right */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_90%_100%,hsla(330,81%,60%,0.12),transparent)]" />
+      {/* Azure Tech glow - left side */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_60%_at_0%_50%,hsla(217,91%,60%,0.08),transparent)]" />
+      {/* Deep Violet glow - bottom left */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,hsla(271,81%,56%,0.08),transparent_40%)]" />
+      {/* Electric Lemon accent - center */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,hsla(48,96%,53%,0.03),transparent_60%)]" />
       
       {/* Animated canvas */}
       <canvas
