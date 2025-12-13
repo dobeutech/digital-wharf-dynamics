@@ -48,15 +48,15 @@ function getClientIp(event: any): string {
 
 export const handler: Handler = async (event) => {
   try {
+    if (event.httpMethod !== 'POST') {
+      return errorResponse(405, 'Method not allowed');
+    }
+
     // Get client IP for rate limiting
     const clientIp = getClientIp(event);
     
     if (isRateLimited(clientIp)) {
       return errorResponse(429, 'Too many requests. Please try again later.');
-    }
-
-    if (event.httpMethod !== 'POST') {
-      return errorResponse(405, 'Method not allowed');
     }
 
     const body = await readJson<{ email?: string; marketingConsent?: boolean }>(event);
@@ -123,7 +123,8 @@ export const handler: Handler = async (event) => {
 
     return jsonResponse(200, { success: true, message: 'Subscribed successfully' });
   } catch (err) {
-    return errorResponse(500, 'Internal error', err instanceof Error ? err.message : String(err));
+    // Do not expose internal error details to clients
+    return errorResponse(500, 'Internal error');
   }
 };
 
