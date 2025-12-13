@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -41,7 +41,7 @@ export default function AdminContacts() {
   const [updating, setUpdating] = useState(false);
   const { toast } = useToast();
 
-  const fetchSubmissions = async () => {
+  const fetchSubmissions = useCallback(async () => {
     setLoading(true);
     let query = supabase
       .from("contact_submissions")
@@ -60,11 +60,11 @@ export default function AdminContacts() {
       setSubmissions(data || []);
     }
     setLoading(false);
-  };
+  }, [statusFilter, toast]);
 
   useEffect(() => {
     fetchSubmissions();
-  }, [statusFilter]);
+  }, [fetchSubmissions]);
 
   const updateStatus = async (id: string, newStatus: string) => {
     setUpdating(true);

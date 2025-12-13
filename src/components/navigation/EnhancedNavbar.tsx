@@ -8,6 +8,7 @@ import { useAdmin } from "@/hooks/useAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { AccessibilitySettings } from "@/components/AccessibilitySettings";
 import { MegaMenu } from "./MegaMenu";
 import { MobileMenu } from "./MobileMenu";
 import { NavigationSearch } from "./NavigationSearch";
@@ -175,6 +176,7 @@ export function EnhancedNavbar() {
           {/* Search, Auth Buttons & Theme Toggle */}
           <div className="hidden md:flex items-center gap-2">
             <NavigationSearch />
+            <AccessibilitySettings />
             <ThemeToggle />
             {user ? (
               <Button
@@ -194,6 +196,7 @@ export function EnhancedNavbar() {
 
           {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center gap-2">
+            <AccessibilitySettings />
             <ThemeToggle />
             <button
               className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-md hover:bg-muted transition-colors"

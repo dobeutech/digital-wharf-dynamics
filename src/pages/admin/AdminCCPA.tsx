@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Shield, Clock, AlertTriangle, CheckCircle, XCircle, Eye } from "lucide-react";
+import { Shield, Clock, AlertTriangle, CheckCircle, Eye } from "lucide-react";
 import { format, differenceInDays, isPast } from "date-fns";
 
 interface CCPARequest {
@@ -59,7 +59,7 @@ export default function AdminCCPA() {
   const [updating, setUpdating] = useState(false);
   const { toast } = useToast();
 
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     setLoading(true);
     let query = supabase
       .from("ccpa_requests")
@@ -78,11 +78,11 @@ export default function AdminCCPA() {
       setRequests(data || []);
     }
     setLoading(false);
-  };
+  }, [statusFilter, toast]);
 
   useEffect(() => {
     fetchRequests();
-  }, [statusFilter]);
+  }, [fetchRequests]);
 
   const updateStatus = async (id: string, newStatus: string) => {
     setUpdating(true);

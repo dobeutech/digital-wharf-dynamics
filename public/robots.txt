@@ -15,9 +15,11 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://app.dobeu.cloud/sitemap.xml
+Sitemap: https://dobeu.net/sitemap.xml
 
 # Disallow admin and protected routes from indexing
 Disallow: /admin
 Disallow: /dashboard
 Disallow: /auth
+Disallow: /reset-password
+Disallow: /verify-email

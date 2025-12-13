@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
@@ -25,11 +25,7 @@ export default function Newsletter() {
   const [posts, setPosts] = useState<NewsPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchPosts();
-  }, [user]);
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     if (!user) return;
 
     const { data, error } = await supabase
@@ -49,7 +45,11 @@ export default function Newsletter() {
 
     setPosts(data || []);
     setLoading(false);
-  };
+  }, [user, toast]);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
   if (loading) {
     return (

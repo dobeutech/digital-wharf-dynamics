@@ -214,3 +214,66 @@ All colors MUST be HSL.
     min-width: 44px;
   }
 }
+
+/* Accessibility Settings Styles */
+@layer base {
+  /* Reduced Motion */
+  .reduce-motion * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* High Contrast Mode */
+  .high-contrast {
+    --foreground: 0 0% 0%;
+    --background: 0 0% 100%;
+    --primary: 48 100% 40%;
+    --border: 0 0% 0%;
+  }
+
+  .dark.high-contrast {
+    --foreground: 0 0% 100%;
+    --background: 0 0% 0%;
+    --primary: 48 100% 60%;
+    --border: 0 0% 100%;
+  }
+
+  .high-contrast * {
+    border-color: currentColor !important;
+  }
+
+  /* Enhanced Focus Ring */
+  .enhanced-focus :focus-visible {
+    outline-width: 3px !important;
+    outline-offset: 3px !important;
+    outline-color: hsl(var(--ring)) !important;
+    outline-style: solid !important;
+  }
+
+  /* Respect system reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* Respect system high contrast preference */
+  @media (prefers-contrast: more) {
+    :root {
+      --foreground: 0 0% 0%;
+      --background: 0 0% 100%;
+      --border: 0 0% 0%;
+    }
+    
+    .dark {
+      --foreground: 0 0% 100%;
+      --background: 0 0% 0%;
+      --border: 0 0% 100%;
+    }
+  }
+}

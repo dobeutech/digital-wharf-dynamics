@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -60,11 +60,7 @@ export default function AdminAuditLogs() {
   const [entityFilter, setEntityFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  useEffect(() => {
-    fetchLogs();
-  }, [actionFilter, entityFilter]);
-
-  const fetchLogs = async () => {
+  const fetchLogs = useCallback(async () => {
     setLoading(true);
     let query = supabase
       .from("audit_logs")
@@ -87,7 +83,11 @@ export default function AdminAuditLogs() {
       setLogs((data as AuditLog[]) || []);
     }
     setLoading(false);
-  };
+  }, [actionFilter, entityFilter]);
+
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
 
   const exportToCSV = () => {
     const headers = ["Timestamp", "Action", "Entity Type", "Entity ID", "User ID"];

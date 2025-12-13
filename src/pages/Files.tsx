@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -30,11 +30,7 @@ export default function Files() {
 
   const RETENTION_DAYS = 1095; // 3 years
 
-  useEffect(() => {
-    fetchFiles();
-  }, [user]);
-
-  const fetchFiles = async () => {
+  const fetchFiles = useCallback(async () => {
     if (!user) return;
 
     const { data, error } = await supabase
@@ -56,7 +52,11 @@ export default function Files() {
     const totalSize = (data || []).reduce((sum, file) => sum + file.file_size, 0);
     setStorageUsed(totalSize);
     setLoading(false);
-  };
+  }, [user, toast]);
+
+  useEffect(() => {
+    fetchFiles();
+  }, [fetchFiles]);
 
   const handleDownload = async (file: ClientFile) => {
     const { data, error } = await supabase.storage

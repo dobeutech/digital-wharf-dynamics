@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
-import { Calendar, User } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 interface NewsPost {
   id: string;
@@ -22,11 +22,7 @@ export default function News() {
   const [posts, setPosts] = useState<NewsPost[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchPosts();
-  }, []);
-
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     const { data, error } = await supabase
       .from("newsletter_posts")
       .select("*")
@@ -45,7 +41,11 @@ export default function News() {
 
     setPosts(data || []);
     setLoading(false);
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
   if (loading) {
     return (

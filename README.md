@@ -89,12 +89,43 @@ This project includes comprehensive enhancements for:
 - ✅ Performance optimizations
 - ✅ PWA support
 - ✅ Responsive design (mobile/tablet/desktop)
-- ✅ Accessibility (WCAG 2.1 AA)
+- ✅ Accessibility (WCAG 2.1 AA) - User-configurable accessibility settings
 - ✅ Testing infrastructure
 - ✅ CI/CD pipelines
 - ✅ Monitoring and alerting setup
 
 See `IMPLEMENTATION_SUMMARY.md` for complete details.
+
+## Admin Portal Setup
+
+The admin portal is accessible at `/admin` for authorized users.
+
+### Creating an Admin User
+
+1. **Register a new account** at `/auth`
+2. **Grant admin role** using Supabase SQL Editor:
+   ```sql
+   -- Replace 'user@email.com' with the actual user email
+   UPDATE profiles 
+   SET roles = array_append(roles, 'admin')
+   WHERE email = 'user@email.com';
+   ```
+   
+   Or via the Supabase Dashboard:
+   - Go to **Table Editor** > **profiles**
+   - Find the user by email
+   - Edit the `roles` column to include `admin`
+
+3. **Admin Features**:
+   - `/admin` - Dashboard overview
+   - `/admin/services` - Manage service catalog
+   - `/admin/projects` - View all client projects
+   - `/admin/users` - User management & role assignment
+   - `/admin/newsletter` - Newsletter management
+   - `/admin/ccpa` - CCPA request handling
+   - `/admin/contacts` - Contact form submissions
+   - `/admin/audit-logs` - Activity audit trail
+   - `/admin/analytics` - Site analytics dashboard
 
 ## Setup Guide
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,11 +28,7 @@ export default function AdminServices() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchServices();
-  }, []);
-
-  const fetchServices = async () => {
+  const fetchServices = useCallback(async () => {
     const { data, error } = await supabase
       .from("services")
       .select("id, name, category, base_price, is_active")
@@ -49,7 +45,11 @@ export default function AdminServices() {
 
     setServices(data || []);
     setLoading(false);
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchServices();
+  }, [fetchServices]);
 
   const toggleServiceStatus = async (id: string, currentStatus: boolean) => {
     const { error } = await supabase

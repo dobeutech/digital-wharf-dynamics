@@ -13,14 +13,13 @@
 ### 1. Linear Project Setup
 - ✅ Created Linear project in DTS team
 - ✅ Set up project structure
-- ✅ Created initial issue (DTS-595) for Lovable/Bolt removal
+- ✅ Created initial issue (DTS-595) for code cleanup
 
 ### 2. Code Cleanup
-- ✅ Removed all Lovable references from README.md
-- ✅ Removed all Bolt references
+- ✅ Removed all third-party build tool references
 - ✅ Updated index.html OG images to use dobeu.net
 - ✅ Updated edge functions to use dobeu.net domain
-- ✅ Removed lovable-tagger dependency
+- ✅ Cleaned up package.json dependencies
 
 ### 3. Documentation
 - ✅ Created `docs/linear-workflow.md` - Workflow documentation
@@ -30,7 +29,7 @@
 ### 4. Configuration
 - ✅ Created `netlify.toml` for Netlify deployment
 - ✅ Created `public/_redirects` for SPA routing
-- ✅ Updated package.json (removed lovable-tagger)
+- ✅ Updated package.json dependencies
 
 ### 5. Quality Assurance
 - ✅ ESLint checks passing (warnings only, no errors)

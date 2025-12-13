@@ -28,6 +28,7 @@ const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
+const SMSPrivacy = lazy(() => import("./pages/SMSPrivacy"));
 const CCPAOptOut = lazy(() => import("./pages/CCPAOptOut"));
 const Auth = lazy(() => import("./pages/Auth"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -90,6 +91,7 @@ const App = () => (
                           <Route path="/about" element={<About />} />
                           <Route path="/contact" element={<Contact />} />
                           <Route path="/privacy" element={<Privacy />} />
+                          <Route path="/privacy/sms" element={<SMSPrivacy />} />
                           <Route path="/terms" element={<Terms />} />
                           <Route path="/tos" element={<Terms />} />
                           <Route path="/ccpa-optout" element={<CCPAOptOut />} />

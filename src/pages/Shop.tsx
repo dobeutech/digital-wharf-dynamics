@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,14 +29,7 @@ export default function Shop() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    fetchServices();
-    // Track funnel: Shop Viewed
-    trackFunnelStep('FUNNEL_SHOP_VIEWED');
-    trackPostHogFunnel(FUNNEL_STEPS.SHOP_VIEWED);
-  }, []);
-
-  const fetchServices = async () => {
+  const fetchServices = useCallback(async () => {
     const { data, error } = await supabase
       .from("services")
       .select("*")
@@ -54,7 +47,14 @@ export default function Shop() {
 
     setServices(data || []);
     setLoading(false);
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    fetchServices();
+    // Track funnel: Shop Viewed
+    trackFunnelStep('FUNNEL_SHOP_VIEWED');
+    trackPostHogFunnel(FUNNEL_STEPS.SHOP_VIEWED);
+  }, [fetchServices]);
 
   const openServiceModal = (service: Service) => {
     if (!user) {
