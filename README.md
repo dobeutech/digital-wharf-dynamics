@@ -1,148 +1,220 @@
-# DOBEU - Digital Wharf Dynamics
+# DOBEU Tech Solutions
 
-## Project Overview
+<div align="center">
 
-DOBEU is a comprehensive web application for digital transformation services, built with modern technologies and best practices.
+![DOBEU](https://img.shields.io/badge/DOBEU-Tech%20Solutions-FACC15?style=for-the-badge&labelColor=000000)
+![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat-square&logo=typescript)
+![Supabase](https://img.shields.io/badge/Supabase-Backend-3FCF8E?style=flat-square&logo=supabase)
+![Netlify](https://img.shields.io/badge/Netlify-Hosted-00C7B7?style=flat-square&logo=netlify)
 
-## How can I edit this code?
+**Transform Your Digital Vision**
 
-**Use your preferred IDE**
+[Live Site](https://dobeu.net) · [Brand Kit](https://dobeu.net/brand) · [Contact](https://dobeu.net/contact)
 
-You can work locally using your own IDE. Clone this repo and push changes to deploy.
+</div>
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+---
 
-Follow these steps:
+## Overview
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+DOBEU Tech Solutions is a premium digital services platform offering web development, software solutions, and strategic consulting. Built with modern technologies and designed for exceptional user experience.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### Brand Colors
 
-# Step 3: Install the necessary dependencies.
-npm i
+| Color | Hex | Usage |
+|-------|-----|-------|
+| 🟡 Electric Lemon | `#FACC15` | Primary brand color |
+| 🔵 Azure Tech | `#3B82F6` | Technology accent |
+| 🟣 Deep Violet | `#A855F7` | Premium accent |
+| 💖 Neon Rose | `#EC4899` | Highlight accent |
+| ⬛ Void Black | `#000000` | Dark backgrounds |
+| ⬜ Stark White | `#FFFFFF` | Light backgrounds |
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## Tech Stack
 
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-- Supabase (Backend & Database)
-- Vitest (Unit Testing)
-- Playwright (E2E Testing)
+| Category | Technologies |
+|----------|-------------|
+| **Frontend** | React 18, TypeScript 5, Vite |
+| **Styling** | Tailwind CSS, Shadcn/ui |
+| **Animation** | Framer Motion |
+| **Backend** | Supabase (PostgreSQL, Auth, Storage, Functions) |
+| **Hosting** | Netlify (Edge, CDN, Functions) |
+| **Testing** | Vitest (Unit), Playwright (E2E) |
+| **Analytics** | Google Analytics, Mixpanel |
 
 ## Quick Start
 
-1. **Install dependencies:**
-   ```bash
-   npm install
-   ```
+### Prerequisites
 
-2. **Set up environment variables:**
-   - Copy `.env.example` to `.env` (if it exists)
-   - Add your Supabase credentials:
-     ```
-     VITE_SUPABASE_URL=your-project-url
-     VITE_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
-     ```
+- Node.js 20+ ([install with nvm](https://github.com/nvm-sh/nvm))
+- npm 9+
 
-3. **Start development server:**
-   ```bash
-   npm run dev
-   ```
+### Installation
 
-4. **Run tests:**
-   ```bash
-   npm run test          # Unit tests
-   npm run test:e2e      # E2E tests
-   ```
+```bash
+# Clone the repository
+git clone https://github.com/your-org/dobeu-web.git
+cd dobeu-web
 
-## Comprehensive Enhancements
+# Install dependencies
+npm install
 
-This project includes comprehensive enhancements for:
-- ✅ Security (Headers, CSP, CSRF protection)
-- ✅ Error handling and resilience
-- ✅ Performance optimizations
-- ✅ PWA support
-- ✅ Responsive design (mobile/tablet/desktop)
-- ✅ Accessibility (WCAG 2.1 AA) - User-configurable accessibility settings
-- ✅ Testing infrastructure
-- ✅ CI/CD pipelines
-- ✅ Monitoring and alerting setup
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your Supabase credentials
 
-See `IMPLEMENTATION_SUMMARY.md` for complete details.
+# Start development server
+npm run dev
+```
 
-## Admin Portal Setup
+### Environment Variables
 
-The admin portal is accessible at `/admin` for authorized users.
+```env
+VITE_SUPABASE_URL=your-supabase-project-url
+VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-anon-key
+```
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+| `npm run test` | Run unit tests |
+| `npm run test:e2e` | Run E2E tests |
+
+## Features
+
+### Core Features
+- ✅ **Responsive Design** - Mobile, tablet, and desktop optimized
+- ✅ **Multi-language Support** - English, Spanish, French
+- ✅ **Theme System** - Light, dark, and system modes
+- ✅ **Accessibility** - WCAG 2.1 AA compliant with user-configurable settings
+- ✅ **SEO Optimized** - Meta tags, sitemap, structured data
+- ✅ **PWA Ready** - Offline support and installable
+
+### Security
+- ✅ CSRF protection
+- ✅ Security headers (HSTS, CSP, X-Frame-Options)
+- ✅ Input validation and sanitization
+- ✅ Rate limiting
+- ✅ Secure authentication with Supabase Auth
+
+### Performance
+- ✅ Code splitting and lazy loading
+- ✅ Image optimization
+- ✅ CDN caching via Netlify
+- ✅ Lighthouse score 90+
+
+## Project Structure
+
+```
+src/
+├── components/       # Reusable UI components
+│   ├── brand/        # Brand kit components
+│   ├── home/         # Homepage sections
+│   ├── layout/       # Layout components
+│   ├── navigation/   # Navigation components
+│   ├── seo/          # SEO components
+│   └── ui/           # Shadcn/ui components
+├── config/           # App configuration
+├── contexts/         # React contexts
+├── hooks/            # Custom hooks
+├── integrations/     # External integrations
+├── lib/              # Utility libraries
+├── pages/            # Page components
+│   └── admin/        # Admin portal pages
+└── __tests__/        # Test files
+```
+
+## Admin Portal
+
+Access the admin portal at `/admin` with admin credentials.
 
 ### Creating an Admin User
 
-1. **Register a new account** at `/auth`
-2. **Grant admin role** using Supabase SQL Editor:
-   ```sql
-   -- Replace 'user@email.com' with the actual user email
-   UPDATE profiles 
-   SET roles = array_append(roles, 'admin')
-   WHERE email = 'user@email.com';
-   ```
-   
-   Or via the Supabase Dashboard:
-   - Go to **Table Editor** > **profiles**
-   - Find the user by email
-   - Edit the `roles` column to include `admin`
+1. Register at `/auth`
+2. Grant admin role via Supabase SQL Editor:
 
-3. **Admin Features**:
-   - `/admin` - Dashboard overview
-   - `/admin/services` - Manage service catalog
-   - `/admin/projects` - View all client projects
-   - `/admin/users` - User management & role assignment
-   - `/admin/newsletter` - Newsletter management
-   - `/admin/ccpa` - CCPA request handling
-   - `/admin/contacts` - Contact form submissions
-   - `/admin/audit-logs` - Activity audit trail
-   - `/admin/analytics` - Site analytics dashboard
+```sql
+UPDATE profiles 
+SET role = 'admin'
+WHERE email = 'your-email@example.com';
+```
 
-## Setup Guide
+### Admin Features
 
-For detailed setup instructions, see `SETUP_GUIDE.md`.
+| Route | Feature |
+|-------|---------|
+| `/admin` | Dashboard overview |
+| `/admin/services` | Service catalog management |
+| `/admin/projects` | Client projects |
+| `/admin/users` | User management |
+| `/admin/newsletter` | Newsletter management |
+| `/admin/ccpa` | CCPA request handling |
+| `/admin/contacts` | Contact submissions |
+| `/admin/audit-logs` | Activity audit trail |
+| `/admin/analytics` | Site analytics |
+
+## Internationalization
+
+The site supports three languages:
+- 🇺🇸 English (default)
+- 🇪🇸 Spanish (Español)
+- 🇫🇷 French (Français)
+
+User language preference is stored in:
+- Browser localStorage
+- URL parameter (`?lang=es`)
+- Database (for logged-in users)
+
+Backend data is always stored in English for consistency.
+
+## Deployment
+
+### Netlify (Production)
+
+The site is deployed automatically on push to `main`:
+
+1. Push to `main` branch
+2. Netlify builds and deploys automatically
+3. Live at [https://dobeu.net](https://dobeu.net)
+
+### Manual Deployment
+
+```bash
+npm run build
+npx netlify deploy --prod
+```
 
 ## Documentation
 
-- `SETUP_GUIDE.md` - Complete setup instructions
-- `IMPLEMENTATION_SUMMARY.md` - All enhancements overview
-- `docs/monitoring-setup.md` - Monitoring configuration
-- `docs/disaster-recovery.md` - Disaster recovery procedures
-- `docs/linear-workflow.md` - Linear project workflow and issue management
+| Document | Description |
+|----------|-------------|
+| [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md) | Pre-deployment checklist |
+| [docs/monitoring-setup.md](./docs/monitoring-setup.md) | Monitoring configuration |
+| [docs/disaster-recovery.md](./docs/disaster-recovery.md) | DR procedures |
 
-## How can I deploy this project?
+## Contributing
 
-This project is configured for deployment to Netlify. See `DEPLOYMENT_CHECKLIST.md` for deployment instructions.
+1. Create a feature branch from `dev`
+2. Make your changes
+3. Run linting and tests
+4. Submit a pull request to `dev`
 
-## Custom Domain
+## License
 
-The project is configured to work with custom domains. Update the domain configuration in your deployment platform settings.
+© 2024 Dobeu Tech Solutions. All rights reserved.
+
+---
+
+<div align="center">
+
+**Built with ❤️ by [DOBEU](https://dobeu.net)**
+
+[Website](https://dobeu.net) · [Contra](https://contra.com/jeremy_williams_fx413nca) · [Behance](https://www.behance.net/jeremywilliams62)
+
+</div>

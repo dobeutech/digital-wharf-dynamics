@@ -41,3 +41,37 @@ test-results
 # Supabase
 .branches
 .temp
+
+# AI Builder Configuration Files
+claude.md
+.claude
+.claude.json
+gemini.md
+.gemini
+.gemini.json
+copilot.md
+.copilot
+cursor.md
+.cursor
+.cursorrules
+.aider*
+.codeium*
+.tabnine*
+.kite
+.sourcery
+cody.json
+.cody
+.continue
+.windsurf
+.bolt
+.lovable
+bolt.new
+lovable.dev
+
+# Other AI/ML files
+*.onnx
+*.pb
+*.pth
+*.pt
+*.h5
+*.keras

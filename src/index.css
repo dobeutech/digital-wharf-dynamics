@@ -599,30 +599,65 @@ All colors MUST be HSL.
 /* Accessibility Settings Styles */
 @layer base {
   /* Reduced Motion */
-  .reduce-motion * {
+  .reduce-motion *,
+  .reduce-motion *::before,
+  .reduce-motion *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
 
-  /* High Contrast Mode */
+  /* High Contrast Mode - Light */
   .high-contrast {
     --foreground: 0 0% 0%;
     --background: 0 0% 100%;
-    --primary: 48 100% 40%;
+    --primary: 48 100% 35%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 90%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 20%;
+    --accent: 48 100% 35%;
+    --accent-foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
     --border: 0 0% 0%;
+    --input: 0 0% 0%;
+    --ring: 48 100% 35%;
   }
 
+  /* High Contrast Mode - Dark */
   .dark.high-contrast {
     --foreground: 0 0% 100%;
     --background: 0 0% 0%;
-    --primary: 48 100% 60%;
+    --primary: 48 100% 65%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 10%;
+    --muted-foreground: 0 0% 80%;
+    --accent: 48 100% 65%;
+    --accent-foreground: 0 0% 0%;
+    --card: 0 0% 5%;
+    --card-foreground: 0 0% 100%;
     --border: 0 0% 100%;
+    --input: 0 0% 100%;
+    --ring: 48 100% 65%;
   }
 
   .high-contrast * {
     border-color: currentColor !important;
+  }
+
+  .high-contrast a,
+  .high-contrast button {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .high-contrast button {
+    border: 2px solid currentColor !important;
   }
 
   /* Enhanced Focus Ring */
@@ -633,9 +668,22 @@ All colors MUST be HSL.
     outline-style: solid !important;
   }
 
+  /* Large Text Mode */
+  .large-text {
+    font-size: 118.75% !important;
+  }
+
+  .large-text h1 { font-size: 3.5rem !important; }
+  .large-text h2 { font-size: 2.5rem !important; }
+  .large-text h3 { font-size: 2rem !important; }
+  .large-text h4 { font-size: 1.5rem !important; }
+  .large-text p, .large-text li, .large-text span { font-size: 1.25rem !important; }
+
   /* Respect system reduced motion preference */
   @media (prefers-reduced-motion: reduce) {
-    * {
+    *,
+    *::before,
+    *::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
@@ -649,12 +697,40 @@ All colors MUST be HSL.
       --foreground: 0 0% 0%;
       --background: 0 0% 100%;
       --border: 0 0% 0%;
+      --primary: 48 100% 35%;
+      --muted-foreground: 0 0% 20%;
     }
     
     .dark {
       --foreground: 0 0% 100%;
       --background: 0 0% 0%;
       --border: 0 0% 100%;
+      --primary: 48 100% 65%;
+      --muted-foreground: 0 0% 80%;
+    }
+
+    a, button {
+      text-decoration: underline;
+    }
+  }
+
+  /* Mobile-specific touch targets */
+  @media (max-width: 768px) {
+    button, 
+    a, 
+    [role="button"],
+    input[type="submit"],
+    input[type="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+
+  /* Tablet optimizations */
+  @media (min-width: 768px) and (max-width: 1024px) {
+    .container {
+      padding-left: 2rem;
+      padding-right: 2rem;
     }
   }
 }

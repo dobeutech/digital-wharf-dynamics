@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AccessibilitySettings } from "@/components/AccessibilitySettings";
+import { LanguageSelector } from "@/components/LanguageSelector";
 import { MegaMenu } from "@/components/navigation/MegaMenu";
 import { MobileMenu } from "@/components/navigation/MobileMenu";
 import { NavigationSearch } from "@/components/navigation/NavigationSearch";
@@ -241,6 +242,7 @@ export function GlassmorphicHeader() {
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <NavigationSearch />
+              <LanguageSelector />
               <AccessibilitySettings />
               <ThemeToggle />
               {user ? (
@@ -273,6 +275,7 @@ export function GlassmorphicHeader() {
 
             {/* Mobile Menu Button */}
             <div className="flex md:hidden items-center gap-2">
+              <LanguageSelector />
               <AccessibilitySettings />
               <ThemeToggle />
               <motion.button

@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Accessibility, Eye, Type, Volume2, MousePointer } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface AccessibilityPreferences {
   reducedMotion: boolean;
@@ -41,6 +42,7 @@ const defaultPreferences: AccessibilityPreferences = {
 export function AccessibilitySettings() {
   const [isOpen, setIsOpen] = useState(false);
   const [preferences, setPreferences] = useState<AccessibilityPreferences>(defaultPreferences);
+  const { t } = useLanguage();
 
   // Load preferences from localStorage on mount
   useEffect(() => {
@@ -117,9 +119,9 @@ export function AccessibilitySettings() {
         <Button
           variant="ghost"
           size="icon"
-          className="rounded-full"
-          aria-label="Open accessibility settings"
-          title="Accessibility Settings"
+          className="min-h-[44px] min-w-[44px] rounded-full hover:bg-primary/10"
+          aria-label={t("a11y.settings")}
+          title={t("a11y.settings")}
         >
           <Accessibility className="h-5 w-5" />
         </Button>
@@ -128,7 +130,7 @@ export function AccessibilitySettings() {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Accessibility className="h-5 w-5" />
-            Accessibility Settings
+            {t("a11y.settings")}
           </DialogTitle>
           <DialogDescription>
             Customize your viewing experience. These settings are saved to your device.

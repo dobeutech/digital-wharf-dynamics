@@ -5,8 +5,12 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#EAB308",
+  "theme_color": "#FACC15",
   "orientation": "portrait-primary",
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/",
+  "id": "dobeu-app",
   "icons": [
     {
       "src": "/favicon.ico",

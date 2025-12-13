@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "./contexts/AuthContext";
 import { NavigationProvider } from "./contexts/NavigationContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
 import { GlassmorphicHeader } from "@/components/layout/GlassmorphicHeader";
 import { FloatingFooter } from "@/components/layout/FloatingFooter";
 import { Analytics } from "@/components/Analytics";
@@ -74,6 +75,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <ErrorBoundary>
+              <LanguageProvider>
               <AuthProvider>
                 <NavigationProvider>
                   <Analytics />
@@ -215,6 +217,7 @@ const App = () => (
                   <NewsletterPopup />
                 </NavigationProvider>
               </AuthProvider>
+              </LanguageProvider>
             </ErrorBoundary>
           </BrowserRouter>
         </TooltipProvider>
