@@ -15,154 +15,210 @@ import { PageTracker } from "@/components/PageTracker";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { AdminRoute } from "@/components/AdminRoute";
 import { SkipLink } from "@/components/SkipLink";
-import Home from "./pages/Home";
-import Services from "./pages/Services";
-import Pricing from "./pages/Pricing";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import Privacy from "./pages/Privacy";
-import Terms from "./pages/Terms";
-import CCPAOptOut from "./pages/CCPAOptOut";
-import Auth from "./pages/Auth";
-import NotFound from "./pages/NotFound";
-import Dashboard from "./pages/Dashboard";
-import Projects from "./pages/Projects";
-import Shop from "./pages/Shop";
-import Files from "./pages/Files";
-import News from "./pages/News";
-import Newsletter from "./pages/Newsletter";
-import ResetPassword from "./pages/ResetPassword";
-import VerifyEmail from "./pages/VerifyEmail";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminServices from "./pages/admin/AdminServices";
-import AdminProjects from "./pages/admin/AdminProjects";
-import AdminUsers from "./pages/admin/AdminUsers";
-import AdminNewsletter from "./pages/admin/AdminNewsletter";
-import AdminCCPA from "./pages/admin/AdminCCPA";
-import AdminContacts from "./pages/admin/AdminContacts";
-import AdminAuditLogs from "./pages/admin/AdminAuditLogs";
-import AdminAnalytics from "./pages/admin/AdminAnalytics";
-import { BrandKit } from "@/components/brand/BrandKit";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import "@/config/env"; // Validate environment variables on startup
+import { lazy, Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Lazy load pages for code splitting
+const Home = lazy(() => import("./pages/Home"));
+const Services = lazy(() => import("./pages/Services"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Privacy = lazy(() => import("./pages/Privacy"));
+const Terms = lazy(() => import("./pages/Terms"));
+const CCPAOptOut = lazy(() => import("./pages/CCPAOptOut"));
+const Auth = lazy(() => import("./pages/Auth"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Projects = lazy(() => import("./pages/Projects"));
+const Shop = lazy(() => import("./pages/Shop"));
+const Files = lazy(() => import("./pages/Files"));
+const News = lazy(() => import("./pages/News"));
+const Newsletter = lazy(() => import("./pages/Newsletter"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminServices = lazy(() => import("./pages/admin/AdminServices"));
+const AdminProjects = lazy(() => import("./pages/admin/AdminProjects"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminNewsletter = lazy(() => import("./pages/admin/AdminNewsletter"));
+const AdminCCPA = lazy(() => import("./pages/admin/AdminCCPA"));
+const AdminContacts = lazy(() => import("./pages/admin/AdminContacts"));
+const AdminAuditLogs = lazy(() => import("./pages/admin/AdminAuditLogs"));
+const AdminAnalytics = lazy(() => import("./pages/admin/AdminAnalytics"));
+const BrandKit = lazy(() => import("@/components/brand/BrandKit").then(m => ({ default: m.BrandKit })));
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center">
+    <div className="space-y-4 w-full max-w-md p-4">
+      <Skeleton className="h-8 w-3/4" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-5/6" />
+      <Skeleton className="h-32 w-full" />
+    </div>
+  </div>
+);
 
 const queryClient = new QueryClient();
 
 const App = () => (
-  <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AuthProvider>
-            <NavigationProvider>
-              <Analytics />
-              <PageTracker />
-              <SkipLink />
-              <div className="flex flex-col min-h-screen">
-                <EnhancedNavbar />
-              <main id="main-content" className="flex-grow" tabIndex={-1}>
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/services" element={<Services />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/terms" element={<Terms />} />
-                  <Route path="/tos" element={<Terms />} />
-                  <Route path="/ccpa-optout" element={<CCPAOptOut />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/verify-email" element={<VerifyEmail />} />
-                  <Route path="/news" element={<News />} />
-                  <Route path="/dashboard" element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/dashboard/projects" element={
-                    <ProtectedRoute>
-                      <Projects />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/dashboard/shop" element={
-                    <ProtectedRoute>
-                      <Shop />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/dashboard/files" element={
-                    <ProtectedRoute>
-                      <Files />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/newsletter" element={
-                    <ProtectedRoute>
-                      <Newsletter />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/brand" element={
-                    <ProtectedRoute>
-                      <BrandKit />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/admin" element={
-                    <AdminRoute>
-                      <AdminDashboard />
-                    </AdminRoute>
-                  } />
-                  <Route path="/admin/services" element={
-                    <AdminRoute>
-                      <AdminServices />
-                    </AdminRoute>
-                  } />
-                  <Route path="/admin/projects" element={
-                    <AdminRoute>
-                      <AdminProjects />
-                    </AdminRoute>
-                  } />
-                  <Route path="/admin/users" element={
-                    <AdminRoute>
-                      <AdminUsers />
-                    </AdminRoute>
-                  } />
-                  <Route path="/admin/newsletter" element={
-                    <AdminRoute>
-                      <AdminNewsletter />
-                    </AdminRoute>
-                  } />
-                  <Route path="/admin/ccpa" element={
-                    <AdminRoute>
-                      <AdminCCPA />
-                    </AdminRoute>
-                  } />
-                  <Route path="/admin/contacts" element={
-                    <AdminRoute>
-                      <AdminContacts />
-                    </AdminRoute>
-                  } />
-                  <Route path="/admin/audit-logs" element={
-                    <AdminRoute>
-                      <AdminAuditLogs />
-                    </AdminRoute>
-                  } />
-                  <Route path="/admin/analytics" element={
-                    <AdminRoute>
-                      <AdminAnalytics />
-                    </AdminRoute>
-                  } />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </main>
-              <Footer />
-            </div>
-              <CookieConsentBanner />
-              <NewsletterPopup />
-            </NavigationProvider>
-          </AuthProvider>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </ThemeProvider>
+  <ErrorBoundary>
+    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <ErrorBoundary>
+              <AuthProvider>
+                <NavigationProvider>
+                  <Analytics />
+                  <PageTracker />
+                  <SkipLink />
+                  <div className="flex flex-col min-h-screen">
+                    <EnhancedNavbar />
+                  <main id="main-content" className="flex-grow" tabIndex={-1}>
+                    <ErrorBoundary>
+                      <Suspense fallback={<PageLoader />}>
+                        <Routes>
+                          <Route path="/" element={<Home />} />
+                          <Route path="/services" element={<Services />} />
+                          <Route path="/pricing" element={<Pricing />} />
+                          <Route path="/about" element={<About />} />
+                          <Route path="/contact" element={<Contact />} />
+                          <Route path="/privacy" element={<Privacy />} />
+                          <Route path="/terms" element={<Terms />} />
+                          <Route path="/tos" element={<Terms />} />
+                          <Route path="/ccpa-optout" element={<CCPAOptOut />} />
+                          <Route path="/auth" element={<Auth />} />
+                          <Route path="/reset-password" element={<ResetPassword />} />
+                          <Route path="/verify-email" element={<VerifyEmail />} />
+                          <Route path="/news" element={<News />} />
+                          <Route path="/dashboard" element={
+                            <ProtectedRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <Dashboard />
+                              </Suspense>
+                            </ProtectedRoute>
+                          } />
+                          <Route path="/dashboard/projects" element={
+                            <ProtectedRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <Projects />
+                              </Suspense>
+                            </ProtectedRoute>
+                          } />
+                          <Route path="/dashboard/shop" element={
+                            <ProtectedRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <Shop />
+                              </Suspense>
+                            </ProtectedRoute>
+                          } />
+                          <Route path="/dashboard/files" element={
+                            <ProtectedRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <Files />
+                              </Suspense>
+                            </ProtectedRoute>
+                          } />
+                          <Route path="/newsletter" element={
+                            <ProtectedRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <Newsletter />
+                              </Suspense>
+                            </ProtectedRoute>
+                          } />
+                          <Route path="/brand" element={
+                            <ProtectedRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <BrandKit />
+                              </Suspense>
+                            </ProtectedRoute>
+                          } />
+                          <Route path="/admin" element={
+                            <AdminRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <AdminDashboard />
+                              </Suspense>
+                            </AdminRoute>
+                          } />
+                          <Route path="/admin/services" element={
+                            <AdminRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <AdminServices />
+                              </Suspense>
+                            </AdminRoute>
+                          } />
+                          <Route path="/admin/projects" element={
+                            <AdminRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <AdminProjects />
+                              </Suspense>
+                            </AdminRoute>
+                          } />
+                          <Route path="/admin/users" element={
+                            <AdminRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <AdminUsers />
+                              </Suspense>
+                            </AdminRoute>
+                          } />
+                          <Route path="/admin/newsletter" element={
+                            <AdminRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <AdminNewsletter />
+                              </Suspense>
+                            </AdminRoute>
+                          } />
+                          <Route path="/admin/ccpa" element={
+                            <AdminRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <AdminCCPA />
+                              </Suspense>
+                            </AdminRoute>
+                          } />
+                          <Route path="/admin/contacts" element={
+                            <AdminRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <AdminContacts />
+                              </Suspense>
+                            </AdminRoute>
+                          } />
+                          <Route path="/admin/audit-logs" element={
+                            <AdminRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <AdminAuditLogs />
+                              </Suspense>
+                            </AdminRoute>
+                          } />
+                          <Route path="/admin/analytics" element={
+                            <AdminRoute>
+                              <Suspense fallback={<PageLoader />}>
+                                <AdminAnalytics />
+                              </Suspense>
+                            </AdminRoute>
+                          } />
+                          <Route path="*" element={<NotFound />} />
+                        </Routes>
+                      </Suspense>
+                    </ErrorBoundary>
+                  </main>
+                  <Footer />
+                </div>
+                  <CookieConsentBanner />
+                  <NewsletterPopup />
+                </NavigationProvider>
+              </AuthProvider>
+            </ErrorBoundary>
+          </BrowserRouter>
+        </TooltipProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
+  </ErrorBoundary>
 );
 
 export default App;

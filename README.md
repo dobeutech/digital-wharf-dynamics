@@ -59,6 +59,61 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
+- Supabase (Backend & Database)
+- Vitest (Unit Testing)
+- Playwright (E2E Testing)
+
+## Quick Start
+
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+2. **Set up environment variables:**
+   - Copy `.env.example` to `.env` (if it exists)
+   - Add your Supabase credentials:
+     ```
+     VITE_SUPABASE_URL=your-project-url
+     VITE_SUPABASE_PUBLISHABLE_KEY=your-publishable-key
+     ```
+
+3. **Start development server:**
+   ```bash
+   npm run dev
+   ```
+
+4. **Run tests:**
+   ```bash
+   npm run test          # Unit tests
+   npm run test:e2e      # E2E tests
+   ```
+
+## Comprehensive Enhancements
+
+This project includes comprehensive enhancements for:
+- ✅ Security (Headers, CSP, CSRF protection)
+- ✅ Error handling and resilience
+- ✅ Performance optimizations
+- ✅ PWA support
+- ✅ Responsive design (mobile/tablet/desktop)
+- ✅ Accessibility (WCAG 2.1 AA)
+- ✅ Testing infrastructure
+- ✅ CI/CD pipelines
+- ✅ Monitoring and alerting setup
+
+See `IMPLEMENTATION_SUMMARY.md` for complete details.
+
+## Setup Guide
+
+For detailed setup instructions, see `SETUP_GUIDE.md`.
+
+## Documentation
+
+- `SETUP_GUIDE.md` - Complete setup instructions
+- `IMPLEMENTATION_SUMMARY.md` - All enhancements overview
+- `docs/monitoring-setup.md` - Monitoring configuration
+- `docs/disaster-recovery.md` - Disaster recovery procedures
 
 ## How can I deploy this project?
 

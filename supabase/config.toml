@@ -17,3 +17,9 @@ verify_jwt = false
 
 [functions.reset-password]
 verify_jwt = false
+
+[functions.backup-database]
+verify_jwt = true
+
+[functions.rate-limiter]
+verify_jwt = false
