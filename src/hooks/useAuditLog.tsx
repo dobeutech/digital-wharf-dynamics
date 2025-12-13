@@ -31,7 +31,7 @@ export function useAuditLog() {
         entity_id: params.entityId || null,
         old_values: params.oldValues || null,
         new_values: params.newValues || null,
-        user_agent: navigator.userAgent,
+        user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
       });
     } catch (err) {
       console.error("Audit logging error:", err);
