@@ -74,7 +74,7 @@ export const handler: Handler = async (event) => {
 
     return errorResponse(405, 'Method not allowed');
   } catch (err) {
-    return errorResponse(500, 'Internal error', err instanceof Error ? err.message : String(err));
+    return errorResponse(500, 'Internal error');
   }
 };
 
