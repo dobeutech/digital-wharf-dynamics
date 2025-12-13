@@ -1,0 +1,33 @@
+* [33mbd132fe[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdev[m[33m)[m feat: Add buildhook dependencies to Netlify plugin
+[31m|[m * [33m5e585a8[m[33m ([m[1;31morigin/dependabot/npm_and_yarn/react-resizable-panels-3.0.6[m[33m)[m chore(deps): bump react-resizable-panels from 2.1.9 to 3.0.6
+[31m|[m[31m/[m  
+[31m|[m * [33m71584d9[m[33m ([m[1;31morigin/dependabot/npm_and_yarn/tailwindcss/typography-0.5.19[m[33m)[m chore(deps-dev): bump @tailwindcss/typography from 0.5.16 to 0.5.19
+[31m|[m[31m/[m  
+[31m|[m * [33m9918a1d[m[33m ([m[1;31morigin/dependabot/npm_and_yarn/next-themes-0.4.6[m[33m)[m chore(deps): bump next-themes from 0.3.0 to 0.4.6
+[31m|[m[31m/[m  
+[31m|[m * [33mc230ec2[m[33m ([m[1;31morigin/dependabot/npm_and_yarn/recharts-3.5.1[m[33m)[m chore(deps): bump recharts from 2.15.4 to 3.5.1
+[31m|[m[31m/[m  
+[31m|[m * [33mc42895e[m[33m ([m[1;31morigin/dependabot/npm_and_yarn/react-hook-form-7.68.0[m[33m)[m chore(deps): bump react-hook-form from 7.61.1 to 7.68.0
+[31m|[m[31m/[m  
+[31m|[m * [33ma7b95e0[m[33m ([m[1;31morigin/dependabot/npm_and_yarn/react-day-picker-9.12.0[m[33m)[m chore(deps): bump react-day-picker from 8.10.1 to 9.12.0
+[31m|[m[31m/[m  
+[31m|[m * [33m57480b6[m[33m ([m[1;31morigin/dependabot/npm_and_yarn/radix-ui/react-aspect-ratio-1.1.8[m[33m)[m chore(deps): bump @radix-ui/react-aspect-ratio from 1.1.7 to 1.1.8
+[31m|[m[31m/[m  
+[31m|[m * [33mdca9c12[m[33m ([m[1;31morigin/dependabot/npm_and_yarn/npm_and_yarn-92f289d509[m[33m)[m chore(deps): bump esbuild in the npm_and_yarn group across 1 directory
+[31m|[m[31m/[m  
+[31m|[m * [33mb0b6621[m[33m ([m[1;31morigin/dependabot/npm_and_yarn/radix-ui/react-menubar-1.1.16[m[33m)[m chore(deps): bump @radix-ui/react-menubar from 1.1.15 to 1.1.16
+[31m|[m[31m/[m  
+[31m|[m * [33ma268184[m[33m ([m[1;31morigin/dependabot/npm_and_yarn/lucide-react-0.561.0[m[33m)[m chore(deps): bump lucide-react from 0.462.0 to 0.561.0
+[31m|[m[31m/[m  
+*   [33m974a701[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/dev[m[33m, [m[1;31morigin/HEAD[m[33m)[m Merge copilot/sub-pr-1: Vite 7 upgrade and security patches
+[1;36m|[m[31m\[m  
+[1;36m|[m * [33mc9f092c[m[33m ([m[1;31morigin/copilot/sub-pr-1[m[33m)[m Review dependency updates: Vite 7 upgrade and transitive security patches
+[1;36m|[m * [33m141ee05[m Initial plan
+* [31m|[m   [33mcc587ea[m Merge copilot/sub-pr-3-please-work: React hooks fix (conflict resolved)
+[32m|[m[33m\[m [31m\[m  
+[32m|[m * [31m|[m [33m9c3c5d9[m[33m ([m[1;31morigin/copilot/sub-pr-3-please-work[m[33m)[m Fix React hooks dependency issue in NavigationContext
+[32m|[m * [31m|[m [33mf0b59b8[m Initial plan
+* [33m|[m [31m|[m   [33m91af922[m Merge copilot/sub-pr-3: userAgent fix and hooks dependencies (conflict resolved)
+[34m|[m[35m\[m [33m\[m [31m\[m  
+[34m|[m * [33m|[m [31m|[m [33m362b8aa[m[33m ([m[1;31morigin/copilot/sub-pr-3-99ef5132-8baf-4cad-82cb-157b5a2477c1[m[33m)[m Use userAgent instead of deprecated navigator.platform for Mac detection
+[34m|[m * [33m|[m [31m|[m [33m3e24ce8[m Fix review feedback: hooks deps, keyboard shortcuts, color classes, sort logic, autosave, PageLayout maxWidth
