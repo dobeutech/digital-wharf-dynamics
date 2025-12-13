@@ -23,6 +23,16 @@ export const Analytics = () => {
   }, []);
 
   useEffect(() => {
+    /**
+     * Initialize Intercom chat widget
+     * 
+     * Changes (ADR-001):
+     * - Widget now visible by default on all pages
+     * - Removed homepage-only restriction
+     * - Added hide_default_launcher: false for explicit visibility
+     * - Improved error logging for debugging
+     * - Fixed user_hash property name for identity verification
+     */
     const boot = async () => {
       const app_id = 'xu0gfiqb';
       const api_base = 'https://api-iam.intercom.io';
@@ -30,31 +40,49 @@ export const Analytics = () => {
       try {
         // Reset any previous session before booting with new identity
         Intercom('shutdown');
-      } catch {
-        // ignore
+      } catch (error) {
+        // Log for debugging but don't fail
+        if (import.meta.env.DEV) {
+          console.warn('Intercom shutdown error:', error);
+        }
       }
 
+      // Base configuration with default visibility
+      const baseConfig = {
+        app_id,
+        api_base,
+        hide_default_launcher: false, // Ensure launcher is visible by default
+      };
+
       if (!user) {
-        Intercom({ app_id, api_base });
+        // Boot anonymously with visible launcher
+        Intercom(baseConfig);
+        if (import.meta.env.DEV) {
+          console.log('Intercom booted anonymously with visible launcher');
+        }
         return;
       }
 
-      // Fetch server-generated JWT (secret never ships to browser)
+      // Fetch server-generated JWT for identity verification (secret never ships to browser)
       const { data, error } = await supabase.functions.invoke('intercom-jwt');
       if (error || !data?.token) {
         console.warn('Failed to fetch Intercom JWT, booting anonymous:', error);
-        Intercom({ app_id, api_base });
+        Intercom(baseConfig);
         return;
       }
 
+      // Boot with user identity and visible launcher
       Intercom({
-        app_id,
-        api_base,
-        intercom_user_jwt: data.token as string,
+        ...baseConfig,
+        user_hash: data.token as string, // Correct property name for identity verification
         user_id: user.id,
         ...(user.email ? { email: user.email } : {}),
         session_duration: 86400000, // 1 day
       });
+
+      if (import.meta.env.DEV) {
+        console.log('Intercom booted with user identity:', user.id);
+      }
     };
 
     void boot();
@@ -62,26 +90,17 @@ export const Analytics = () => {
     return () => {
       try {
         Intercom('shutdown');
-      } catch {
-        // ignore
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.warn('Intercom shutdown error on cleanup:', error);
+        }
       }
     };
   }, [user]);
 
-  useEffect(() => {
-    // Show Intercom only if the user stays on home page > 5s
-    if (location.pathname !== '/') return;
-
-    const timer = window.setTimeout(() => {
-      try {
-        Intercom('show');
-      } catch {
-        // ignore
-      }
-    }, 5000);
-
-    return () => window.clearTimeout(timer);
-  }, [location.pathname]);
+  // REMOVED: Homepage-only visibility logic (ADR-001)
+  // The widget will now be visible by default on all pages
+  // Previous logic only showed widget after 5s on homepage, which limited discoverability
 
   return null;
 };
