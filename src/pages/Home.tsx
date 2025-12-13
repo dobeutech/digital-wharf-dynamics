@@ -1,5 +1,5 @@
 import { CustomCursor } from "@/components/layout/CustomCursor";
-import { Hero } from "@/components/home/Hero";
+import { EnhancedHero } from "@/components/home/EnhancedHero";
 import { Mission } from "@/components/home/Mission";
 import { Services } from "@/components/home/Services";
 import { Work } from "@/components/home/Work";
@@ -15,7 +15,7 @@ export default function Home() {
         keywords="web development, custom websites, software development, business growth, modern web solutions, responsive design"
       />
       <CustomCursor />
-      <Hero />
+      <EnhancedHero />
       <Mission />
       <Services />
       <Work />

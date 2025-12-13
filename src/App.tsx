@@ -6,8 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "./contexts/AuthContext";
 import { NavigationProvider } from "./contexts/NavigationContext";
-import { EnhancedNavbar } from "@/components/navigation/EnhancedNavbar";
-import { Footer } from "@/components/layout/Footer";
+import { GlassmorphicHeader } from "@/components/layout/GlassmorphicHeader";
+import { FloatingFooter } from "@/components/layout/FloatingFooter";
 import { Analytics } from "@/components/Analytics";
 import { CookieConsentBanner } from "@/components/CookieConsent";
 import { NewsletterPopup } from "@/components/NewsletterPopup";
@@ -80,7 +80,7 @@ const App = () => (
                   <PageTracker />
                   <SkipLink />
                   <div className="flex flex-col min-h-screen">
-                    <EnhancedNavbar />
+                    <GlassmorphicHeader />
                   <main id="main-content" className="flex-grow" tabIndex={-1}>
                     <ErrorBoundary>
                       <Suspense fallback={<PageLoader />}>
@@ -209,7 +209,7 @@ const App = () => (
                       </Suspense>
                     </ErrorBoundary>
                   </main>
-                  <Footer />
+                  <FloatingFooter />
                 </div>
                   <CookieConsentBanner />
                   <NewsletterPopup />
