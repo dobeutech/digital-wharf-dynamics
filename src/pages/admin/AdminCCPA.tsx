@@ -107,15 +107,14 @@ export default function AdminCCPA() {
 
     try {
       await api.patch(`/ccpa-request?id=${selectedRequest.id}`, { notes });
-
-    if (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to save notes" });
-    } else {
       toast({ title: "Saved", description: "Notes saved successfully" });
       setSelectedRequest({ ...selectedRequest, notes });
       fetchRequests();
+    } catch (error) {
+      toast({ variant: "destructive", title: "Error", description: "Failed to save notes" });
+    } finally {
+      setUpdating(false);
     }
-    setUpdating(false);
   };
 
   const openDetails = (request: CCPARequest) => {

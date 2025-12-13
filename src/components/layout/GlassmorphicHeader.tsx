@@ -5,7 +5,6 @@ import { Logo } from "@/components/layout/Logo";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdmin } from "@/hooks/useAdmin";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { AccessibilitySettings } from "@/components/AccessibilitySettings";
@@ -27,7 +26,7 @@ export function GlassmorphicHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [showMegaMenu, setShowMegaMenu] = useState(false);
   const [showAdminMenu, setShowAdminMenu] = useState(false);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { isAdmin } = useAdmin();
   const { toast } = useToast();
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useNavigation();
@@ -63,6 +62,12 @@ export function GlassmorphicHeader() {
       toast({
         title: "Logged out",
         description: "You have been successfully logged out.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        variant: "destructive",
       });
     }
   };

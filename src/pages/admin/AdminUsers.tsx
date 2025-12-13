@@ -83,6 +83,9 @@ export default function AdminUsers() {
         toast.success("Role added successfully");
         fetchUsers();
       }
+    } catch (error) {
+      toast.error(hasRole ? "Failed to remove role" : "Failed to add role");
+      console.error(error);
     }
   };
 
