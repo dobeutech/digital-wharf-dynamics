@@ -60,9 +60,6 @@ export default function Files() {
       const baseUrl = import.meta.env.PROD ? '/.netlify/functions' : 'http://localhost:8888/.netlify/functions';
       const response = await fetch(`${baseUrl}/files?id=${file.id}&download=true`, {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-        headers: {
-          'Authorization': `Bearer ${await api.getAccessToken()}`,
-        },
       });
 
       if (!response.ok) {
