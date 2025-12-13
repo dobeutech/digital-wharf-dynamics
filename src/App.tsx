@@ -27,6 +27,7 @@ const Services = lazy(() => import("./pages/Services"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const About = lazy(() => import("./pages/About"));
 const Contact = lazy(() => import("./pages/Contact"));
+const Schedule = lazy(() => import("./pages/Schedule"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const SMSPrivacy = lazy(() => import("./pages/SMSPrivacy"));
@@ -92,6 +93,7 @@ const App = () => (
                           <Route path="/pricing" element={<Pricing />} />
                           <Route path="/about" element={<About />} />
                           <Route path="/contact" element={<Contact />} />
+                          <Route path="/schedule" element={<Schedule />} />
                           <Route path="/privacy" element={<Privacy />} />
                           <Route path="/privacy/sms" element={<SMSPrivacy />} />
                           <Route path="/terms" element={<Terms />} />

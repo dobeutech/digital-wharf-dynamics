@@ -4,46 +4,48 @@
  */
 
 interface EnvConfig {
-  VITE_SUPABASE_URL: string;
-  VITE_SUPABASE_PUBLISHABLE_KEY: string;
+  VITE_SUPABASE_URL?: string;
+  VITE_SUPABASE_PUBLISHABLE_KEY?: string;
   // Add other environment variables as needed
 }
 
-const requiredEnvVars = [
+const optionalEnvVars = [
   'VITE_SUPABASE_URL',
   'VITE_SUPABASE_PUBLISHABLE_KEY',
 ] as const;
 
 /**
- * Validates that all required environment variables are present
- * @throws Error if any required variable is missing
+ * Validates environment variables (optional for Supabase if using MongoDB)
+ * @returns EnvConfig with optional Supabase variables
  */
 export function validateEnv(): EnvConfig {
-  const missing: string[] = [];
   const config: Partial<EnvConfig> = {};
 
-  for (const key of requiredEnvVars) {
+  for (const key of optionalEnvVars) {
     const value = import.meta.env[key];
-    if (!value || value.trim() === '') {
-      missing.push(key);
-    } else {
+    if (value && value.trim() !== '') {
       config[key] = value;
     }
   }
 
-  if (missing.length > 0) {
-    throw new Error(
-      `Missing required environment variables: ${missing.join(', ')}\n` +
-      'Please check your .env file or environment configuration.'
+  // Warn if Supabase variables are missing (but don't throw)
+  const hasUrl = !!config.VITE_SUPABASE_URL;
+  const hasKey = !!config.VITE_SUPABASE_PUBLISHABLE_KEY;
+  
+  if (!hasUrl || !hasKey) {
+    console.warn(
+      'Supabase environment variables are not set. ' +
+      'If you are using MongoDB instead, Supabase features will be disabled. ' +
+      'Note: This application is built around Supabase for auth, database, and storage.'
     );
   }
 
-  // Validate Supabase URL format
+  // Validate Supabase URL format if provided
   if (config.VITE_SUPABASE_URL && !config.VITE_SUPABASE_URL.startsWith('https://')) {
     console.warn('VITE_SUPABASE_URL should start with https://');
   }
 
-  // Validate Supabase key format (publishable keys typically start with eyJ)
+  // Validate Supabase key format if provided
   if (config.VITE_SUPABASE_PUBLISHABLE_KEY && !config.VITE_SUPABASE_PUBLISHABLE_KEY.startsWith('eyJ') && !config.VITE_SUPABASE_PUBLISHABLE_KEY.startsWith('sb_')) {
     console.warn('VITE_SUPABASE_PUBLISHABLE_KEY format may be incorrect');
   }

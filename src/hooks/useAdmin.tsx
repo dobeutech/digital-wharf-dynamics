@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 
 export function useAdmin() {
-  const { user } = useAuth();
+  const { user, getAccessToken } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -15,25 +14,30 @@ export function useAdmin() {
         return;
       }
 
-      const { data, error } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", user.id)
-        .eq("role", "admin")
-        .single();
-
-      if (error) {
-        console.error("Error checking admin status:", error);
+      // Prefer Auth0 RBAC permission claim from access token
+      const token = await getAccessToken();
+      if (!token) {
         setIsAdmin(false);
-      } else {
-        setIsAdmin(!!data);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const payloadPart = token.split(".")[1];
+        const json = atob(payloadPart.replace(/-/g, "+").replace(/_/g, "/").padEnd(payloadPart.length + ((4 - (payloadPart.length % 4)) % 4), "="));
+        const claims = JSON.parse(json) as Record<string, unknown>;
+        const permissions = Array.isArray(claims.permissions) ? (claims.permissions.filter((p) => typeof p === "string") as string[]) : [];
+        setIsAdmin(permissions.includes("admin:access"));
+      } catch (e) {
+        console.error("Error checking admin status:", e);
+        setIsAdmin(false);
       }
 
       setLoading(false);
     };
 
     checkAdminStatus();
-  }, [user]);
+  }, [user, getAccessToken]);
 
   return { isAdmin, loading };
 }

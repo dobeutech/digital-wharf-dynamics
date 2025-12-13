@@ -31,7 +31,7 @@ Allow: /
   }
   if (policy[0] === "1") {
     [null, ...supportedUserAgents].forEach((ua, i) => {
-      if (ua && policy.charCodeAt(1 + Math.floor(i / 5)) & 1 << i % 5) {
+      if (ua && policy.charCodeAt(1 + Math.round(i / 5)) & 1 << i % 5) {
         text += `
 
 User-agent: ${ua}

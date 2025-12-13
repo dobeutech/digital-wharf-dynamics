@@ -18,7 +18,8 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { Mail, Phone, MapPin, ExternalLink, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { Link } from "react-router-dom";
+import { useApi } from "@/lib/api";
 import { trackEvent, MIXPANEL_EVENTS } from "@/lib/mixpanel";
 import { PageMeta } from "@/components/seo/PageMeta";
 
@@ -59,6 +60,7 @@ const contactFormSchema = z.object({
 type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 export default function Contact() {
+  const api = useApi();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [showPhoneField, setShowPhoneField] = useState(false);
@@ -113,20 +115,14 @@ export default function Contact() {
     setFormStatus('idle');
 
     try {
-      const { data: response, error } = await supabase.functions.invoke('contact-submit', {
-        body: {
-          name: data.name,
-          email: data.email,
-          phone: data.phone || null,
-          message: data.message,
-          smsConsent: data.smsConsent,
-          marketingConsent: data.marketingConsent,
-        }
+      const response = await api.post<{ success: boolean; submission?: unknown; error?: string }>('/contact-submissions', {
+        name: data.name,
+        email: data.email,
+        phone: data.phone || null,
+        message: data.message,
+        smsConsent: data.smsConsent,
+        marketingConsent: data.marketingConsent,
       });
-
-      if (error) {
-        throw new Error(error.message || 'Failed to submit message');
-      }
 
       if (!response.success) {
         throw new Error(response.error || 'Failed to submit message');
@@ -448,8 +444,8 @@ export default function Contact() {
                 <p className="mb-6 opacity-90 text-sm sm:text-base">
                   Book a free 30-minute consultation to discuss your project in detail.
                 </p>
-                <Button variant="secondary" size="lg" className="shadow-material min-h-[44px]">
-                  Schedule Consultation
+                <Button asChild variant="secondary" size="lg" className="shadow-material min-h-[44px]">
+                  <Link to="/schedule">Schedule Consultation</Link>
                 </Button>
               </CardContent>
             </Card>

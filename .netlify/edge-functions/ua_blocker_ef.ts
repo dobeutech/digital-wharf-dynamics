@@ -613,7 +613,7 @@ var supportedUserAgents = [
 ];
 
 // src/edge-functions/ef.ts
-var ef_default = (request, context) => {
+var ef_default = (request) => {
   const analyticsEnabled = !!Netlify.env.get("USER_AGENT_BLOCKER_ANALYTICS");
   const policy = Netlify.env.get("USER_AGENT_BLOCKER_EF_POLICY") || "";
   const blockingEnabled = policy[0] === "1";
@@ -623,22 +623,18 @@ var ef_default = (request, context) => {
   const userAgent = (request.headers.get("user-agent") || "").toLowerCase();
   const willBlock = blockingEnabled && [null, ...supportedUserAgents].some((ua, i) => {
     if (ua === null && userAgent.trim() === "") {
-      return !!(policy.charCodeAt(1 + Math.floor(i / 5)) & 1 << i % 5);
-    } else if (ua && policy.charCodeAt(1 + Math.floor(i / 5)) & 1 << i % 5 && userAgent.includes(ua.toLowerCase())) {
+      return true;
+    } else if (ua && policy.charCodeAt(1 + Math.round(i / 5)) & 1 << i % 5 && userAgent.includes(ua.toLowerCase())) {
       return true;
     }
   });
-  if (analyticsEnabled && context) {
+  if (analyticsEnabled) {
     if (userAgent.trim() === "") {
-      context.waitUntil(incrementInBlob("<NULL>", willBlock).catch(err => {
-        console.error('Analytics error:', err);
-      }));
+      increment("<NULL>", willBlock);
     } else {
       for (const ua of supportedUserAgents) {
         if (userAgent.includes(ua.toLowerCase())) {
-          context.waitUntil(incrementInBlob(ua, willBlock).catch(err => {
-            console.error('Analytics error:', err);
-          }));
+          increment(ua, willBlock);
           break;
         }
       }
@@ -686,6 +682,9 @@ async function incrementInBlob(userAgent, willBlock) {
       await store.delete(blob.key);
     }
   }
+}
+function increment(userAgent, willBlock) {
+  setTimeout(() => incrementInBlob(userAgent, willBlock), 0);
 }
 export {
   config,

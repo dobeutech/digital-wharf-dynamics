@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Check, ShoppingCart } from "lucide-react";
@@ -23,6 +23,7 @@ interface Service {
 
 export default function Shop() {
   const { user } = useAuth();
+  const api = useApi();
   const { toast } = useToast();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -123,20 +124,20 @@ export default function Shop() {
         total_amount: totalAmount,
       });
 
-      const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: {
-          serviceId,
-          serviceName,
-          totalAmount,
-          selectedAddOns,
-          isSubscription,
-        },
+      const response = await api.post<{ url?: string; error?: string }>("/create-checkout", {
+        serviceId,
+        serviceName,
+        totalAmount,
+        selectedAddOns,
+        isSubscription,
       });
 
-      if (error) throw error;
+      if (response.error) {
+        throw new Error(response.error);
+      }
 
-      if (data?.url) {
-        window.location.href = data.url;
+      if (response.url) {
+        window.location.href = response.url;
       } else {
         throw new Error("No checkout URL returned");
       }

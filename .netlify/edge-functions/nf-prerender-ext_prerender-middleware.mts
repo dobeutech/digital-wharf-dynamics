@@ -31,7 +31,7 @@ var prerender_middleware_default = async (req, context) => {
     "X-Prerender-Token": authToken.trim()
   };
   try {
-    return await context.next(new Request(prerenderUrl.toString(), {
+    return context.next(new Request(prerenderUrl.toString(), {
       method: "GET",
       headers
     }));
@@ -43,7 +43,7 @@ var prerender_middleware_default = async (req, context) => {
 var config = {
   // Only paths with no extension, or .html/.htm
   // eslint-disable-next-line no-useless-escape
-  pattern: ["^.*/[^.]*$", "^.*\\.html$", "^.*\\.htm$"],
+  pattern: ["^.*/[^.]*$", "^.*.html$", "^.*.htm$"],
   excludedPattern: [
     "^/netlify-prerender-function.*$",
     // Exclude development paths of Vite/React
