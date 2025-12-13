@@ -24,7 +24,10 @@ export async function getMongoClient(): Promise<MongoClient> {
     },
   });
 
-  clientPromise = client.connect();
+  clientPromise = client.connect().catch((err) => {
+    clientPromise = null;
+    throw err;
+  });
   return clientPromise;
 }
 
