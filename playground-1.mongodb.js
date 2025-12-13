@@ -9,13 +9,7 @@
 // 3. Use the connection string below, or click "Click here to add connection" in the playground
 //
 // Atlas SQL Connection String (X.509 Certificate Authentication):
-// mongodb://vscode@atlas-sql-691d75a0ab43cb5ef6bf1970-tdodph.a.query.mongodb.net/?tls=true&tlsCAFile=c%3A%5CUsers%5Cjswil%5CDownloads%5CX509-cert-1253989881055617180.pem&tlsCertificateKeyFile=c%3A%5CUsers%5Cjswil%5CDownloads%5CX509-cert-1253989881055617180.pem
-//
-// Note: The certificate file path is URL-encoded. Decoded path:
-// c:\Users\jswil\Downloads\X509-cert-1253989881055617180.pem
-//
-// Alternative connection string format (if the above doesn't work):
-// mongodb://vscode@atlas-sql-691d75a0ab43cb5ef6bf1970-tdodph.a.query.mongodb.net/app?tls=true&tlsCAFile=C%3A%5CUsers%5Cjswil%5CDownloads%5CX509-cert-1253989881055617180.pem&tlsCertificateKeyFile=C%3A%5CUsers%5Cjswil%5CDownloads%5CX509-cert-1253989881055617180.pem
+// mongodb://<user>@<cluster>/?tls=true&tlsCAFile=<path-to-cert.pem>&tlsCertificateKeyFile=<path-to-cert.pem>
 
 const database = 'app'; // Matches MONGODB_DB_NAME from environment
 
