@@ -75,3 +75,6 @@ lovable.dev
 *.pt
 *.h5
 *.keras
+
+# Local Netlify folder
+.netlify
