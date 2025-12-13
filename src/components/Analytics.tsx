@@ -92,7 +92,7 @@ export const Analytics = () => {
 
       // Update Intercom by calling it again with full config
       try {
-        Intercom(intercomConfig);
+        Intercom('update', intercomConfig);
         console.log('Intercom updated with user data:', {
           user_id: intercomConfig.user_id,
           email: intercomConfig.email,
