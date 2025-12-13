@@ -68,7 +68,7 @@ serve(async (req) => {
     );
 
     // Get the origin from the request headers
-    const origin = req.headers.get("origin") || "https://qwdukyhuyhjbzbbvoixp.lovable.app";
+    const origin = req.headers.get("origin") || "https://dobeu.net";
 
     // Generate password reset link using Supabase Admin API
     const { data, error } = await supabaseAdmin.auth.admin.generateLink({

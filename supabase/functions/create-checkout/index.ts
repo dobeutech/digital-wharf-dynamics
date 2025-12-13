@@ -76,7 +76,7 @@ serve(async (req) => {
       ? ` + ${selectedAddOns.map(a => a.name).join(", ")}`
       : "";
 
-    const origin = req.headers.get("origin") || "https://lovable.dev";
+    const origin = req.headers.get("origin") || "https://dobeu.net";
 
     if (isSubscription) {
       // Monthly retainer - create subscription

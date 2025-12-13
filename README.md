@@ -1,22 +1,14 @@
-# Welcome to your Lovable project
+# DOBEU - Digital Wharf Dynamics
 
-## Project info
+## Project Overview
 
-**URL**: https://lovable.dev/projects/dd383b88-651d-4a77-9e22-ca7e355b1a54
+DOBEU is a comprehensive web application for digital transformation services, built with modern technologies and best practices.
 
 ## How can I edit this code?
 
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/dd383b88-651d-4a77-9e22-ca7e355b1a54) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
 **Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+You can work locally using your own IDE. Clone this repo and push changes to deploy.
 
 The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
@@ -114,15 +106,12 @@ For detailed setup instructions, see `SETUP_GUIDE.md`.
 - `IMPLEMENTATION_SUMMARY.md` - All enhancements overview
 - `docs/monitoring-setup.md` - Monitoring configuration
 - `docs/disaster-recovery.md` - Disaster recovery procedures
+- `docs/linear-workflow.md` - Linear project workflow and issue management
 
 ## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/dd383b88-651d-4a77-9e22-ca7e355b1a54) and click on Share -> Publish.
+This project is configured for deployment to Netlify. See `DEPLOYMENT_CHECKLIST.md` for deployment instructions.
 
-## Can I connect a custom domain to my Lovable project?
+## Custom Domain
 
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+The project is configured to work with custom domains. Update the domain configuration in your deployment platform settings.

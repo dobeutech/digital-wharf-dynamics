@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
-import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -20,7 +19,7 @@ export default defineConfig(({ mode }) => ({
         : "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.mxpnl.com https://www.googletagmanager.com https://us.i.posthog.com; connect-src 'self' https://*.supabase.co https://cdn.mxpnl.com https://*.posthog.com https://*.intercom.io wss://*.intercom.io; img-src 'self' data: https: blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; frame-src 'self' https://*.intercom.io;",
     },
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
