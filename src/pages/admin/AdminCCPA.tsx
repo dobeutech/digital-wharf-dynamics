@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -51,6 +51,7 @@ function getDeadlineStatus(deadline: string | null) {
 }
 
 export default function AdminCCPA() {
+  const api = useApi();
   const [requests, setRequests] = useState<CCPARequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -61,24 +62,18 @@ export default function AdminCCPA() {
 
   const fetchRequests = useCallback(async () => {
     setLoading(true);
-    let query = supabase
-      .from("ccpa_requests")
-      .select("*")
-      .order("submitted_at", { ascending: false });
-
-    if (statusFilter !== "all") {
-      query = query.eq("status", statusFilter);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to fetch CCPA requests" });
-    } else {
+    try {
+      // TODO: Create admin endpoint for CCPA requests management
+      // For now, this will fail - endpoint needs to be created
+      const endpoint = statusFilter === "all" ? "/ccpa-request" : `/ccpa-request?status=${statusFilter}`;
+      const data = await api.get<CCPARequest[]>(endpoint);
       setRequests(data || []);
+      setLoading(false);
+    } catch (error) {
+      toast({ variant: "destructive", title: "Error", description: "Failed to fetch CCPA requests" });
+      setLoading(false);
     }
-    setLoading(false);
-  }, [statusFilter, toast]);
+  }, [api, statusFilter, toast]);
 
   useEffect(() => {
     fetchRequests();
@@ -91,31 +86,27 @@ export default function AdminCCPA() {
       updates.processed_at = new Date().toISOString();
     }
 
-    const { error } = await supabase
-      .from("ccpa_requests")
-      .update(updates)
-      .eq("id", id);
-
-    if (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to update status" });
-    } else {
+    try {
+      // TODO: Create admin endpoint for updating CCPA requests
+      await api.patch(`/ccpa-request?id=${id}`, updates);
       toast({ title: "Updated", description: "Status updated successfully" });
       fetchRequests();
       if (selectedRequest?.id === id) {
         setSelectedRequest({ ...selectedRequest, status: newStatus, processed_at: updates.processed_at as string || selectedRequest.processed_at });
       }
+    } catch (error) {
+      toast({ variant: "destructive", title: "Error", description: "Failed to update status" });
+    } finally {
+      setUpdating(false);
     }
-    setUpdating(false);
   };
 
   const saveNotes = async () => {
     if (!selectedRequest) return;
     setUpdating(true);
 
-    const { error } = await supabase
-      .from("ccpa_requests")
-      .update({ notes })
-      .eq("id", selectedRequest.id);
+    try {
+      await api.patch(`/ccpa-request?id=${selectedRequest.id}`, { notes });
 
     if (error) {
       toast({ variant: "destructive", title: "Error", description: "Failed to save notes" });

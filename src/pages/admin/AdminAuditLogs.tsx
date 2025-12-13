@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +27,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Loader2, Search, Eye, Download, FileText } from "lucide-react";
-import type { Json } from "@/integrations/supabase/types";
 
 interface AuditLog {
   id: string;
@@ -35,8 +34,8 @@ interface AuditLog {
   action: string;
   entity_type: string;
   entity_id: string | null;
-  old_values: Json | null;
-  new_values: Json | null;
+  old_values: unknown | null;
+  new_values: unknown | null;
   user_agent: string | null;
   created_at: string;
 }

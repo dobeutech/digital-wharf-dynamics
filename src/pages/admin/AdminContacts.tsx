@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -33,6 +33,7 @@ const statusColors: Record<string, string> = {
 };
 
 export default function AdminContacts() {
+  const api = useApi();
   const [submissions, setSubmissions] = useState<ContactSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -43,24 +44,17 @@ export default function AdminContacts() {
 
   const fetchSubmissions = useCallback(async () => {
     setLoading(true);
-    let query = supabase
-      .from("contact_submissions")
-      .select("*")
-      .order("submitted_at", { ascending: false });
+    try {
+      const endpoint = statusFilter === "all" ? "/contact-submissions" : `/contact-submissions?status=${statusFilter}`;
+      const data = await api.get<ContactSubmission[]>(endpoint);
 
-    if (statusFilter !== "all") {
-      query = query.eq("status", statusFilter);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to fetch contact submissions" });
-    } else {
       setSubmissions(data || []);
+      setLoading(false);
+    } catch (error) {
+      toast({ variant: "destructive", title: "Error", description: "Failed to fetch contact submissions" });
+      setLoading(false);
     }
-    setLoading(false);
-  }, [statusFilter, toast]);
+  }, [api, statusFilter, toast]);
 
   useEffect(() => {
     fetchSubmissions();
@@ -73,40 +67,34 @@ export default function AdminContacts() {
       updates.responded_at = new Date().toISOString();
     }
 
-    const { error } = await supabase
-      .from("contact_submissions")
-      .update(updates)
-      .eq("id", id);
-
-    if (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to update status" });
-    } else {
+    try {
+      await api.patch(`/contact-submissions?id=${id}`, updates);
       toast({ title: "Updated", description: "Status updated successfully" });
       fetchSubmissions();
       if (selectedSubmission?.id === id) {
         setSelectedSubmission({ ...selectedSubmission, status: newStatus, responded_at: updates.responded_at as string || selectedSubmission.responded_at });
       }
+    } catch (error) {
+      toast({ variant: "destructive", title: "Error", description: "Failed to update status" });
+    } finally {
+      setUpdating(false);
     }
-    setUpdating(false);
   };
 
   const saveNotes = async () => {
     if (!selectedSubmission) return;
     setUpdating(true);
 
-    const { error } = await supabase
-      .from("contact_submissions")
-      .update({ notes })
-      .eq("id", selectedSubmission.id);
-
-    if (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to save notes" });
-    } else {
+    try {
+      await api.patch(`/contact-submissions?id=${selectedSubmission.id}`, { notes });
       toast({ title: "Saved", description: "Notes saved successfully" });
       setSelectedSubmission({ ...selectedSubmission, notes });
       fetchSubmissions();
+    } catch (error) {
+      toast({ variant: "destructive", title: "Error", description: "Failed to save notes" });
+    } finally {
+      setUpdating(false);
     }
-    setUpdating(false);
   };
 
   const openDetails = async (submission: ContactSubmission) => {

@@ -17,6 +17,7 @@ interface Project {
 }
 
 export default function AdminProjects() {
+  const api = useApi();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,17 +26,14 @@ export default function AdminProjects() {
   }, []);
 
   const fetchProjects = async () => {
-    const { data, error } = await supabase
-      .from("projects")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching projects:", error);
-    } else {
+    try {
+      const data = await api.get<Project[]>("/projects");
       setProjects(data || []);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const getStatusColor = (status: string) => {
