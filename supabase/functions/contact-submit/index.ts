@@ -116,7 +116,7 @@ async function sendEmails(resend: Resend, sanitized: Record<string, unknown>) {
         <!DOCTYPE html>
         <html>
         <head><meta charset="utf-8"></head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h1 style="color: #EAB308;">Thank You for Reaching Out!</h1>
           <p>Dear ${sanitized.name},</p>
           <p>We have received your message and appreciate you contacting Dobeu Tech Solutions. Our team will review your inquiry and get back to you as soon as possible.</p>
@@ -143,7 +143,7 @@ async function sendEmails(resend: Resend, sanitized: Record<string, unknown>) {
         <!DOCTYPE html>
         <html>
         <head><meta charset="utf-8"></head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h1 style="color: #EAB308;">New Contact Form Submission</h1>
           <div style="background: #f4f4f4; padding: 16px; border-radius: 8px; margin: 20px 0;">
             <p style="margin: 8px 0;"><strong>Name:</strong> ${sanitized.name}</p>

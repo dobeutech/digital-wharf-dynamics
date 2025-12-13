@@ -142,7 +142,7 @@ async function sendEmails(resend: Resend, sanitized: Record<string, unknown>, re
         <!DOCTYPE html>
         <html>
         <head><meta charset="utf-8"></head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h1 style="color: #EAB308;">Privacy Request Confirmed</h1>
           <p>Dear ${sanitized.fullName},</p>
           <p>We have received your California Consumer Privacy Act (CCPA) request. Here are the details:</p>
@@ -170,7 +170,7 @@ async function sendEmails(resend: Resend, sanitized: Record<string, unknown>, re
         <!DOCTYPE html>
         <html>
         <head><meta charset="utf-8"></head>
-        <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <body style="font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
           <h1 style="color: #EAB308;">New CCPA Request Received</h1>
           <div style="background: #f4f4f4; padding: 16px; border-radius: 8px; margin: 20px 0;">
             <p style="margin: 8px 0;"><strong>Reference ID:</strong> ${referenceId}</p>

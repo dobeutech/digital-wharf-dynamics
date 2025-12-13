@@ -21,8 +21,9 @@ export function Logo({ variant = "default", className }: LogoProps) {
         y="40"
         fill={fillColor}
         fontSize="32"
-        fontWeight="700"
-        fontFamily="system-ui, -apple-system, sans-serif"
+        fontWeight="800"
+        fontFamily="Inter, system-ui, -apple-system, sans-serif"
+        letterSpacing="-0.02em"
       >
         DOBEU
       </text>

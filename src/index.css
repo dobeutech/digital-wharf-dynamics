@@ -6,6 +6,21 @@
 All colors MUST be HSL.
 */
 
+/* ===== TYPOGRAPHY - Inter Font Family ===== */
+html {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Inter variable font settings for supported browsers */
+@supports (font-variation-settings: normal) {
+  html {
+    font-family: 'Inter var', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+}
+
 @layer base {
   :root {
     /* ===== DOBEU BRAND COLOR SYSTEM ===== */
