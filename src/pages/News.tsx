@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Calendar } from "lucide-react";
@@ -18,30 +18,25 @@ interface NewsPost {
 }
 
 export default function News() {
+  const api = useApi();
   const { toast } = useToast();
   const [posts, setPosts] = useState<NewsPost[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchPosts = useCallback(async () => {
-    const { data, error } = await supabase
-      .from("newsletter_posts")
-      .select("*")
-      .eq("is_published", true)
-      .eq("is_public", true)
-      .order("published_at", { ascending: false });
-
-    if (error) {
+    try {
+      const data = await api.get<NewsPost[]>("/news");
+      setPosts(data || []);
+      setLoading(false);
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to load news posts",
         variant: "destructive",
       });
-      return;
+      setLoading(false);
     }
-
-    setPosts(data || []);
-    setLoading(false);
-  }, [toast]);
+  }, [api, toast]);
 
   useEffect(() => {
     fetchPosts();

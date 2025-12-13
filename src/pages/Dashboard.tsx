@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { FolderOpen, ShoppingBag, FileText, Newspaper } from "lucide-react";
 import { PageLayout } from "@/components/layout/PageLayout";
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const api = useApi();
   const [stats, setStats] = useState({
     activeProjects: 0,
     totalFiles: 0,
@@ -19,21 +20,29 @@ export default function Dashboard() {
     const fetchStats = async () => {
       if (!user) return;
 
-      const [projectsRes, filesRes, purchasesRes] = await Promise.all([
-        supabase.from("projects").select("id", { count: "exact" }).eq("user_id", user.id).neq("status", "completed"),
-        supabase.from("client_files").select("id", { count: "exact" }).eq("user_id", user.id),
-        supabase.from("purchases").select("id", { count: "exact" }).eq("user_id", user.id).eq("status", "pending"),
-      ]);
+      try {
+        const [projects, files] = await Promise.all([
+          api.get<unknown[]>("/projects").catch(() => []),
+          api.get<unknown[]>("/files").catch(() => []),
+        ]);
 
-      setStats({
-        activeProjects: projectsRes.count || 0,
-        totalFiles: filesRes.count || 0,
-        pendingPurchases: purchasesRes.count || 0,
-      });
+        const activeProjects = Array.isArray(projects) 
+          ? projects.filter((p: any) => p.status !== 'completed').length 
+          : 0;
+        const totalFiles = Array.isArray(files) ? files.length : 0;
+
+        setStats({
+          activeProjects,
+          totalFiles,
+          pendingPurchases: 0, // TODO: Implement purchases endpoint if needed
+        });
+      } catch (error) {
+        console.error('Failed to fetch dashboard stats:', error);
+      }
     };
 
     fetchStats();
-  }, [user]);
+  }, [user, api]);
 
   return (
     <PageLayout maxWidth="2xl">

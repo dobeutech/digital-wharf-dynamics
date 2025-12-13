@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -31,6 +31,7 @@ interface Project {
 
 export default function Projects() {
   const { user } = useAuth();
+  const api = useApi();
   const { toast } = useToast();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,60 +39,51 @@ export default function Projects() {
   const fetchProjects = useCallback(async () => {
     if (!user) return;
 
-    const { data: projectsData, error } = await supabase
-      .from("projects")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
+    try {
+      const projectsData = await api.get<Project[]>("/projects");
 
-    if (error) {
+      // Fetch tasks for each project
+      const projectsWithTasks = await Promise.all(
+        (projectsData || []).map(async (project) => {
+          try {
+            const tasks = await api.get<Task[]>(`/project-tasks?project_id=${project.id}`);
+            return { ...project, tasks: tasks || [] };
+          } catch {
+            return { ...project, tasks: [] };
+          }
+        })
+      );
+
+      setProjects(projectsWithTasks);
+      setLoading(false);
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to load projects",
         variant: "destructive",
       });
-      return;
+      setLoading(false);
     }
-
-    const projectsWithTasks = await Promise.all(
-      (projectsData || []).map(async (project) => {
-        const { data: tasks } = await supabase
-          .from("project_tasks")
-          .select("*")
-          .eq("project_id", project.id)
-          .order("order_index");
-
-        return { ...project, tasks: tasks || [] };
-      })
-    );
-
-    setProjects(projectsWithTasks);
-    setLoading(false);
-  }, [user, toast]);
+  }, [user, api, toast]);
 
   useEffect(() => {
     fetchProjects();
   }, [fetchProjects]);
 
   const toggleTask = async (projectId: string, taskId: string, currentStatus: boolean) => {
-    const { error } = await supabase
-      .from("project_tasks")
-      .update({
+    try {
+      await api.patch(`/project-tasks?id=${taskId}`, {
         is_completed: !currentStatus,
         completed_at: !currentStatus ? new Date().toISOString() : null,
-      })
-      .eq("id", taskId);
-
-    if (error) {
+      });
+      fetchProjects();
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to update task",
         variant: "destructive",
       });
-      return;
     }
-
-    fetchProjects();
   };
 
   const getStatusColor = (status: string) => {

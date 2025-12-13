@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuditLog } from "@/hooks/useAuditLog";
@@ -19,6 +19,7 @@ interface UserRole {
 }
 
 export default function AdminUsers() {
+  const api = useApi();
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [userRoles, setUserRoles] = useState<Map<string, string[]>>(new Map());
   const [loading, setLoading] = useState(true);
@@ -29,46 +30,36 @@ export default function AdminUsers() {
   }, []);
 
   const fetchUsers = async () => {
-    const [profilesRes, rolesRes] = await Promise.all([
-      supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-      supabase.from("user_roles").select("*"),
-    ]);
+    try {
+      const usersData = await api.get<{ users: Profile[]; roles: UserRole[] }>("/admin-users");
+      
+      if (usersData.users) {
+        setProfiles(usersData.users);
+      }
 
-    if (profilesRes.error) {
-      console.error("Error fetching profiles:", profilesRes.error);
-    } else {
-      setProfiles(profilesRes.data || []);
+      if (usersData.roles) {
+        const rolesMap = new Map<string, string[]>();
+        usersData.roles.forEach((role: UserRole) => {
+          const existing = rolesMap.get(role.user_id) || [];
+          rolesMap.set(role.user_id, [...existing, role.role]);
+        });
+        setUserRoles(rolesMap);
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      setLoading(false);
     }
-
-    if (rolesRes.error) {
-      console.error("Error fetching roles:", rolesRes.error);
-    } else {
-      const rolesMap = new Map<string, string[]>();
-      (rolesRes.data || []).forEach((role: UserRole) => {
-        const existing = rolesMap.get(role.user_id) || [];
-        rolesMap.set(role.user_id, [...existing, role.role]);
-      });
-      setUserRoles(rolesMap);
-    }
-
-    setLoading(false);
   };
 
   const toggleRole = async (userId: string, role: "admin" | "moderator" | "user") => {
     const currentRoles = userRoles.get(userId) || [];
     const hasRole = currentRoles.includes(role);
 
-    if (hasRole) {
-      const { error } = await supabase
-        .from("user_roles")
-        .delete()
-        .eq("user_id", userId)
-        .eq("role", role);
-
-      if (error) {
-        toast.error("Failed to remove role");
-        console.error(error);
-      } else {
+    try {
+      if (hasRole) {
+        await api.delete(`/admin-users?user_id=${userId}&role=${role}`);
         // Audit log for role removal
         await logAction({
           action: "ROLE_CHANGE",
@@ -79,16 +70,8 @@ export default function AdminUsers() {
         });
         toast.success("Role removed successfully");
         fetchUsers();
-      }
-    } else {
-      const { error } = await supabase
-        .from("user_roles")
-        .insert({ user_id: userId, role: role });
-
-      if (error) {
-        toast.error("Failed to add role");
-        console.error(error);
       } else {
+        await api.post("/admin-users", { user_id: userId, role });
         // Audit log for role addition
         await logAction({
           action: "ROLE_CHANGE",

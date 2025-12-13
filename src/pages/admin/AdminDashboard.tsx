@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { ShoppingBag, FolderOpen, Users, Newspaper, FileText, Shield, MessageSquare, ClipboardList, BarChart3 } from "lucide-react";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 
 export default function AdminDashboard() {
+  const api = useApi();
   const [stats, setStats] = useState({
     totalServices: 0,
     totalProjects: 0,
@@ -21,33 +22,39 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const fetchStats = async () => {
-      const [servicesRes, projectsRes, profilesRes, postsRes, ccpaRes, contactsRes, pendingCCPARes, newContactsRes, auditRes] = await Promise.all([
-        supabase.from("services").select("id", { count: "exact" }),
-        supabase.from("projects").select("id", { count: "exact" }),
-        supabase.from("profiles").select("id", { count: "exact" }),
-        supabase.from("newsletter_posts").select("id", { count: "exact" }),
-        supabase.from("ccpa_requests").select("id", { count: "exact" }),
-        supabase.from("contact_submissions").select("id", { count: "exact" }),
-        supabase.from("ccpa_requests").select("id", { count: "exact" }).eq("status", "pending"),
-        supabase.from("contact_submissions").select("id", { count: "exact" }).eq("status", "new"),
-        supabase.from("audit_logs").select("id", { count: "exact" }),
-      ]);
+      try {
+        const [services, projects, users, posts, ccpaRequests, contacts, auditLogs] = await Promise.all([
+          api.get<unknown[]>("/services").catch(() => []),
+          api.get<unknown[]>("/projects").catch(() => []),
+          api.get<unknown[]>("/admin-users").catch(() => []),
+          api.get<unknown[]>("/newsletter").catch(() => []),
+          api.get<unknown[]>("/contact-submissions?status=all").catch(() => []),
+          api.get<unknown[]>("/contact-submissions").catch(() => []),
+          api.get<unknown[]>("/audit-logs").catch(() => []),
+        ]);
 
-      setStats({
-        totalServices: servicesRes.count || 0,
-        totalProjects: projectsRes.count || 0,
-        totalUsers: profilesRes.count || 0,
-        totalPosts: postsRes.count || 0,
-        totalCCPARequests: ccpaRes.count || 0,
-        totalContactSubmissions: contactsRes.count || 0,
-        totalAuditLogs: auditRes.count || 0,
-        pendingCCPA: pendingCCPARes.count || 0,
-        newContacts: newContactsRes.count || 0,
-      });
+        // Count pending CCPA and new contacts from the full lists
+        const pendingCCPA = Array.isArray(ccpaRequests) ? ccpaRequests.filter((r: any) => r.status === 'pending').length : 0;
+        const newContacts = Array.isArray(contacts) ? contacts.filter((c: any) => c.status === 'new').length : 0;
+
+        setStats({
+          totalServices: Array.isArray(services) ? services.length : 0,
+          totalProjects: Array.isArray(projects) ? projects.length : 0,
+          totalUsers: Array.isArray(users) ? users.length : 0,
+          totalPosts: Array.isArray(posts) ? posts.length : 0,
+          totalCCPARequests: Array.isArray(ccpaRequests) ? ccpaRequests.length : 0,
+          totalContactSubmissions: Array.isArray(contacts) ? contacts.length : 0,
+          totalAuditLogs: Array.isArray(auditLogs) ? auditLogs.length : 0,
+          pendingCCPA,
+          newContacts,
+        });
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      }
     };
 
     fetchStats();
-  }, []);
+  }, [api]);
 
   return (
     <AdminLayout>
