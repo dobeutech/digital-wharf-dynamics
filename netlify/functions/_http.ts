@@ -21,8 +21,13 @@ export async function readJson<T = any>(event: HandlerEvent): Promise<T> {
   if (!event.body) {
     throw new Error('Missing request body');
   }
+
+  const rawBody = event.isBase64Encoded
+    ? Buffer.from(event.body, 'base64').toString('utf8')
+    : event.body;
+
   try {
-    return JSON.parse(event.body) as T;
+    return JSON.parse(rawBody) as T;
   } catch {
     throw new Error('Invalid JSON body');
   }
