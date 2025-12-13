@@ -58,14 +58,8 @@ export function GlassmorphicHeader() {
 
   const handleLogout = async () => {
     trackEvent("Navigation", { action: "logout" });
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      toast({
-        title: "Error",
-        description: "Failed to log out. Please try again.",
-        variant: "destructive",
-      });
-    } else {
+    try {
+      await signOut();
       toast({
         title: "Logged out",
         description: "You have been successfully logged out.",

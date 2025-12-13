@@ -31,10 +31,10 @@ export default function AdminUsers() {
 
   const fetchUsers = async () => {
     try {
-      const usersData = await api.get<{ users: Profile[]; roles: UserRole[] }>("/admin-users");
+      const usersData = await api.get<{ profiles: Profile[]; roles: UserRole[] }>("/admin-users");
       
-      if (usersData.users) {
-        setProfiles(usersData.users);
+      if (usersData.profiles) {
+        setProfiles(usersData.profiles);
       }
 
       if (usersData.roles) {

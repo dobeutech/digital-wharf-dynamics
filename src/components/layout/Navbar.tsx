@@ -5,7 +5,6 @@ import { Logo } from "./Logo";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useAdmin } from "@/hooks/useAdmin";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { NavLink } from "@/components/NavLink";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -13,7 +12,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const { isAdmin } = useAdmin();
   const { toast } = useToast();
 
@@ -37,17 +36,17 @@ export function Navbar() {
   }, [isMobileMenuOpen]);
 
   const handleLogout = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
+    try {
+      await signOut();
+      toast({
+        title: "Logged out",
+        description: "You have been successfully logged out.",
+      });
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to log out. Please try again.",
         variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Logged out",
-        description: "You have been successfully logged out.",
       });
     }
   };
