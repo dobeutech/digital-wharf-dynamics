@@ -3,9 +3,11 @@ import posthog from 'posthog-js';
 import Intercom from '@intercom/messenger-js-sdk';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useLocation } from 'react-router-dom';
 
 export const Analytics = () => {
   const { user } = useAuth();
+  const location = useLocation();
 
   useEffect(() => {
     // Initialize PostHog
@@ -65,6 +67,21 @@ export const Analytics = () => {
       }
     };
   }, [user]);
+
+  useEffect(() => {
+    // Show Intercom only if the user stays on home page > 5s
+    if (location.pathname !== '/') return;
+
+    const timer = window.setTimeout(() => {
+      try {
+        Intercom('show');
+      } catch {
+        // ignore
+      }
+    }, 5000);
+
+    return () => window.clearTimeout(timer);
+  }, [location.pathname]);
 
   return null;
 };
