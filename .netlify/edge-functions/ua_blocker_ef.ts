@@ -623,8 +623,8 @@ var ef_default = (request) => {
   const userAgent = (request.headers.get("user-agent") || "").toLowerCase();
   const willBlock = blockingEnabled && [null, ...supportedUserAgents].some((ua, i) => {
     if (ua === null && userAgent.trim() === "") {
-      return true;
-    } else if (ua && policy.charCodeAt(1 + Math.round(i / 5)) & 1 << i % 5 && userAgent.includes(ua.toLowerCase())) {
+      return !!(policy.charCodeAt(1 + Math.floor(i / 5)) & 1 << i % 5);
+    } else if (ua && policy.charCodeAt(1 + Math.floor(i / 5)) & 1 << i % 5 && userAgent.includes(ua.toLowerCase())) {
       return true;
     }
   });
