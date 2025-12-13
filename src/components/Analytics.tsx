@@ -4,6 +4,15 @@ import Intercom from '@intercom/messenger-js-sdk';
 import { useAuth } from '@/contexts/AuthContext';
 import { useAuth0 } from '@auth0/auth0-react';
 
+interface WindowWithIntercom extends Window {
+  Intercom?: unknown;
+}
+
+interface UserWithCreatedAt {
+  created_at?: string | number;
+  [key: string]: unknown;
+}
+
 export const Analytics = () => {
   const { user } = useAuth();
   const { user: auth0User } = useAuth0();
@@ -34,7 +43,7 @@ export const Analytics = () => {
         console.log('Intercom initialized with app_id: xu0gfiqb');
         
         // Verify Intercom is available on window
-        if (typeof window !== 'undefined' && (window as any).Intercom) {
+        if (typeof window !== 'undefined' && (window as unknown as WindowWithIntercom).Intercom) {
           console.log('Intercom SDK loaded successfully on window object');
         } else {
           console.warn('Intercom SDK may not be fully loaded yet');
@@ -53,8 +62,8 @@ export const Analytics = () => {
     let createdAt: number | undefined;
     
     // First check the raw Auth0 user object (which may have created_at)
-    if (auth0User && (auth0User as any).created_at) {
-      const created = (auth0User as any).created_at;
+    if (auth0User && (auth0User as UserWithCreatedAt).created_at) {
+      const created = (auth0User as UserWithCreatedAt).created_at;
       if (typeof created === 'string') {
         // ISO string - convert to Unix timestamp
         createdAt = Math.floor(new Date(created).getTime() / 1000);
@@ -64,8 +73,8 @@ export const Analytics = () => {
       }
     }
     // Fallback to mapped user object if not found in auth0User
-    else if (user && (user as any).created_at) {
-      const created = (user as any).created_at;
+    else if (user && (user as unknown as UserWithCreatedAt).created_at) {
+      const created = (user as unknown as UserWithCreatedAt).created_at;
       if (typeof created === 'string') {
         createdAt = Math.floor(new Date(created).getTime() / 1000);
       } else if (typeof created === 'number') {

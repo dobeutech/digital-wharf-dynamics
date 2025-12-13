@@ -68,7 +68,7 @@ export async function verifyAuth0Jwt(event: HandlerEvent): Promise<Auth0Claims> 
     ...(ns ? extractArrayClaim(claims, `${ns}/roles`) : []),
   ];
 
-  return { ...(payload as any), sub, permissions, roles };
+  return { ...payload, sub, permissions, roles } as Auth0Claims;
 }
 
 export async function requireAuth(event: HandlerEvent): Promise<Auth0Claims> {

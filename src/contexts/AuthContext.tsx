@@ -54,9 +54,9 @@ function AuthContextInner({ children }: { children: React.ReactNode }) {
     if (!isAuthenticated || !auth0User?.sub) return null;
     return {
       id: auth0User.sub,
-      email: (auth0User as any).email,
-      email_verified: (auth0User as any).email_verified,
-      name: (auth0User as any).name,
+      email: auth0User.email,
+      email_verified: auth0User.email_verified,
+      name: auth0User.name,
     };
   }, [auth0User, isAuthenticated]);
 
@@ -193,7 +193,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         audience: audience || undefined,
       }}
       onRedirectCallback={(appState) => {
-        const to = (appState as any)?.returnTo as string | undefined;
+        const to = (appState as { returnTo?: string } | undefined)?.returnTo;
         navigate(to || '/');
       }}
     >

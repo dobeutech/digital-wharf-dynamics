@@ -1,4 +1,4 @@
-import type { Handler } from '@netlify/functions';
+import type { Handler, HandlerEvent } from '@netlify/functions';
 import { ObjectId } from 'mongodb';
 import { errorResponse, jsonResponse, readJson } from './_http';
 import { requireAuth, requirePermission } from './_auth0';
@@ -40,7 +40,7 @@ function toSubmission(d: ContactSubmissionDoc) {
   };
 }
 
-function getClientIp(event: any): string | null {
+function getClientIp(event: HandlerEvent): string | null {
   const raw = event.headers?.['x-forwarded-for'] || event.headers?.['X-Forwarded-For'];
   if (!raw) return null;
   return String(raw).split(',')[0]?.trim() || null;

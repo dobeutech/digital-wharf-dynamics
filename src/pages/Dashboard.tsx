@@ -27,7 +27,7 @@ export default function Dashboard() {
         ]);
 
         const activeProjects = Array.isArray(projects) 
-          ? projects.filter((p: any) => p.status !== 'completed').length 
+          ? projects.filter((p: { status?: string }) => p.status !== 'completed').length 
           : 0;
         const totalFiles = Array.isArray(files) ? files.length : 0;
 
