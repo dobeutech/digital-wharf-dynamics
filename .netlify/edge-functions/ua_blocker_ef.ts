@@ -613,7 +613,7 @@ var supportedUserAgents = [
 ];
 
 // src/edge-functions/ef.ts
-var ef_default = (request) => {
+var ef_default = (request, context) => {
   const analyticsEnabled = !!Netlify.env.get("USER_AGENT_BLOCKER_ANALYTICS");
   const policy = Netlify.env.get("USER_AGENT_BLOCKER_EF_POLICY") || "";
   const blockingEnabled = policy[0] === "1";
@@ -628,13 +628,17 @@ var ef_default = (request) => {
       return true;
     }
   });
-  if (analyticsEnabled) {
+  if (analyticsEnabled && context) {
     if (userAgent.trim() === "") {
-      increment("<NULL>", willBlock);
+      context.waitUntil(incrementInBlob("<NULL>", willBlock).catch(err => {
+        console.error('Analytics error:', err);
+      }));
     } else {
       for (const ua of supportedUserAgents) {
         if (userAgent.includes(ua.toLowerCase())) {
-          increment(ua, willBlock);
+          context.waitUntil(incrementInBlob(ua, willBlock).catch(err => {
+            console.error('Analytics error:', err);
+          }));
           break;
         }
       }
@@ -682,9 +686,6 @@ async function incrementInBlob(userAgent, willBlock) {
       await store.delete(blob.key);
     }
   }
-}
-function increment(userAgent, willBlock) {
-  setTimeout(() => incrementInBlob(userAgent, willBlock), 0);
 }
 export {
   config,

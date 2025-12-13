@@ -31,7 +31,7 @@ var prerender_middleware_default = async (req, context) => {
     "X-Prerender-Token": authToken.trim()
   };
   try {
-    return context.next(new Request(prerenderUrl.toString(), {
+    return await context.next(new Request(prerenderUrl.toString(), {
       method: "GET",
       headers
     }));
