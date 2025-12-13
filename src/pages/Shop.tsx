@@ -31,24 +31,19 @@ export default function Shop() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchServices = useCallback(async () => {
-    const { data, error } = await supabase
-      .from("services")
-      .select("*")
-      .eq("is_active", true)
-      .order("category");
-
-    if (error) {
+    try {
+      const data = await api.get<Service[]>("/services?active=true");
+      setServices(data || []);
+      setLoading(false);
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to load services",
         variant: "destructive",
       });
-      return;
+      setLoading(false);
     }
-
-    setServices(data || []);
-    setLoading(false);
-  }, [toast]);
+  }, [api, toast]);
 
   useEffect(() => {
     fetchServices();
