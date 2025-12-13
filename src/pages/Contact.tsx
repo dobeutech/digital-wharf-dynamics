@@ -76,6 +76,8 @@ export default function Contact() {
   });
 
   const watchPhone = form.watch("phone");
+  const watchName = form.watch("name");
+  const watchEmail = form.watch("email");
   const watchMessage = form.watch("message");
 
   useEffect(() => {
@@ -104,7 +106,7 @@ export default function Contact() {
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [watchMessage, form]);
+  }, [watchName, watchEmail, watchMessage, form]);
 
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);

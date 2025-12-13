@@ -159,7 +159,7 @@ export function AccessibleContactsTable({
     <div className="space-y-4">
       <div role="status" aria-live="polite" className="sr-only">
         Showing {paginatedSubmissions.length} of {sortedSubmissions.length} contact submissions.
-        {(sortField !== "submitted_at" && sortDirection !== "none") || (sortField === "submitted_at" && sortDirection !== "desc") ?
+        {(sortField !== "submitted_at" || sortDirection !== "desc") && sortDirection !== "none" ?
           ` Sorted by ${sortField} ${sortDirection === "asc" ? "ascending" : sortDirection === "desc" ? "descending" : ""}.` :
           ""
         }

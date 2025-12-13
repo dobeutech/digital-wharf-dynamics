@@ -25,6 +25,10 @@ export function NavigationSearch() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
+  const isMac = typeof navigator !== 'undefined' && 
+    (navigator.userAgent.indexOf('Mac') !== -1 || 
+     navigator.userAgent.indexOf('iPhone') !== -1 || 
+     navigator.userAgent.indexOf('iPad') !== -1);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -74,7 +78,7 @@ export function NavigationSearch() {
         <span className="hidden lg:inline-flex">Search navigation...</span>
         <span className="inline-flex lg:hidden">Search...</span>
         <kbd className="pointer-events-none absolute right-1.5 top-2 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
-          <span className="text-xs">⌘</span>K
+          <span className="text-xs">{isMac ? "⌘" : "Ctrl"}</span>K
         </kbd>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>

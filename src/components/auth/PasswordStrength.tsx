@@ -53,6 +53,13 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
     return "bg-green-500";
   }, [strength]);
 
+  const strengthTextColor = useMemo(() => {
+    if (strength < 50) return "text-destructive";
+    if (strength < 75) return "text-yellow-500";
+    if (strength < 100) return "text-blue-500";
+    return "text-green-500";
+  }, [strength]);
+
   if (!password) return null;
 
   return (
@@ -61,7 +68,7 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
         <div className="flex items-center justify-between text-xs">
           <span className="text-muted-foreground">Password strength</span>
           {strengthLabel && (
-            <span className={`font-medium ${strengthColor.replace('bg-', 'text-')}`}>
+            <span className={`font-medium ${strengthTextColor}`}>
               {strengthLabel}
             </span>
           )}
