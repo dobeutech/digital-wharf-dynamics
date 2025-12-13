@@ -22,10 +22,34 @@ export const Analytics = () => {
     console.log('Analytics initialized: PostHog, Intercom, and GTM');
   }, []);
 
-  // Initialize and update Intercom when user data changes
+  // Initialize Intercom immediately on mount (even without user)
   useEffect(() => {
+    if (!intercomInitialized.current) {
+      // Initialize Intercom with just app_id first
+      try {
+        Intercom({
+          app_id: 'xu0gfiqb',
+        });
+        intercomInitialized.current = true;
+        console.log('Intercom initialized with app_id: xu0gfiqb');
+        
+        // Verify Intercom is available on window
+        if (typeof window !== 'undefined' && (window as any).Intercom) {
+          console.log('Intercom SDK loaded successfully on window object');
+        } else {
+          console.warn('Intercom SDK may not be fully loaded yet');
+        }
+      } catch (error) {
+        console.error('Failed to initialize Intercom:', error);
+      }
+    }
+  }, []);
+
+  // Update Intercom when user data changes
+  useEffect(() => {
+    if (!intercomInitialized.current) return;
+
     // Convert created_at to Unix timestamp (seconds) if available
-    // Check both the mapped user object and the raw Auth0 user object
     let createdAt: number | undefined;
     
     // First check the raw Auth0 user object (which may have created_at)
@@ -49,7 +73,7 @@ export const Analytics = () => {
       }
     }
 
-    // Build Intercom config
+    // Build Intercom config with user data
     const intercomConfig: {
       app_id: string;
       user_id?: string;
@@ -65,29 +89,19 @@ export const Analytics = () => {
       if (user.name) intercomConfig.name = user.name;
       if (user.email) intercomConfig.email = user.email;
       if (createdAt) intercomConfig.created_at = createdAt;
-    }
 
-    // Initialize or update Intercom
-    if (!intercomInitialized.current) {
-      // First initialization
-      Intercom(intercomConfig);
-      intercomInitialized.current = true;
-      console.log('Intercom initialized with config:', {
-        app_id: intercomConfig.app_id,
-        user_id: intercomConfig.user_id,
-        email: intercomConfig.email,
-        name: intercomConfig.name,
-        created_at: intercomConfig.created_at,
-      });
-    } else {
-      // Update existing Intercom instance
-      Intercom('update', intercomConfig);
-      console.log('Intercom updated with user data:', {
-        user_id: intercomConfig.user_id,
-        email: intercomConfig.email,
-        name: intercomConfig.name,
-        created_at: intercomConfig.created_at,
-      });
+      // Update Intercom by calling it again with full config
+      try {
+        Intercom(intercomConfig);
+        console.log('Intercom updated with user data:', {
+          user_id: intercomConfig.user_id,
+          email: intercomConfig.email,
+          name: intercomConfig.name,
+          created_at: intercomConfig.created_at,
+        });
+      } catch (error) {
+        console.error('Failed to update Intercom:', error);
+      }
     }
   }, [user, auth0User]);
 

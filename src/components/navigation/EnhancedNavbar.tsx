@@ -63,6 +63,12 @@ export function EnhancedNavbar() {
         title: "Logged out",
         description: "You have been successfully logged out.",
       });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 

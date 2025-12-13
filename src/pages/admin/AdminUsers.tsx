@@ -59,7 +59,7 @@ export default function AdminUsers() {
 
     try {
       if (hasRole) {
-        await api.delete(`/admin-users?user_id=${userId}&role=${role}`);
+        await api.post("/admin-users", { user_id: userId, role, enabled: false });
         // Audit log for role removal
         await logAction({
           action: "ROLE_CHANGE",
@@ -71,7 +71,7 @@ export default function AdminUsers() {
         toast.success("Role removed successfully");
         fetchUsers();
       } else {
-        await api.post("/admin-users", { user_id: userId, role });
+        await api.post("/admin-users", { user_id: userId, role, enabled: true });
         // Audit log for role addition
         await logAction({
           action: "ROLE_CHANGE",

@@ -25,8 +25,8 @@ export default function AdminDashboard() {
       try {
         const [services, projects, users, posts, ccpaRequests, contacts, auditLogs] = await Promise.all([
           api.get<unknown[]>("/services").catch(() => []),
-          api.get<unknown[]>("/projects").catch(() => []),
-          api.get<unknown[]>("/admin-users").catch(() => []),
+          api.get<unknown[]>("/projects?all=true").catch(() => []),
+          api.get<{ profiles: unknown[]; roles: unknown[] }>("/admin-users").catch(() => ({ profiles: [], roles: [] })),
           api.get<unknown[]>("/newsletter").catch(() => []),
           api.get<unknown[]>("/contact-submissions?status=all").catch(() => []),
           api.get<unknown[]>("/contact-submissions").catch(() => []),
@@ -40,7 +40,7 @@ export default function AdminDashboard() {
         setStats({
           totalServices: Array.isArray(services) ? services.length : 0,
           totalProjects: Array.isArray(projects) ? projects.length : 0,
-          totalUsers: Array.isArray(users) ? users.length : 0,
+          totalUsers: Array.isArray(users.profiles) ? users.profiles.length : 0,
           totalPosts: Array.isArray(posts) ? posts.length : 0,
           totalCCPARequests: Array.isArray(ccpaRequests) ? ccpaRequests.length : 0,
           totalContactSubmissions: Array.isArray(contacts) ? contacts.length : 0,
