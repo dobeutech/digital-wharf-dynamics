@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useAdmin } from "@/hooks/useAdmin";
 import { useToast } from "@/hooks/use-toast";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { CursorToggle } from "@/components/CursorToggle";
 import { AccessibilitySettings } from "@/components/AccessibilitySettings";
 import { LanguageSelector } from "@/components/LanguageSelector";
 import { MegaMenu } from "@/components/navigation/MegaMenu";
@@ -244,6 +245,7 @@ export function GlassmorphicHeader() {
               <NavigationSearch />
               <LanguageSelector />
               <AccessibilitySettings />
+              <CursorToggle />
               <ThemeToggle />
               {!user && <HeaderTypeformButton source="header" />}
               {user ? (
@@ -278,6 +280,7 @@ export function GlassmorphicHeader() {
             <div className="flex md:hidden items-center gap-2">
               <LanguageSelector />
               <AccessibilitySettings />
+              <CursorToggle />
               <ThemeToggle />
               <motion.button
                 className={cn(

@@ -32,12 +32,25 @@ export const Analytics = () => {
         });
         intercomInitialized.current = true;
         console.log('Intercom initialized with app_id: xu0gfiqb');
-        
-        // Verify Intercom is available on window
-        if (typeof window !== 'undefined' && (window as any).Intercom) {
-          console.log('Intercom SDK loaded successfully on window object');
-        } else {
-          console.warn('Intercom SDK may not be fully loaded yet');
+
+        // Boot Intercom to show the messenger widget
+        if (typeof window !== 'undefined') {
+          const win = window as any;
+          if (win.Intercom) {
+            win.Intercom('boot', { app_id: 'xu0gfiqb' });
+            console.log('Intercom booted successfully');
+          } else {
+            // Fallback: wait for Intercom to load then boot
+            const checkIntercom = setInterval(() => {
+              if (win.Intercom) {
+                win.Intercom('boot', { app_id: 'xu0gfiqb' });
+                console.log('Intercom booted after delay');
+                clearInterval(checkIntercom);
+              }
+            }, 100);
+            // Clear interval after 5 seconds to prevent infinite loop
+            setTimeout(() => clearInterval(checkIntercom), 5000);
+          }
         }
       } catch (error) {
         console.error('Failed to initialize Intercom:', error);

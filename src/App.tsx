@@ -7,9 +7,11 @@ import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "./contexts/AuthContext";
 import { NavigationProvider } from "./contexts/NavigationContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { SettingsProvider } from "./contexts/SettingsContext";
 import { GlassmorphicHeader } from "@/components/layout/GlassmorphicHeader";
 import { FloatingFooter } from "@/components/layout/FloatingFooter";
 import { Analytics } from "@/components/Analytics";
+import { TypeformEmbed } from "@/components/TypeformEmbed";
 import { CookieConsentBanner } from "@/components/CookieConsent";
 import { NewsletterPopup } from "@/components/NewsletterPopup";
 import { PageTracker } from "@/components/PageTracker";
@@ -76,6 +78,7 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <ErrorBoundary>
+              <SettingsProvider>
               <LanguageProvider>
               <AuthProvider>
                 <NavigationProvider>
@@ -217,9 +220,11 @@ const App = () => (
                 </div>
                   <CookieConsentBanner />
                   <NewsletterPopup />
+                  <TypeformEmbed />
                 </NavigationProvider>
               </AuthProvider>
               </LanguageProvider>
+              </SettingsProvider>
             </ErrorBoundary>
           </BrowserRouter>
         </TooltipProvider>
