@@ -34,8 +34,8 @@ export default function AdminDashboard() {
         ]);
 
         // Count pending CCPA and new contacts from the full lists
-        const pendingCCPA = Array.isArray(ccpaRequests) ? ccpaRequests.filter((r: any) => r.status === 'pending').length : 0;
-        const newContacts = Array.isArray(contacts) ? contacts.filter((c: any) => c.status === 'new').length : 0;
+        const pendingCCPA = Array.isArray(ccpaRequests) ? ccpaRequests.filter((r: { status?: string }) => r.status === 'pending').length : 0;
+        const newContacts = Array.isArray(contacts) ? contacts.filter((c: { status?: string }) => c.status === 'new').length : 0;
 
         setStats({
           totalServices: Array.isArray(services) ? services.length : 0,

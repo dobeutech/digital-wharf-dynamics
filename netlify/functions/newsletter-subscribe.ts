@@ -1,4 +1,4 @@
-import type { Handler } from '@netlify/functions';
+import type { Handler, HandlerEvent } from '@netlify/functions';
 import { errorResponse, jsonResponse, readJson } from './_http';
 import { getMongoDb } from './_mongo';
 
@@ -40,7 +40,7 @@ function validateEmail(email: string): boolean {
   return emailRegex.test(email) && email.length <= 255;
 }
 
-function getClientIp(event: any): string {
+function getClientIp(event: HandlerEvent): string {
   const raw = event.headers?.['x-forwarded-for'] || event.headers?.['X-Forwarded-For'];
   if (!raw) return 'unknown';
   return String(raw).split(',')[0]?.trim() || 'unknown';
@@ -48,15 +48,15 @@ function getClientIp(event: any): string {
 
 export const handler: Handler = async (event) => {
   try {
+    if (event.httpMethod !== 'POST') {
+      return errorResponse(405, 'Method not allowed');
+    }
+
     // Get client IP for rate limiting
     const clientIp = getClientIp(event);
     
     if (isRateLimited(clientIp)) {
       return errorResponse(429, 'Too many requests. Please try again later.');
-    }
-
-    if (event.httpMethod !== 'POST') {
-      return errorResponse(405, 'Method not allowed');
     }
 
     const body = await readJson<{ email?: string; marketingConsent?: boolean }>(event);
@@ -123,7 +123,8 @@ export const handler: Handler = async (event) => {
 
     return jsonResponse(200, { success: true, message: 'Subscribed successfully' });
   } catch (err) {
-    return errorResponse(500, 'Internal error', err instanceof Error ? err.message : String(err));
+    // Do not expose internal error details to clients
+    return errorResponse(500, 'Internal error');
   }
 };
 

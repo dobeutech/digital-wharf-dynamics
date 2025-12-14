@@ -17,7 +17,7 @@ export function errorResponse(statusCode: number, message: string, details?: unk
   return jsonResponse(statusCode, { error: message, details: details ?? undefined });
 }
 
-export async function readJson<T = any>(event: HandlerEvent): Promise<T> {
+export async function readJson<T = unknown>(event: HandlerEvent): Promise<T> {
   if (!event.body) {
     throw new Error('Missing request body');
   }

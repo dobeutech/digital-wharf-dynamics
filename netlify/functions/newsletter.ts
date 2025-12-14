@@ -43,7 +43,10 @@ export const handler: Handler = async (event) => {
     if (event.httpMethod === 'GET') {
       // Members-only feed: published posts (public or not)
       const q: Record<string, unknown> = { is_published: true };
-      if (id) q._id = new ObjectId(id);
+      if (id) {
+        if (!ObjectId.isValid(id)) return errorResponse(400, 'Invalid id');
+        q._id = new ObjectId(id);
+      }
       const docs = await col.find(q).sort({ published_at: -1 }).toArray();
       return jsonResponse(200, docs.map(toPost));
     }
@@ -84,9 +87,9 @@ export const handler: Handler = async (event) => {
         { $set: update },
         { returnDocument: 'after' }
       );
+      if (!res) return errorResponse(404, 'Not found');
       // @ts-expect-error driver response typing differs across versions
-      const doc = (res?.value ?? res) as NewsletterPostDoc | undefined;
-      if (!doc) return errorResponse(404, 'Not found');
+      const doc = (res.value ?? res) as NewsletterPostDoc;
       return jsonResponse(200, toPost(doc));
     }
 

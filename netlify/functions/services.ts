@@ -42,7 +42,13 @@ export const handler: Handler = async (event) => {
 
     if (event.httpMethod === 'GET') {
       if (id) {
-        const doc = await col.findOne({ _id: new ObjectId(id) });
+        let objectId: ObjectId;
+        try {
+          objectId = new ObjectId(id);
+        } catch {
+          return errorResponse(400, 'Invalid id');
+        }
+        const doc = await col.findOne({ _id: objectId });
         if (!doc) return errorResponse(404, 'Not found');
         return jsonResponse(200, toService(doc));
       }
