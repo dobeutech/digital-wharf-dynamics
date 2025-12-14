@@ -22,6 +22,7 @@ import {
 import { cn } from "@/lib/utils";
 import { trackEvent } from "@/lib/mixpanel";
 import { motion, useScroll, useTransform } from "motion/react";
+import { HeaderTypeformButton } from "@/components/TypeformButton";
 
 export function GlassmorphicHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -245,6 +246,7 @@ export function GlassmorphicHeader() {
               <LanguageSelector />
               <AccessibilitySettings />
               <ThemeToggle />
+              {!user && <HeaderTypeformButton source="header" />}
               {user ? (
                 <Button
                   onClick={handleLogout}

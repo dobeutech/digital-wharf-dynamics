@@ -4,6 +4,7 @@ import { ExternalLink, ArrowUpRight } from "lucide-react";
 import { motion, useInView } from "motion/react";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
+import { LearnMoreButton } from "@/components/TypeformButton";
 
 export function FloatingFooter() {
   const currentYear = new Date().getFullYear();
@@ -97,6 +98,7 @@ export function FloatingFooter() {
                   </Link>
                 </Button>
               </motion.div>
+              <LearnMoreButton source="footer-cta" />
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
                 <Button
                   asChild
