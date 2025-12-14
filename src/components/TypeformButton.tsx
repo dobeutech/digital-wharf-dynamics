@@ -40,7 +40,7 @@ export function TypeformButton({
         onClick={handleClick}
         variant={variant}
         size={size}
-        className={className}
+        className={fullWidth ? `${className} w-full`.trim() : className}
         aria-label={text}
       >
         {IconComponent && <IconComponent className="w-4 h-4 mr-2" />}
