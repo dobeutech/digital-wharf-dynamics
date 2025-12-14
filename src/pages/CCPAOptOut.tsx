@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
 import { Shield, CheckCircle } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 
 const ccpaFormSchema = z.object({
   fullName: z.string()
@@ -52,6 +52,7 @@ const ccpaFormSchema = z.object({
 type CCPAFormValues = z.infer<typeof ccpaFormSchema>;
 
 export default function CCPAOptOut() {
+  const api = useApi();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [referenceId, setReferenceId] = useState<string>("");
@@ -82,24 +83,22 @@ export default function CCPAOptOut() {
     setIsSubmitting(true);
     
     try {
-      const { data: response, error } = await supabase.functions.invoke('ccpa-request', {
-        body: {
-          fullName: data.fullName,
-          email: data.email,
-          phone: data.phone || null,
-          address: data.address || null,
-          requestTypes: data.requestTypes,
-          additionalInfo: data.additionalInfo || null,
-          confirmIdentity: data.confirmIdentity,
-        }
+      const response = await api.post<{ success: boolean; referenceId?: string; responseDeadline?: string; error?: string }>('/ccpa-request', {
+        fullName: data.fullName,
+        email: data.email,
+        phone: data.phone || null,
+        address: data.address || null,
+        requestTypes: data.requestTypes,
+        additionalInfo: data.additionalInfo || null,
+        confirmIdentity: data.confirmIdentity,
       });
-
-      if (error) {
-        throw new Error(error.message || 'Failed to submit request');
-      }
 
       if (!response.success) {
         throw new Error(response.error || 'Failed to submit request');
+      }
+
+      if (!response.referenceId || !response.responseDeadline) {
+        throw new Error('Invalid response from server');
       }
 
       setReferenceId(response.referenceId);

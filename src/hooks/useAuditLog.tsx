@@ -1,6 +1,5 @@
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
-import type { Json } from "@/integrations/supabase/types";
 
 type AuditAction = 
   | "CREATE" | "UPDATE" | "DELETE" | "VIEW"
@@ -14,30 +13,26 @@ interface AuditLogParams {
   action: AuditAction;
   entityType: EntityType;
   entityId?: string;
-  oldValues?: Json;
-  newValues?: Json;
+  oldValues?: unknown;
+  newValues?: unknown;
 }
 
 export function useAuditLog() {
   const { user } = useAuth();
+  const api = useApi();
 
   const logAction = async (params: AuditLogParams) => {
     if (!user) return;
 
     try {
-      const { error } = await supabase.from("audit_logs").insert([{
-        user_id: user.id,
+      await api.post("/audit-logs", {
         action: params.action,
         entity_type: params.entityType,
         entity_id: params.entityId || null,
         old_values: params.oldValues || null,
         new_values: params.newValues || null,
-        user_agent: navigator.userAgent,
-      }]);
-
-      if (error) {
-        console.error("Failed to log audit action:", error);
-      }
+        user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+      });
     } catch (err) {
       console.error("Audit logging error:", err);
     }

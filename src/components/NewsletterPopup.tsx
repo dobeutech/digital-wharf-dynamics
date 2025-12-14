@@ -5,10 +5,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { trackEvent, MIXPANEL_EVENTS } from "@/lib/mixpanel";
 
 export const NewsletterPopup = () => {
+  const api = useApi();
   const [open, setOpen] = useState(false);
   const [email, setEmail] = useState("");
   const [marketingConsent, setMarketingConsent] = useState(false);
@@ -41,16 +42,13 @@ export const NewsletterPopup = () => {
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('newsletter-subscribe', {
-        body: { email: email.trim(), marketingConsent }
+      const response = await api.post<{ success: boolean; message?: string; error?: string }>('/newsletter-subscribe', {
+        email: email.trim(),
+        marketingConsent
       });
 
-      if (error) {
-        throw error;
-      }
-
-      if (data?.error) {
-        toast.error(data.error);
+      if (response.error) {
+        toast.error(response.error);
         return;
       }
 
@@ -60,7 +58,7 @@ export const NewsletterPopup = () => {
       });
 
       localStorage.setItem("newsletterPopupSeen", "true");
-      toast.success(data?.message || "Thank you for subscribing!");
+      toast.success(response.message || "Thank you for subscribing!");
       setOpen(false);
     } catch (error) {
       console.error('Subscription error:', error);

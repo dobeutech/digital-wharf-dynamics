@@ -1,87 +1,15 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { supabase } from '@/integrations/supabase/client';
-import { PasswordStrength } from '@/components/auth/PasswordStrength';
-import { Eye, EyeOff } from 'lucide-react';
-
-const loginSchema = z.object({
-  email: z.string()
-    .trim()
-    .min(1, "Email is required")
-    .email("Please enter a valid email")
-    .max(255, "Email must be less than 255 characters"),
-  password: z.string()
-    .min(1, "Password is required")
-    .max(128, "Password must be less than 128 characters"),
-});
-
-const signupSchema = z.object({
-  username: z.string()
-    .trim()
-    .min(3, "Username must be at least 3 characters")
-    .max(30, "Username must be less than 30 characters")
-    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers, and underscores"),
-  email: z.string()
-    .trim()
-    .min(1, "Email is required")
-    .email("Please enter a valid email")
-    .max(255, "Email must be less than 255 characters"),
-  password: z.string()
-    .min(8, "Password must be at least 8 characters")
-    .max(128, "Password must be less than 128 characters")
-    .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-    .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-    .regex(/[0-9]/, "Password must contain at least one number"),
-});
-
-const forgotPasswordSchema = z.object({
-  email: z.string()
-    .trim()
-    .min(1, "Email is required")
-    .email("Please enter a valid email")
-    .max(255, "Email must be less than 255 characters"),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
-type SignupFormData = z.infer<typeof signupSchema>;
-type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 export default function Auth() {
   const { signIn, signUp, signInWithGoogle, user } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
-  const [forgotPasswordCooldown, setForgotPasswordCooldown] = useState(0);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showSignupPassword, setShowSignupPassword] = useState(false);
-
-  const loginForm = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: '', password: '' },
-  });
-
-  const signupForm = useForm<SignupFormData>({
-    resolver: zodResolver(signupSchema),
-    defaultValues: { username: '', email: '', password: '' },
-  });
-
-  const watchSignupPassword = signupForm.watch('password');
-
-  const forgotPasswordForm = useForm<ForgotPasswordFormData>({
-    resolver: zodResolver(forgotPasswordSchema),
-    defaultValues: { email: '' },
-  });
+  const [busy, setBusy] = useState<null | 'login' | 'signup' | 'google'>(null);
 
   useEffect(() => {
     if (user) {
@@ -89,91 +17,30 @@ export default function Auth() {
     }
   }, [user, navigate]);
 
-  // Cooldown timer for forgot password
-  useEffect(() => {
-    if (forgotPasswordCooldown > 0) {
-      const timer = setTimeout(() => setForgotPasswordCooldown(forgotPasswordCooldown - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [forgotPasswordCooldown]);
-
-  const handleLogin = async (data: LoginFormData) => {
-    const { error } = await signIn(data.email, data.password);
-
+  const handleLogin = async () => {
+    setBusy('login');
+    const { error } = await signIn();
     if (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Login failed',
-        description: error.message || 'Invalid email or password',
-      });
-    } else {
-      toast({
-        title: 'Welcome back!',
-        description: 'You have successfully logged in.',
-      });
+      toast({ variant: 'destructive', title: 'Login failed', description: error.message });
+      setBusy(null);
     }
   };
 
-  const handleSignup = async (data: SignupFormData) => {
-    const { error } = await signUp(data.email, data.password, data.username);
-
+  const handleSignup = async () => {
+    setBusy('signup');
+    const { error } = await signUp();
     if (error) {
-      if (error.message?.includes('already registered')) {
-        toast({
-          variant: 'destructive',
-          title: 'Account exists',
-          description: 'This email is already registered. Please login instead.',
-        });
-      } else {
-        toast({
-          variant: 'destructive',
-          title: 'Signup failed',
-          description: error.message || 'Could not create account',
-        });
-      }
-    } else {
-      toast({
-        title: 'Account created!',
-        description: 'Please check your email to verify your account.',
-      });
-      navigate('/verify-email');
+      toast({ variant: 'destructive', title: 'Signup failed', description: error.message });
+      setBusy(null);
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleGoogle = async () => {
+    setBusy('google');
     const { error } = await signInWithGoogle();
-
     if (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Google sign-in failed',
-        description: error.message,
-      });
-    }
-  };
-
-  const handleForgotPassword = async (data: ForgotPasswordFormData) => {
-    try {
-      const response = await supabase.functions.invoke('reset-password', {
-        body: { email: data.email },
-      });
-
-      // Always show generic success message to prevent email enumeration
-      toast({
-        title: 'Check your email',
-        description: 'If an account exists with this email, you will receive a password reset link.',
-      });
-      
-      setForgotPasswordCooldown(60);
-      setForgotPasswordOpen(false);
-      forgotPasswordForm.reset();
-    } catch (error) {
-      toast({
-        title: 'Check your email',
-        description: 'If an account exists with this email, you will receive a password reset link.',
-      });
-      setForgotPasswordCooldown(60);
-      setForgotPasswordOpen(false);
+      toast({ variant: 'destructive', title: 'Sign-in failed', description: error.message });
+      setBusy(null);
     }
   };
 
@@ -187,282 +54,28 @@ export default function Auth() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="login">Login</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="login">
-              <Form {...loginForm}>
-                <form onSubmit={loginForm.handleSubmit(handleLogin)} className="space-y-4">
-                  <FormField
-                    control={loginForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="you@example.com"
-                            autoComplete="email"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={loginForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <div className="flex items-center justify-between">
-                          <FormLabel>Password</FormLabel>
-                          <Dialog open={forgotPasswordOpen} onOpenChange={setForgotPasswordOpen}>
-                            <DialogTrigger asChild>
-                              <Button
-                                type="button"
-                                variant="link"
-                                className="px-0 h-auto font-normal text-xs text-muted-foreground hover:text-primary"
-                                disabled={forgotPasswordCooldown > 0}
-                              >
-                                {forgotPasswordCooldown > 0 
-                                  ? `Wait ${forgotPasswordCooldown}s` 
-                                  : 'Forgot Password?'}
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent>
-                              <DialogHeader>
-                                <DialogTitle>Reset Password</DialogTitle>
-                                <DialogDescription>
-                                  Enter your email address and we'll send you a link to reset your password.
-                                </DialogDescription>
-                              </DialogHeader>
-                              <Form {...forgotPasswordForm}>
-                                <form onSubmit={forgotPasswordForm.handleSubmit(handleForgotPassword)} className="space-y-4">
-                                  <FormField
-                                    control={forgotPasswordForm.control}
-                                    name="email"
-                                    render={({ field }) => (
-                                      <FormItem>
-                                        <FormLabel>Email</FormLabel>
-                                        <FormControl>
-                                          <Input
-                                            type="email"
-                                            placeholder="you@example.com"
-                                            autoComplete="email"
-                                            {...field}
-                                          />
-                                        </FormControl>
-                                        <FormMessage />
-                                      </FormItem>
-                                    )}
-                                  />
-                                  <Button 
-                                    type="submit" 
-                                    className="w-full"
-                                    disabled={forgotPasswordForm.formState.isSubmitting}
-                                  >
-                                    {forgotPasswordForm.formState.isSubmitting ? 'Sending...' : 'Send Reset Link'}
-                                  </Button>
-                                </form>
-                              </Form>
-                            </DialogContent>
-                          </Dialog>
-                        </div>
-                        <FormControl>
-                          <div className="relative">
-                            <Input
-                              type={showPassword ? "text" : "password"}
-                              autoComplete="current-password"
-                              {...field}
-                              className="pr-10"
-                            />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                              onClick={() => setShowPassword(!showPassword)}
-                              aria-label={showPassword ? "Hide password" : "Show password"}
-                            >
-                              {showPassword ? (
-                                <EyeOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                              ) : (
-                                <Eye className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                              )}
-                            </Button>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full" disabled={loginForm.formState.isSubmitting}>
-                    {loginForm.formState.isSubmitting ? 'Logging in...' : 'Login'}
-                  </Button>
-                </form>
-              </Form>
-
-              <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-                </div>
+          <div className="space-y-3">
+            <Button className="w-full" onClick={handleLogin} disabled={busy !== null}>
+              {busy === 'login' ? 'Redirecting...' : 'Log In'}
+            </Button>
+            <Button variant="outline" className="w-full" onClick={handleSignup} disabled={busy !== null}>
+              {busy === 'signup' ? 'Redirecting...' : 'Create Account'}
+            </Button>
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
               </div>
-
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={handleGoogleSignIn}
-                disabled={loginForm.formState.isSubmitting}
-              >
-                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                  <path
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    fill="#4285F4"
-                  />
-                  <path
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    fill="#34A853"
-                  />
-                  <path
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                    fill="#FBBC05"
-                  />
-                  <path
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    fill="#EA4335"
-                  />
-                </svg>
-                Google
-              </Button>
-            </TabsContent>
-
-            <TabsContent value="signup">
-              <Form {...signupForm}>
-                <form onSubmit={signupForm.handleSubmit(handleSignup)} className="space-y-4">
-                  <FormField
-                    control={signupForm.control}
-                    name="username"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Username</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="text"
-                            placeholder="johndoe"
-                            autoComplete="username"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={signupForm.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input
-                            type="email"
-                            placeholder="you@example.com"
-                            autoComplete="email"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={signupForm.control}
-                    name="password"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <div className="relative">
-                            <Input
-                              type={showSignupPassword ? "text" : "password"}
-                              autoComplete="new-password"
-                              {...field}
-                              className="pr-10"
-                            />
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                              onClick={() => setShowSignupPassword(!showSignupPassword)}
-                              aria-label={showSignupPassword ? "Hide password" : "Show password"}
-                            >
-                              {showSignupPassword ? (
-                                <EyeOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                              ) : (
-                                <Eye className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-                              )}
-                            </Button>
-                          </div>
-                        </FormControl>
-                        <FormMessage />
-                        {watchSignupPassword && <PasswordStrength password={watchSignupPassword} />}
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit" className="w-full" disabled={signupForm.formState.isSubmitting}>
-                    {signupForm.formState.isSubmitting ? 'Creating account...' : 'Create Account'}
-                  </Button>
-                </form>
-              </Form>
-
-              <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-                </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
               </div>
-
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={handleGoogleSignIn}
-                disabled={signupForm.formState.isSubmitting}
-              >
-                <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
-                  <path
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                    fill="#4285F4"
-                  />
-                  <path
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                    fill="#34A853"
-                  />
-                  <path
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                    fill="#FBBC05"
-                  />
-                  <path
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                    fill="#EA4335"
-                  />
-                </svg>
-                Google
-              </Button>
-            </TabsContent>
-          </Tabs>
+            </div>
+            <Button variant="outline" className="w-full" onClick={handleGoogle} disabled={busy !== null}>
+              {busy === 'google' ? 'Redirecting...' : 'Continue with Google'}
+            </Button>
+            <p className="text-xs text-muted-foreground text-center">
+              Password reset and email verification are handled by Auth0’s login flow.
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>

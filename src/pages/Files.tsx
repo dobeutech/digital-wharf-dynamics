@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { format, differenceInDays } from "date-fns";
@@ -22,7 +22,8 @@ interface ClientFile {
 }
 
 export default function Files() {
-  const { user } = useAuth();
+  const { user, getAccessToken } = useAuth();
+  const api = useApi();
   const { toast } = useToast();
   const [files, setFiles] = useState<ClientFile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -33,53 +34,54 @@ export default function Files() {
   const fetchFiles = useCallback(async () => {
     if (!user) return;
 
-    const { data, error } = await supabase
-      .from("client_files")
-      .select("*")
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
-
-    if (error) {
+    try {
+      const data = await api.get<ClientFile[]>("/files");
+      setFiles(data || []);
+      const totalSize = (data || []).reduce((sum, file) => sum + (file.file_size || 0), 0);
+      setStorageUsed(totalSize);
+      setLoading(false);
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to load files",
         variant: "destructive",
       });
-      return;
+      setLoading(false);
     }
-
-    setFiles(data || []);
-    const totalSize = (data || []).reduce((sum, file) => sum + file.file_size, 0);
-    setStorageUsed(totalSize);
-    setLoading(false);
-  }, [user, toast]);
+  }, [user, api, toast]);
 
   useEffect(() => {
     fetchFiles();
   }, [fetchFiles]);
 
   const handleDownload = async (file: ClientFile) => {
-    const { data, error } = await supabase.storage
-      .from(file.storage_bucket)
-      .download(file.file_path);
+    try {
+      const token = await getAccessToken();
+      const baseUrl = import.meta.env.PROD ? '/.netlify/functions' : 'http://localhost:8888/.netlify/functions';
+      const response = await fetch(`${baseUrl}/files?id=${file.id}&download=true`, {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
+      });
 
-    if (error) {
+      if (!response.ok) {
+        throw new Error('Failed to download file');
+      }
+
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = file.file_name;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to download file",
         variant: "destructive",
       });
-      return;
     }
-
-    const url = URL.createObjectURL(data);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = file.file_name;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   };
 
   const getFileIcon = (fileType: string) => {

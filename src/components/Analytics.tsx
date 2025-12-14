@@ -1,13 +1,13 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import posthog from 'posthog-js';
 import Intercom from '@intercom/messenger-js-sdk';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { useLocation } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export const Analytics = () => {
   const { user } = useAuth();
-  const location = useLocation();
+  const { user: auth0User } = useAuth0();
+  const intercomInitialized = useRef(false);
 
   useEffect(() => {
     // Initialize PostHog
@@ -22,85 +22,88 @@ export const Analytics = () => {
     console.log('Analytics initialized: PostHog, Intercom, and GTM');
   }, []);
 
+  // Initialize Intercom immediately on mount (even without user)
   useEffect(() => {
-    /**
-     * Initialize Intercom chat widget
-     * 
-     * Changes (ADR-001):
-     * - Widget now visible by default on all pages
-     * - Removed homepage-only restriction
-     * - Added hide_default_launcher: false for explicit visibility
-     * - Improved error logging for debugging
-     * - Fixed user_hash property name for identity verification
-     */
-    const boot = async () => {
-      const app_id = 'xu0gfiqb';
-      const api_base = 'https://api-iam.intercom.io';
-
+    if (!intercomInitialized.current) {
+      // Initialize Intercom with just app_id first
       try {
-        // Reset any previous session before booting with new identity
-        Intercom('shutdown');
+        Intercom({
+          app_id: 'xu0gfiqb',
+        });
+        intercomInitialized.current = true;
+        console.log('Intercom initialized with app_id: xu0gfiqb');
+        
+        // Verify Intercom is available on window
+        if (typeof window !== 'undefined' && (window as any).Intercom) {
+          console.log('Intercom SDK loaded successfully on window object');
+        } else {
+          console.warn('Intercom SDK may not be fully loaded yet');
+        }
       } catch (error) {
-        // Log for debugging but don't fail
-        if (import.meta.env.DEV) {
-          console.warn('Intercom shutdown error:', error);
-        }
+        console.error('Failed to initialize Intercom:', error);
       }
+    }
+  }, []);
 
-      // Base configuration with default visibility
-      const baseConfig = {
-        app_id,
-        api_base,
-        hide_default_launcher: false, // Ensure launcher is visible by default
-      };
+  // Update Intercom when user data changes
+  useEffect(() => {
+    if (!intercomInitialized.current) return;
 
-      if (!user) {
-        // Boot anonymously with visible launcher
-        Intercom(baseConfig);
-        if (import.meta.env.DEV) {
-          console.log('Intercom booted anonymously with visible launcher');
-        }
-        return;
+    // Convert created_at to Unix timestamp (seconds) if available
+    let createdAt: number | undefined;
+    
+    // First check the raw Auth0 user object (which may have created_at)
+    if (auth0User && (auth0User as any).created_at) {
+      const created = (auth0User as any).created_at;
+      if (typeof created === 'string') {
+        // ISO string - convert to Unix timestamp
+        createdAt = Math.floor(new Date(created).getTime() / 1000);
+      } else if (typeof created === 'number') {
+        // Already a timestamp - ensure it's in seconds
+        createdAt = created < 10000000000 ? created : Math.floor(created / 1000);
       }
-
-      // Fetch server-generated JWT for identity verification (secret never ships to browser)
-      const { data, error } = await supabase.functions.invoke('intercom-jwt');
-      if (error || !data?.token) {
-        console.warn('Failed to fetch Intercom JWT, booting anonymous:', error);
-        Intercom(baseConfig);
-        return;
+    }
+    // Fallback to mapped user object if not found in auth0User
+    else if (user && (user as any).created_at) {
+      const created = (user as any).created_at;
+      if (typeof created === 'string') {
+        createdAt = Math.floor(new Date(created).getTime() / 1000);
+      } else if (typeof created === 'number') {
+        createdAt = created < 10000000000 ? created : Math.floor(created / 1000);
       }
+    }
 
-      // Boot with user identity and visible launcher
-      Intercom({
-        ...baseConfig,
-        user_hash: data.token as string, // Correct property name for identity verification
-        user_id: user.id,
-        ...(user.email ? { email: user.email } : {}),
-        session_duration: 86400000, // 1 day
-      });
-
-      if (import.meta.env.DEV) {
-        console.log('Intercom booted with user identity:', user.id);
-      }
+    // Build Intercom config with user data
+    const intercomConfig: {
+      app_id: string;
+      user_id?: string;
+      name?: string;
+      email?: string;
+      created_at?: number;
+    } = {
+      app_id: 'xu0gfiqb',
     };
 
-    void boot();
+    if (user) {
+      intercomConfig.user_id = user.id;
+      if (user.name) intercomConfig.name = user.name;
+      if (user.email) intercomConfig.email = user.email;
+      if (createdAt) intercomConfig.created_at = createdAt;
 
-    return () => {
+      // Update Intercom by calling it again with full config
       try {
-        Intercom('shutdown');
+        Intercom('update', intercomConfig);
+        console.log('Intercom updated with user data:', {
+          user_id: intercomConfig.user_id,
+          email: intercomConfig.email,
+          name: intercomConfig.name,
+          created_at: intercomConfig.created_at,
+        });
       } catch (error) {
-        if (import.meta.env.DEV) {
-          console.warn('Intercom shutdown error on cleanup:', error);
-        }
+        console.error('Failed to update Intercom:', error);
       }
-    };
-  }, [user]);
-
-  // REMOVED: Homepage-only visibility logic (ADR-001)
-  // The widget will now be visible by default on all pages
-  // Previous logic only showed widget after 5s on homepage, which limited discoverability
+    }
+  }, [user, auth0User]);
 
   return null;
 };

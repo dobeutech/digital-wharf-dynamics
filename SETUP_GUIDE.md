@@ -18,9 +18,23 @@ This will install all new testing and development dependencies including:
 Create a `.env` file in the root directory with the following variables:
 
 ```env
-# Supabase Configuration (Required)
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=your-publishable-key-here
+# Frontend (Vite) - Auth0 (required once migration is complete)
+VITE_AUTH0_DOMAIN=your-tenant.us.auth0.com
+VITE_AUTH0_CLIENT_ID=your_auth0_spa_client_id
+VITE_AUTH0_AUDIENCE=https://api.dobeu.netlify.app
+
+# Backend (Netlify Functions) - Auth0 verification (required)
+AUTH0_DOMAIN=your-tenant.us.auth0.com
+AUTH0_AUDIENCE=https://api.dobeu.netlify.app
+
+# Backend (Netlify Functions) - MongoDB (required)
+MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<db>?retryWrites=true&w=majority
+MONGODB_DB_NAME=app
+GRIDFS_BUCKET=files
+
+# Optional: Supabase Realtime (optional integration only)
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
 
 # Optional: Sentry (for error tracking)
 # VITE_SENTRY_DSN=your-sentry-dsn-here
@@ -29,7 +43,7 @@ VITE_SUPABASE_PUBLISHABLE_KEY=your-publishable-key-here
 # BACKUP_SECRET_TOKEN=your-secret-token-here
 ```
 
-**Important:** Never commit the `.env` file to version control. The `.env.example` file serves as a template.
+**Important:** Never commit the `.env` file to version control.
 
 ## Step 3: Database Migrations
 
@@ -60,7 +74,7 @@ supabase migration up
 
 ## Step 4: Configure Supabase Edge Functions
 
-Update `supabase/config.toml` to include the new functions:
+If you still use Supabase Edge Functions (legacy), update `supabase/config.toml` to include the new functions:
 
 ```toml
 [functions.backup-database]

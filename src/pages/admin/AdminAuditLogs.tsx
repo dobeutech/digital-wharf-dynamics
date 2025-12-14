@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +27,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { Loader2, Search, Eye, Download, FileText } from "lucide-react";
-import type { Json } from "@/integrations/supabase/types";
 
 interface AuditLog {
   id: string;
@@ -35,8 +34,8 @@ interface AuditLog {
   action: string;
   entity_type: string;
   entity_id: string | null;
-  old_values: Json | null;
-  new_values: Json | null;
+  old_values: unknown | null;
+  new_values: unknown | null;
   user_agent: string | null;
   created_at: string;
 }
@@ -53,6 +52,7 @@ const actionColors: Record<string, string> = {
 };
 
 export default function AdminAuditLogs() {
+  const api = useApi();
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedLog, setSelectedLog] = useState<AuditLog | null>(null);
@@ -62,28 +62,18 @@ export default function AdminAuditLogs() {
 
   const fetchLogs = useCallback(async () => {
     setLoading(true);
-    let query = supabase
-      .from("audit_logs")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(100);
-
-    if (actionFilter !== "all") {
-      query = query.eq("action", actionFilter);
-    }
-    if (entityFilter !== "all") {
-      query = query.eq("entity_type", entityFilter);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
+    try {
+      let endpoint = "/audit-logs?limit=100";
+      if (actionFilter !== "all") endpoint += `&action=${actionFilter}`;
+      if (entityFilter !== "all") endpoint += `&entity_type=${entityFilter}`;
+      const data = await api.get<AuditLog[]>(endpoint);
+      setLogs(data || []);
+      setLoading(false);
+    } catch (error) {
       console.error("Error fetching audit logs:", error);
-    } else {
-      setLogs((data as AuditLog[]) || []);
+      setLoading(false);
     }
-    setLoading(false);
-  }, [actionFilter, entityFilter]);
+  }, [api, actionFilter, entityFilter]);
 
   useEffect(() => {
     fetchLogs();

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { Loader2, Plus, FileText } from "lucide-react";
 
 interface NewsletterPost {
@@ -18,6 +18,7 @@ interface NewsletterPost {
 }
 
 export default function AdminNewsletter() {
+  const api = useApi();
   const [posts, setPosts] = useState<NewsletterPost[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,17 +27,14 @@ export default function AdminNewsletter() {
   }, []);
 
   const fetchPosts = async () => {
-    const { data, error } = await supabase
-      .from("newsletter_posts")
-      .select("*")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Error fetching newsletter posts:", error);
-    } else {
+    try {
+      const data = await api.get<NewsletterPost[]>("/newsletter");
       setPosts(data || []);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching newsletter posts:", error);
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   if (loading) {

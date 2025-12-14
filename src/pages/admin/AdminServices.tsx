@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 
@@ -24,74 +24,64 @@ interface Service {
 }
 
 export default function AdminServices() {
+  const api = useApi();
   const { toast } = useToast();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchServices = useCallback(async () => {
-    const { data, error } = await supabase
-      .from("services")
-      .select("id, name, category, base_price, is_active")
-      .order("category");
-
-    if (error) {
+    try {
+      const data = await api.get<Service[]>("/services");
+      setServices(data || []);
+      setLoading(false);
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to load services",
         variant: "destructive",
       });
-      return;
+      setLoading(false);
     }
-
-    setServices(data || []);
-    setLoading(false);
-  }, [toast]);
+  }, [api, toast]);
 
   useEffect(() => {
     fetchServices();
   }, [fetchServices]);
 
   const toggleServiceStatus = async (id: string, currentStatus: boolean) => {
-    const { error } = await supabase
-      .from("services")
-      .update({ is_active: !currentStatus })
-      .eq("id", id);
-
-    if (error) {
+    try {
+      await api.patch(`/services?id=${id}`, { is_active: !currentStatus });
+      toast({
+        title: "Success",
+        description: "Service status updated",
+      });
+      fetchServices();
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to update service status",
         variant: "destructive",
       });
-      return;
     }
-
-    toast({
-      title: "Success",
-      description: "Service status updated",
-    });
-    fetchServices();
   };
 
   const deleteService = async (id: string) => {
     if (!confirm("Are you sure you want to delete this service?")) return;
 
-    const { error } = await supabase.from("services").delete().eq("id", id);
-
-    if (error) {
+    try {
+      await api.delete(`/services?id=${id}`);
+      toast({
+        title: "Success",
+        description: "Service deleted",
+      });
+      fetchServices();
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to delete service",
         variant: "destructive",
       });
-      return;
     }
-
-    toast({
-      title: "Success",
-      description: "Service deleted",
-    });
-    fetchServices();
   };
 
   if (loading) {

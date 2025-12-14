@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { supabase } from "@/integrations/supabase/client";
+import { useApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
@@ -21,6 +21,7 @@ interface NewsPost {
 
 export default function Newsletter() {
   const { user } = useAuth();
+  const api = useApi();
   const { toast } = useToast();
   const [posts, setPosts] = useState<NewsPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,24 +29,19 @@ export default function Newsletter() {
   const fetchPosts = useCallback(async () => {
     if (!user) return;
 
-    const { data, error } = await supabase
-      .from("newsletter_posts")
-      .select("*")
-      .eq("is_published", true)
-      .order("published_at", { ascending: false });
-
-    if (error) {
+    try {
+      const data = await api.get<NewsPost[]>("/newsletter");
+      setPosts(data || []);
+      setLoading(false);
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to load newsletter posts",
         variant: "destructive",
       });
-      return;
+      setLoading(false);
     }
-
-    setPosts(data || []);
-    setLoading(false);
-  }, [user, toast]);
+  }, [user, api, toast]);
 
   useEffect(() => {
     fetchPosts();

@@ -5,7 +5,8 @@
 ![DOBEU](https://img.shields.io/badge/DOBEU-Tech%20Solutions-FACC15?style=for-the-badge&labelColor=000000)
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat-square&logo=typescript)
-![Supabase](https://img.shields.io/badge/Supabase-Backend-3FCF8E?style=flat-square&logo=supabase)
+![Auth0](https://img.shields.io/badge/Auth0-Auth-EB5424?style=flat-square&logo=auth0)
+![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248?style=flat-square&logo=mongodb)
 ![Netlify](https://img.shields.io/badge/Netlify-Hosted-00C7B7?style=flat-square&logo=netlify)
 
 **Transform Your Digital Vision**
@@ -38,7 +39,10 @@ DOBEU Tech Solutions is a premium digital services platform offering web develop
 | **Frontend** | React 18, TypeScript 5, Vite |
 | **Styling** | Tailwind CSS, Shadcn/ui |
 | **Animation** | Framer Motion |
-| **Backend** | Supabase (PostgreSQL, Auth, Storage, Functions) |
+| **Backend** | Netlify Functions (Node) |
+| **Auth** | Auth0 (SPA + JWT) |
+| **Database** | MongoDB Atlas |
+| **Files** | MongoDB GridFS |
 | **Hosting** | Netlify (Edge, CDN, Functions) |
 | **Testing** | Vitest (Unit), Playwright (E2E) |
 | **Analytics** | Google Analytics, Mixpanel |
@@ -71,8 +75,21 @@ npm run dev
 ### Environment Variables
 
 ```env
-VITE_SUPABASE_URL=your-supabase-project-url
-VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-anon-key
+# Frontend (Vite) - Auth0
+VITE_AUTH0_DOMAIN=your-tenant.us.auth0.com
+VITE_AUTH0_CLIENT_ID=your_auth0_spa_client_id
+VITE_AUTH0_AUDIENCE=https://api.dobeu.netlify.app
+
+# Backend (Netlify Functions)
+AUTH0_DOMAIN=your-tenant.us.auth0.com
+AUTH0_AUDIENCE=https://api.dobeu.netlify.app
+MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<db>?retryWrites=true&w=majority
+MONGODB_DB_NAME=app
+GRIDFS_BUCKET=files
+
+# Optional: Supabase Realtime (optional integration only)
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
 ```
 
 ## Scripts
@@ -101,7 +118,7 @@ VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-anon-key
 - ✅ Security headers (HSTS, CSP, X-Frame-Options)
 - ✅ Input validation and sanitization
 - ✅ Rate limiting
-- ✅ Secure authentication with Supabase Auth
+- ✅ Secure authentication with Auth0
 
 ### Performance
 - ✅ Code splitting and lazy loading
@@ -136,14 +153,8 @@ Access the admin portal at `/admin` with admin credentials.
 
 ### Creating an Admin User
 
-1. Register at `/auth`
-2. Grant admin role via Supabase SQL Editor:
-
-```sql
-UPDATE profiles 
-SET role = 'admin'
-WHERE email = 'your-email@example.com';
-```
+1. Ensure the user can log in via Auth0.
+2. Assign the Auth0 RBAC permission `admin:access` (or the configured equivalent) to the user.
 
 ### Admin Features
 

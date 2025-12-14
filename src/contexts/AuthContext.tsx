@@ -1,186 +1,204 @@
-import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
-import { User, Session, AuthError } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
 import { trackEvent, identifyUser, resetUser, MIXPANEL_EVENTS, trackFunnelStep } from '@/lib/mixpanel';
 import { identifyPostHogUser, resetPostHogUser, trackFunnelStep as trackPostHogFunnel, FUNNEL_STEPS, reloadFeatureFlags } from '@/lib/posthog';
 
-/**
- * Performance Optimizations:
- * 1. Use useCallback for all functions to prevent unnecessary re-renders
- * 2. Use useMemo for context value to prevent re-creating object on every render
- * 3. Batch analytics calls to reduce overhead
- * 4. Add error boundaries for analytics failures
- */
+export interface AuthUser {
+  id: string;
+  email?: string;
+  email_verified?: boolean;
+  name?: string;
+}
 
+export interface AuthSession {
+  accessToken?: string;
+  claims?: Record<string, unknown>;
+}
+
+export interface AuthError {
+  message: string;
+}
 interface AuthContextType {
-  user: User | null;
-  session: Session | null;
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
-  signUp: (email: string, password: string, username: string) => Promise<{ error: AuthError | null }>;
+  user: AuthUser | null;
+  session: AuthSession | null;
+  signIn: (email?: string, password?: string) => Promise<{ error: AuthError | null }>;
+  signUp: (email?: string, password?: string, username?: string) => Promise<{ error: AuthError | null }>;
   signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   resendVerificationEmail: () => Promise<{ error: AuthError | Error | null }>;
+  getAccessToken: () => Promise<string | null>;
   loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+function decodeJwtPayload(token: string): Record<string, unknown> | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length < 2) return null;
+    const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const json = atob(payload.padEnd(payload.length + ((4 - (payload.length % 4)) % 4), '='));
+    return JSON.parse(json) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+function AuthContextInner({ children }: { children: React.ReactNode }) {
+  const { isLoading, isAuthenticated, user: auth0User, loginWithRedirect, logout, getAccessTokenSilently } = useAuth0();
   const navigate = useNavigate();
+  const [session, setSession] = useState<AuthSession | null>(null);
+
+  const user = useMemo<AuthUser | null>(() => {
+    if (!isAuthenticated || !auth0User?.sub) return null;
+    return {
+      id: auth0User.sub,
+      email: (auth0User as any).email,
+      email_verified: (auth0User as any).email_verified,
+      name: (auth0User as any).name,
+    };
+  }, [auth0User, isAuthenticated]);
 
   useEffect(() => {
-    // Set up auth state listener first
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (event === 'SIGNED_IN' && session) {
-          // Check if email is verified before redirecting
-          if (session.user.email_confirmed_at) {
-            navigate('/');
-          } else {
-            navigate('/verify-email');
-          }
+    if (!user) return;
+    identifyUser(user.id, { email: user.email });
+    identifyPostHogUser(user.id, { email: user.email });
+    reloadFeatureFlags();
+  }, [user]);
+
+  const getAccessToken = useMemo(
+    () =>
+      async (): Promise<string | null> => {
+        if (!isAuthenticated) return null;
+        try {
+          const token = await getAccessTokenSilently();
+          setSession({ accessToken: token, claims: decodeJwtPayload(token) ?? undefined });
+          return token;
+        } catch {
+          return null;
         }
-      }
-    );
+      },
+    [isAuthenticated, getAccessTokenSilently]
+  );
 
-    // Then check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-      
-      // Identify user in Mixpanel and PostHog if session exists
-      if (session?.user) {
-        identifyUser(session.user.id, { 
-          email: session.user.email,
-          created_at: session.user.created_at,
-        });
-        identifyPostHogUser(session.user.id, {
-          email: session.user.email,
-          created_at: session.user.created_at,
-        });
-        reloadFeatureFlags();
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  // Memoize functions to prevent unnecessary re-renders of consuming components
-  const signUp = useCallback(async (email: string, password: string, username: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          username: username
-        }
-      }
-    });
-
-    if (!error && data.user) {
-      // Track signup event
-      trackEvent(MIXPANEL_EVENTS.SIGN_UP, {
-        user_id: data.user.id,
-        email: email,
-        username: username,
+  const signIn = async () => {
+    try {
+      trackEvent(MIXPANEL_EVENTS.SIGN_IN);
+      await loginWithRedirect({
+        appState: { returnTo: '/' },
       });
-      identifyUser(data.user.id, { email, username });
-      
-      // Track funnel: Signup Complete
-      trackFunnelStep('FUNNEL_SIGNUP_COMPLETE', { user_id: data.user.id });
-      trackPostHogFunnel(FUNNEL_STEPS.SIGNUP_COMPLETE, { user_id: data.user.id });
-      identifyPostHogUser(data.user.id, { email, username });
-      reloadFeatureFlags();
-
-      // Create profile entry
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          auth_user_id: data.user.id,
-          username: username
-        });
-      
-      if (profileError) {
-        return { error: profileError };
-      }
+      return { error: null };
+    } catch (e) {
+      return { error: { message: e instanceof Error ? e.message : 'Login failed' } };
     }
-
-    return { error };
   };
 
-  const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    
-    if (!error && data.user) {
-      trackEvent(MIXPANEL_EVENTS.SIGN_IN, { email });
-      identifyUser(data.user.id, { email });
+  const signUp = async () => {
+    try {
+      trackEvent(MIXPANEL_EVENTS.SIGN_UP);
+      await loginWithRedirect({
+        authorizationParams: { screen_hint: 'signup' },
+        appState: { returnTo: '/' },
+      });
+      trackFunnelStep('FUNNEL_SIGNUP_COMPLETE');
+      trackPostHogFunnel(FUNNEL_STEPS.SIGNUP_COMPLETE);
+      return { error: null };
+    } catch (e) {
+      return { error: { message: e instanceof Error ? e.message : 'Signup failed' } };
     }
-    
-    return { error };
   };
 
   const signInWithGoogle = async () => {
-    trackEvent(MIXPANEL_EVENTS.SIGN_IN_GOOGLE);
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/`
-      }
-    });
-    return { error };
+    try {
+      trackEvent(MIXPANEL_EVENTS.SIGN_IN_GOOGLE);
+      await loginWithRedirect({
+        appState: { returnTo: '/' },
+      });
+      return { error: null };
+    } catch (e) {
+      return { error: { message: e instanceof Error ? e.message : 'Google sign-in failed' } };
+    }
   };
 
   const signOut = async () => {
     trackEvent(MIXPANEL_EVENTS.SIGN_OUT);
     resetUser();
     resetPostHogUser();
-    await supabase.auth.signOut();
+    setSession(null);
+    await logout({ logoutParams: { returnTo: `${window.location.origin}/auth` } });
     navigate('/auth');
   };
 
   const resendVerificationEmail = async () => {
-    if (!user?.email) {
-      return { error: new Error('No email address found') };
-    }
-
-    const { error } = await supabase.auth.resend({
-      type: 'signup',
-      email: user.email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/`
-      }
-    });
-
-    return { error };
+    // Auth0 verification resend is handled via Auth0 flows (Universal Login / email templates).
+    return { error: new Error('Email verification resend is managed by Auth0') };
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      session, 
-      signIn, 
-      signUp, 
-      signInWithGoogle, 
-      signOut, 
-      resendVerificationEmail,
-      loading 
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        session,
+        signIn,
+        signUp,
+        signInWithGoogle,
+        signOut,
+        resendVerificationEmail,
+        getAccessToken,
+        loading: isLoading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
+  );
+}
+
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+  const navigate = useNavigate();
+
+  const domain = import.meta.env.VITE_AUTH0_DOMAIN;
+  const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
+  const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
+
+  // If Auth0 isn't configured, keep the app usable for public pages.
+  if (!domain || !clientId) {
+    return (
+      <AuthContext.Provider
+        value={{
+          user: null,
+          session: null,
+          signIn: async () => ({ error: { message: 'Auth is not configured' } }),
+          signUp: async () => ({ error: { message: 'Auth is not configured' } }),
+          signInWithGoogle: async () => ({ error: { message: 'Auth is not configured' } }),
+          signOut: async () => undefined,
+          resendVerificationEmail: async () => ({ error: new Error('Auth is not configured') }),
+          getAccessToken: async () => null,
+          loading: false,
+        }}
+      >
+        {children}
+      </AuthContext.Provider>
+    );
+  }
+
+  return (
+    <Auth0Provider
+      domain={domain}
+      clientId={clientId}
+      cacheLocation="localstorage"
+      useRefreshTokens
+      authorizationParams={{
+        redirect_uri: window.location.origin,
+        audience: audience || undefined,
+      }}
+      onRedirectCallback={(appState) => {
+        const to = (appState as any)?.returnTo as string | undefined;
+        navigate(to || '/');
+      }}
+    >
+      <AuthContextInner>{children}</AuthContextInner>
+    </Auth0Provider>
   );
 };
 

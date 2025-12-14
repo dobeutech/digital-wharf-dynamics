@@ -8,6 +8,22 @@ interface RequestOptions extends RequestInit {
   retries?: number;
   retryDelay?: number;
   timeout?: number;
+  includeAuth?: boolean; // Whether to include Auth0 token
+}
+
+/**
+ * Get Auth0 access token for authenticated requests
+ */
+async function getAuthToken(): Promise<string | null> {
+  try {
+    // Dynamically import to avoid circular dependency
+    const { useAuth } = await import('@/contexts/AuthContext');
+    // Note: This won't work directly in a non-React context
+    // We'll need to pass the token from components
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -21,8 +37,20 @@ export async function apiRequest<T>(
     retries = 3,
     retryDelay = 1000,
     timeout = 30000,
+    includeAuth = false,
     ...fetchOptions
   } = options;
+
+  // Get Auth0 token if needed
+  let authToken: string | null = null;
+  if (includeAuth) {
+    authToken = await getAuthToken();
+  }
+
+  const headers = new Headers(fetchOptions.headers);
+  if (authToken) {
+    headers.set('Authorization', `Bearer ${authToken}`);
+  }
 
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeout);
@@ -32,6 +60,7 @@ export async function apiRequest<T>(
       async () => {
         const res = await fetch(url, {
           ...fetchOptions,
+          headers,
           signal: controller.signal,
         });
 
@@ -113,5 +142,75 @@ export function put<T>(url: string, data?: unknown, options?: RequestOptions): P
  */
 export function del<T>(url: string, options?: RequestOptions): Promise<T> {
   return apiRequest<T>(url, { ...options, method: 'DELETE' });
+}
+
+/**
+ * Netlify Functions API client
+ * Automatically includes Auth0 token and uses correct base URL
+ */
+export class NetlifyFunctionsClient {
+  private baseUrl: string;
+  private getToken: (() => Promise<string | null>) | null = null;
+
+  constructor(getTokenFn?: () => Promise<string | null>) {
+    // Use Netlify Functions URL in production, localhost in development
+    this.baseUrl = import.meta.env.PROD
+      ? '/.netlify/functions'
+      : 'http://localhost:8888/.netlify/functions';
+    this.getToken = getTokenFn || null;
+  }
+
+  private async getHeaders(): Promise<HeadersInit> {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+
+    if (this.getToken) {
+      const token = await this.getToken();
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+    }
+
+    return headers;
+  }
+
+  async get<T>(endpoint: string, options?: RequestOptions): Promise<T> {
+    const headers = await this.getHeaders();
+    return apiRequest<T>(`${this.baseUrl}${endpoint}`, {
+      ...options,
+      method: 'GET',
+      headers: { ...headers, ...options?.headers },
+    });
+  }
+
+  async post<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
+    const headers = await this.getHeaders();
+    return apiRequest<T>(`${this.baseUrl}${endpoint}`, {
+      ...options,
+      method: 'POST',
+      headers: { ...headers, ...options?.headers },
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  async put<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
+    const headers = await this.getHeaders();
+    return apiRequest<T>(`${this.baseUrl}${endpoint}`, {
+      ...options,
+      method: 'PUT',
+      headers: { ...headers, ...options?.headers },
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  async delete<T>(endpoint: string, options?: RequestOptions): Promise<T> {
+    const headers = await this.getHeaders();
+    return apiRequest<T>(`${this.baseUrl}${endpoint}`, {
+      ...options,
+      method: 'DELETE',
+      headers: { ...headers, ...options?.headers },
+    });
+  }
 }
 
