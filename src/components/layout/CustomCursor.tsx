@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
+import { useSettings } from "@/contexts/SettingsContext";
 
 export function CustomCursor() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isPointer, setIsPointer] = useState(false);
+  const { settings } = useSettings();
 
   useEffect(() => {
+    if (!settings.customCursorEnabled) return;
+
     const updateMousePosition = (e: MouseEvent) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
-      
+
       const target = e.target as HTMLElement;
       setIsPointer(
         target.tagName === "A" ||
@@ -20,7 +24,11 @@ export function CustomCursor() {
 
     window.addEventListener("mousemove", updateMousePosition);
     return () => window.removeEventListener("mousemove", updateMousePosition);
-  }, []);
+  }, [settings.customCursorEnabled]);
+
+  if (!settings.customCursorEnabled) {
+    return null;
+  }
 
   return (
     <>
