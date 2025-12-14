@@ -50,7 +50,11 @@ export const handler: Handler = async (event) => {
 
     if (event.httpMethod === 'POST') {
       // Toggle role assignment (idempotent-ish).
-      const body = await readJson<{ user_id?: string; role?: 'admin' | 'moderator' | 'user'; enabled?: boolean }>(event);
+      const rawBody = await readJson<unknown>(event);
+      if (!rawBody || typeof rawBody !== 'object') {
+        return errorResponse(400, 'Invalid JSON body');
+      }
+      const body = rawBody as { user_id?: string; role?: 'admin' | 'moderator' | 'user'; enabled?: boolean };
       if (!body.user_id || !body.role) return errorResponse(400, 'Missing user_id or role');
       const enabled = body.enabled !== false;
       const now = new Date().toISOString();
@@ -70,7 +74,7 @@ export const handler: Handler = async (event) => {
 
     return errorResponse(405, 'Method not allowed');
   } catch (err) {
-    return errorResponse(500, 'Internal error', err instanceof Error ? err.message : String(err));
+    return errorResponse(500, 'Internal error');
   }
 };
 

@@ -11,6 +11,10 @@ const STATIC_CACHE = 'dobeu-static-v1';
 const STATIC_ASSETS = [
   '/',
   '/favicon.ico',
+  '/icon.svg',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/apple-touch-icon.png',
   '/manifest.json',
 ];
 

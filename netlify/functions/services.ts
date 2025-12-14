@@ -105,7 +105,13 @@ export const handler: Handler = async (event) => {
 
     if (event.httpMethod === 'DELETE') {
       if (!id) return errorResponse(400, 'Missing id');
-      const res = await col.deleteOne({ _id: new ObjectId(id) });
+      let objectId: ObjectId;
+      try {
+        objectId = new ObjectId(id);
+      } catch {
+        return errorResponse(400, 'Invalid id');
+      }
+      const res = await col.deleteOne({ _id: objectId });
       return jsonResponse(200, { deleted: res.deletedCount === 1 });
     }
 

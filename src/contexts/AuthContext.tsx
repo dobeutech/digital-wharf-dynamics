@@ -67,16 +67,20 @@ function AuthContextInner({ children }: { children: React.ReactNode }) {
     reloadFeatureFlags();
   }, [user]);
 
-  const getAccessToken = async (): Promise<string | null> => {
-    if (!isAuthenticated) return null;
-    try {
-      const token = await getAccessTokenSilently();
-      setSession({ accessToken: token, claims: decodeJwtPayload(token) ?? undefined });
-      return token;
-    } catch {
-      return null;
-    }
-  };
+  const getAccessToken = useMemo(
+    () =>
+      async (): Promise<string | null> => {
+        if (!isAuthenticated) return null;
+        try {
+          const token = await getAccessTokenSilently();
+          setSession({ accessToken: token, claims: decodeJwtPayload(token) ?? undefined });
+          return token;
+        } catch {
+          return null;
+        }
+      },
+    [isAuthenticated, getAccessTokenSilently]
+  );
 
   const signIn = async () => {
     try {
