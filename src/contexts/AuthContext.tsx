@@ -67,6 +67,40 @@ function AuthContextInner({ children }: { children: React.ReactNode }) {
     reloadFeatureFlags();
   }, [user]);
 
+  // Check phone verification status after OAuth login
+  useEffect(() => {
+    if (!isAuthenticated || !user || isLoading) return;
+
+    const checkPhoneVerification = async () => {
+      try {
+        const token = await getAccessTokenSilently();
+        if (!token) return;
+
+        const response = await fetch('/.netlify/functions/check-phone-verification', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // If user is new or phone not verified, redirect to phone verification
+          // Skip if already on verify-phone page to avoid redirect loop
+          if (!data.phone_verified && !window.location.pathname.includes('/verify-phone')) {
+            navigate('/verify-phone');
+          }
+        }
+      } catch (error) {
+        // Silently fail - don't block user if check fails
+        console.error('Error checking phone verification:', error);
+      }
+    };
+
+    // Small delay to ensure token is available
+    const timer = setTimeout(checkPhoneVerification, 1000);
+    return () => clearTimeout(timer);
+  }, [isAuthenticated, user, isLoading, getAccessTokenSilently, navigate]);
+
   const getAccessToken = useMemo(
     () =>
       async (): Promise<string | null> => {

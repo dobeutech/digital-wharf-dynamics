@@ -44,6 +44,7 @@ const News = lazy(() => import("./pages/News"));
 const Newsletter = lazy(() => import("./pages/Newsletter"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const VerifyEmail = lazy(() => import("./pages/VerifyEmail"));
+const VerifyPhone = lazy(() => import("./pages/VerifyPhone"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminServices = lazy(() => import("./pages/admin/AdminServices"));
 const AdminProjects = lazy(() => import("./pages/admin/AdminProjects"));
@@ -105,6 +106,7 @@ const App = () => (
                           <Route path="/auth" element={<Auth />} />
                           <Route path="/reset-password" element={<ResetPassword />} />
                           <Route path="/verify-email" element={<VerifyEmail />} />
+                          <Route path="/verify-phone" element={<VerifyPhone />} />
                           <Route path="/news" element={<News />} />
                           <Route path="/dashboard" element={
                             <ProtectedRoute>

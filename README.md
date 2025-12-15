@@ -87,6 +87,11 @@ MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<db>?retryWrites=true&w=ma
 MONGODB_DB_NAME=app
 GRIDFS_BUCKET=files
 
+# Twilio SMS Verification
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE_NUMBER=+1234567890
+
 # Optional: Supabase Realtime (optional integration only)
 VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
@@ -151,6 +156,121 @@ The Intercom chat widget is integrated for customer support. If the widget is no
 - File: `src/components/Analytics.tsx`
 - The Intercom initialization happens automatically when the Analytics component mounts
 - User data is updated when a user logs in
+
+### Twilio SMS Verification
+
+Twilio SMS verification is integrated to verify phone numbers for new OAuth users. When a user creates an account via OAuth (Google, etc.), they are required to verify their phone number before accessing protected features.
+
+#### Setup
+
+1. **Install Twilio SDK:**
+   ```bash
+   npm install twilio
+   ```
+
+2. **Configure Environment Variables:**
+   
+   Add these to your Netlify environment variables:
+   ```env
+   TWILIO_ACCOUNT_SID=your_twilio_account_sid
+   TWILIO_AUTH_TOKEN=your_twilio_auth_token
+   TWILIO_PHONE_NUMBER=+1234567890  # Your Twilio phone number
+   ```
+
+3. **Get Twilio Credentials:**
+   - Sign up at [Twilio](https://www.twilio.com/)
+   - Get your Account SID and Auth Token from the Twilio Console
+   - Purchase a phone number or use a trial number for testing
+
+#### How It Works
+
+1. **New User Flow:**
+   - User signs up via OAuth (Google, etc.)
+   - After successful authentication, the system checks if phone is verified
+   - If not verified, user is redirected to `/verify-phone`
+   - User enters phone number and receives SMS code
+   - User enters 6-digit code to verify
+   - Once verified, user can access all features
+
+2. **Verification Functions:**
+   - `/.netlify/functions/send-sms-verification` - Sends SMS verification code
+   - `/.netlify/functions/verify-sms-code` - Verifies the SMS code
+   - `/.netlify/functions/check-phone-verification` - Checks verification status
+
+3. **Database Schema:**
+   The `profiles` collection in MongoDB includes:
+   ```typescript
+   {
+     auth_user_id: string;      // Auth0 user ID
+     phone: string;              // Normalized phone number (10 digits)
+     phone_verified: boolean;   // Verification status
+     phone_verified_at: string;  // ISO timestamp
+     username: string;
+     created_at: string;
+     updated_at: string;
+   }
+   ```
+
+4. **SMS Verification Codes:**
+   Codes are stored in `sms_verification_codes` collection:
+   - 6-digit numeric codes
+   - 10-minute expiration
+   - Maximum 5 verification attempts
+   - Rate limiting: 1 code per 10 minutes per user
+
+#### Implementation Details
+
+**Files:**
+- `netlify/functions/send-sms-verification.ts` - Sends SMS code
+- `netlify/functions/verify-sms-code.ts` - Verifies SMS code
+- `netlify/functions/check-phone-verification.ts` - Checks status
+- `src/pages/VerifyPhone.tsx` - Phone verification UI
+- `src/contexts/AuthContext.tsx` - Auto-redirects to verification if needed
+
+**Phone Number Format:**
+- Accepts US phone numbers only
+- Automatically normalizes to 10 digits
+- Formats as `+1XXXXXXXXXX` for Twilio
+
+**Security Features:**
+- Rate limiting on code requests
+- Code expiration (10 minutes)
+- Maximum attempt limits (5 attempts)
+- One-time use codes
+- Authentication required for all endpoints
+
+#### Troubleshooting
+
+**Issue: SMS codes not being sent**
+
+1. **Verify Twilio credentials:**
+   ```bash
+   # Check environment variables in Netlify
+   netlify env:list
+   ```
+
+2. **Check Twilio account:**
+   - Ensure account is active
+   - Verify phone number is purchased/verified
+   - Check account balance (if using pay-as-you-go)
+
+3. **Check function logs:**
+   - View Netlify function logs in dashboard
+   - Look for Twilio API errors
+
+**Issue: Codes not verifying**
+
+1. **Check code expiration:**
+   - Codes expire after 10 minutes
+   - Request a new code if expired
+
+2. **Verify attempt limits:**
+   - Maximum 5 attempts per code
+   - Request new code if limit reached
+
+3. **Check phone number format:**
+   - Must be valid US phone number
+   - Should be 10 digits (area code + number)
 
 ### Netlify CLI and Auth0 Setup
 
