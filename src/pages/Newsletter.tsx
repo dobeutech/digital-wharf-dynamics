@@ -7,6 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Calendar, Lock } from "lucide-react";
 import DOMPurify from "dompurify";
+import { PageMeta } from "@/components/seo/PageMeta";
 
 interface NewsPost {
   id: string;
@@ -56,8 +57,15 @@ export default function Newsletter() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4">
-      <div className="container mx-auto max-w-4xl">
+    <>
+      <PageMeta
+        title="The Digital Wharf Newsletter"
+        description="Exclusive updates, insights, and tech news for DOBEU members. Subscribe to stay informed about the latest in web development and software solutions."
+        keywords="newsletter, tech updates, web development news, exclusive content, member updates"
+        canonical="https://dobeu.net/newsletter"
+      />
+      <div className="min-h-screen pt-24 pb-20 px-4">
+        <div className="container mx-auto max-w-4xl">
         <div className="mb-12">
           <h1 className="text-4xl font-bold mb-4">The Digital Wharf</h1>
           <p className="text-xl text-muted-foreground">
@@ -119,5 +127,6 @@ export default function Newsletter() {
         )}
       </div>
     </div>
+    </>
   );
 }

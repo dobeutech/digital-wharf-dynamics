@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Check } from "lucide-react";
+import { PageMeta } from "@/components/seo/PageMeta";
 
 export default function Pricing() {
   const pricingPlans = [
@@ -61,8 +62,15 @@ export default function Pricing() {
   ];
 
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4">
-      <div className="container mx-auto">
+    <>
+      <PageMeta
+        title="Pricing Plans"
+        description="Flexible pricing options for web development and consulting services. Choose from project-based, hourly, or monthly retainer plans starting at $250/hour."
+        keywords="web development pricing, consulting rates, software development cost, hourly consulting, monthly retainer"
+        canonical="https://dobeu.net/pricing"
+      />
+      <div className="min-h-screen pt-24 pb-20 px-4">
+        <div className="container mx-auto">
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold mb-6 gradient-primary bg-clip-text text-transparent">
             Pricing Plans
@@ -142,5 +150,6 @@ export default function Pricing() {
         </div>
       </div>
     </div>
+    </>
   );
 }

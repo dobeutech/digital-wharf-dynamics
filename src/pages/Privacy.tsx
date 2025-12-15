@@ -1,6 +1,15 @@
+import { PageMeta } from "@/components/seo/PageMeta";
+
 export default function Privacy() {
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4">
+    <>
+      <PageMeta
+        title="Privacy Policy"
+        description="DOBEU Privacy Policy - Learn how we collect, use, and protect your personal information. Last updated December 2, 2025."
+        keywords="privacy policy, data protection, GDPR, CCPA, personal information"
+        canonical="https://dobeu.net/privacy"
+      />
+      <div className="min-h-screen pt-24 pb-20 px-4">
       <div className="container mx-auto max-w-4xl">
         <h1 className="text-4xl font-bold mb-8">Privacy Policy</h1>
         <div className="prose prose-lg max-w-none space-y-6 text-muted-foreground">
@@ -167,5 +176,6 @@ export default function Privacy() {
         </div>
       </div>
     </div>
+    </>
   );
 }

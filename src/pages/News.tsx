@@ -5,6 +5,7 @@ import { useApi } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { Calendar } from "lucide-react";
+import { PageMeta } from "@/components/seo/PageMeta";
 
 interface NewsPost {
   id: string;
@@ -51,8 +52,15 @@ export default function News() {
   }
 
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4">
-      <div className="container mx-auto max-w-4xl">
+    <>
+      <PageMeta
+        title="Latest News & Updates"
+        description="Stay updated with the latest news, announcements, and insights from DOBEU. Read about our projects, technology trends, and industry updates."
+        keywords="tech news, web development updates, software development blog, DOBEU news, technology insights"
+        canonical="https://dobeu.net/news"
+      />
+      <div className="min-h-screen pt-24 pb-20 px-4">
+        <div className="container mx-auto max-w-4xl">
         <div className="mb-12">
           <h1 className="text-4xl font-bold mb-4">Latest News</h1>
           <p className="text-xl text-muted-foreground">Stay updated with our latest announcements and insights</p>
@@ -93,5 +101,6 @@ export default function News() {
         )}
       </div>
     </div>
+    </>
   );
 }

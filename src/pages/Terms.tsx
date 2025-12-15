@@ -1,6 +1,15 @@
+import { PageMeta } from "@/components/seo/PageMeta";
+
 export default function Terms() {
   return (
-    <div className="min-h-screen pt-24 pb-20 px-4">
+    <>
+      <PageMeta
+        title="Terms of Service"
+        description="DOBEU Terms of Service - Read our terms and conditions for using our web development and consulting services. Last updated December 2, 2025."
+        keywords="terms of service, terms and conditions, service agreement, legal terms"
+        canonical="https://dobeu.net/terms"
+      />
+      <div className="min-h-screen pt-24 pb-20 px-4">
       <div className="container mx-auto max-w-4xl">
         <h1 className="text-4xl font-bold mb-8">Terms of Service</h1>
         <div className="prose prose-lg max-w-none space-y-6 text-muted-foreground">
@@ -161,5 +170,6 @@ export default function Terms() {
         </div>
       </div>
     </div>
+    </>
   );
 }
