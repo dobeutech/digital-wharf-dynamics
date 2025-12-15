@@ -39,8 +39,8 @@ export const Analytics = () => {
     if (!user) return;
 
     try {
-      Intercom({
-        app_id: 'xu0gfiqb',
+      // Use the 'update' method to modify user attributes after boot
+      Intercom('update', {
         user_id: user.id,
         ...(user.name && { name: user.name }),
         ...(user.email && { email: user.email }),
