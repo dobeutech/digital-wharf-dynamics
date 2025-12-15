@@ -118,15 +118,22 @@ export function mockMatchMedia(matches = false) {
  * Mock IntersectionObserver for lazy loading tests
  */
 export function mockIntersectionObserver() {
-  global.IntersectionObserver = class IntersectionObserver {
-    constructor() {}
-    disconnect() {}
-    observe() {}
-    takeRecords() {
+  global.IntersectionObserver = class MockIntersectionObserver implements IntersectionObserver {
+    readonly root: Element | Document | null = null;
+    readonly rootMargin: string = "";
+    readonly thresholds: ReadonlyArray<number> = [];
+
+    constructor(
+      _callback: IntersectionObserverCallback,
+      _options?: IntersectionObserverInit,
+    ) {}
+    disconnect(): void {}
+    observe(_target: Element): void {}
+    takeRecords(): IntersectionObserverEntry[] {
       return [];
     }
-    unobserve() {}
-  } as any;
+    unobserve(_target: Element): void {}
+  };
 }
 
 /**

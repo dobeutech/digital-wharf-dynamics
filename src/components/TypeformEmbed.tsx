@@ -1,11 +1,26 @@
 import { useEffect } from "react";
 
+// Type definition for Typeform embed library
+interface TypeformAPI {
+  load: () => void;
+  createPopup: (
+    formId: string,
+    options: Record<string, unknown>,
+  ) => { open: () => void };
+}
+
+declare global {
+  interface Window {
+    tf?: TypeformAPI;
+  }
+}
+
 export const TypeformEmbed = () => {
   useEffect(() => {
     // Typeform script is loaded in index.html
     // This ensures the live embed is initialized when the component mounts
-    if (typeof window !== "undefined" && (window as any).tf) {
-      (window as any).tf.load();
+    if (typeof window !== "undefined" && window.tf) {
+      window.tf.load();
     }
   }, []);
 

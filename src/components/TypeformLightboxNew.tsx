@@ -5,6 +5,21 @@ import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/mixpanel";
 import { useAuth } from "@/contexts/AuthContext";
 
+// Type definition for Typeform embed library
+interface TypeformAPI {
+  load: () => void;
+  createPopup: (
+    formId: string,
+    options: Record<string, unknown>,
+  ) => { open: () => void };
+}
+
+declare global {
+  interface Window {
+    tf?: TypeformAPI;
+  }
+}
+
 interface TypeformLightboxNewProps {
   isOpen: boolean;
   onClose: () => void;
@@ -82,9 +97,9 @@ export function TypeformLightboxNew({
         containerRef.current.appendChild(embedDiv);
 
         // Trigger Typeform load if available
-        if ((window as any).tf && (window as any).tf.load) {
+        if (window.tf?.load) {
           try {
-            (window as any).tf.load();
+            window.tf.load();
           } catch (error) {
             console.error("Error loading Typeform:", error);
           }

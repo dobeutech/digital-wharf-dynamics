@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import {
   Card,
   CardContent,
@@ -17,8 +19,23 @@ import {
 import { PageMeta } from "@/components/seo/PageMeta";
 
 export default function Services() {
+  const { hash } = useLocation();
+
+  // Scroll to anchor when hash changes
+  useEffect(() => {
+    if (hash) {
+      const element = document.getElementById(hash.replace("#", ""));
+      if (element) {
+        // Small delay to ensure page is rendered
+        setTimeout(() => {
+          element.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 100);
+      }
+    }
+  }, [hash]);
   const services = [
     {
+      id: "website",
       icon: Globe,
       title: "Website Design & Development",
       description:
@@ -31,6 +48,7 @@ export default function Services() {
       ],
     },
     {
+      id: "software",
       icon: Code2,
       title: "Software Development",
       description:
@@ -43,6 +61,7 @@ export default function Services() {
       ],
     },
     {
+      id: "learning",
       icon: BookOpen,
       title: "Learning & Training",
       description:
@@ -55,6 +74,7 @@ export default function Services() {
       ],
     },
     {
+      id: "consulting",
       icon: MessageSquare,
       title: "Consulting",
       description:
@@ -67,6 +87,7 @@ export default function Services() {
       ],
     },
     {
+      id: "strategic",
       icon: TrendingUp,
       title: "Strategic Planning & Optimization",
       description:
@@ -100,10 +121,11 @@ export default function Services() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            {services.map((service, index) => (
+            {services.map((service) => (
               <Card
-                key={index}
-                className="shadow-material hover:shadow-material-lg transition-material"
+                key={service.id}
+                id={service.id}
+                className="shadow-material hover:shadow-material-lg transition-material scroll-mt-24"
               >
                 <CardHeader>
                   <service.icon className="w-12 h-12 text-primary mb-4" />
