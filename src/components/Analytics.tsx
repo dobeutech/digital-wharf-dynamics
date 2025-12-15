@@ -1,13 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import posthog from 'posthog-js';
 import Intercom from '@intercom/messenger-js-sdk';
 import { useAuth } from '@/contexts/AuthContext';
-import { useAuth0 } from '@auth0/auth0-react';
 
 export const Analytics = () => {
   const { user } = useAuth();
-  const { user: auth0User } = useAuth0();
-  const intercomInitialized = useRef(false);
 
   useEffect(() => {
     // Initialize PostHog
@@ -22,101 +19,44 @@ export const Analytics = () => {
     console.log('Analytics initialized: PostHog, Intercom, and GTM');
   }, []);
 
-  // Initialize Intercom immediately on mount (even without user)
+  // Initialize Intercom
   useEffect(() => {
-    if (!intercomInitialized.current) {
-      // Initialize Intercom with just app_id first
-      try {
-        Intercom({
-          app_id: 'xu0gfiqb',
-        });
-        intercomInitialized.current = true;
+    try {
+      Intercom({
+        app_id: 'xu0gfiqb',
+      });
+      
+      if (import.meta.env.DEV) {
         console.log('Intercom initialized with app_id: xu0gfiqb');
-
-        // Boot Intercom to show the messenger widget
-        if (typeof window !== 'undefined') {
-          const win = window as any;
-          if (win.Intercom) {
-            win.Intercom('boot', { app_id: 'xu0gfiqb' });
-            console.log('Intercom booted successfully');
-          } else {
-            // Fallback: wait for Intercom to load then boot
-            const checkIntercom = setInterval(() => {
-              if (win.Intercom) {
-                win.Intercom('boot', { app_id: 'xu0gfiqb' });
-                console.log('Intercom booted after delay');
-                clearInterval(checkIntercom);
-              }
-            }, 100);
-            // Clear interval after 5 seconds to prevent infinite loop
-            setTimeout(() => clearInterval(checkIntercom), 5000);
-          }
-        }
-      } catch (error) {
-        console.error('Failed to initialize Intercom:', error);
       }
+    } catch (error) {
+      console.error('Failed to initialize Intercom:', error);
     }
   }, []);
 
   // Update Intercom when user data changes
   useEffect(() => {
-    if (!intercomInitialized.current) return;
+    if (!user) return;
 
-    // Convert created_at to Unix timestamp (seconds) if available
-    let createdAt: number | undefined;
-    
-    // First check the raw Auth0 user object (which may have created_at)
-    if (auth0User && (auth0User as any).created_at) {
-      const created = (auth0User as any).created_at;
-      if (typeof created === 'string') {
-        // ISO string - convert to Unix timestamp
-        createdAt = Math.floor(new Date(created).getTime() / 1000);
-      } else if (typeof created === 'number') {
-        // Already a timestamp - ensure it's in seconds
-        createdAt = created < 10000000000 ? created : Math.floor(created / 1000);
-      }
-    }
-    // Fallback to mapped user object if not found in auth0User
-    else if (user && (user as any).created_at) {
-      const created = (user as any).created_at;
-      if (typeof created === 'string') {
-        createdAt = Math.floor(new Date(created).getTime() / 1000);
-      } else if (typeof created === 'number') {
-        createdAt = created < 10000000000 ? created : Math.floor(created / 1000);
-      }
-    }
+    try {
+      Intercom({
+        app_id: 'xu0gfiqb',
+        user_id: user.id,
+        ...(user.name && { name: user.name }),
+        ...(user.email && { email: user.email }),
+      });
 
-    // Build Intercom config with user data
-    const intercomConfig: {
-      app_id: string;
-      user_id?: string;
-      name?: string;
-      email?: string;
-      created_at?: number;
-    } = {
-      app_id: 'xu0gfiqb',
-    };
-
-    if (user) {
-      intercomConfig.user_id = user.id;
-      if (user.name) intercomConfig.name = user.name;
-      if (user.email) intercomConfig.email = user.email;
-      if (createdAt) intercomConfig.created_at = createdAt;
-
-      // Update Intercom by calling it again with full config
-      try {
-        Intercom('update', intercomConfig);
+      if (import.meta.env.DEV) {
         console.log('Intercom updated with user data:', {
-          user_id: intercomConfig.user_id,
-          email: intercomConfig.email,
-          name: intercomConfig.name,
-          created_at: intercomConfig.created_at,
+          user_id: user.id,
+          email: user.email,
+          name: user.name,
         });
-      } catch (error) {
-        console.error('Failed to update Intercom:', error);
       }
+    } catch (error) {
+      console.error('Failed to update Intercom:', error);
     }
-  }, [user, auth0User]);
+  }, [user]);
 
   return null;
 };

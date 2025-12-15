@@ -220,7 +220,6 @@ const App = () => (
                 </div>
                   <CookieConsentBanner />
                   <NewsletterPopup />
-                  <TypeformEmbed />
                 </NavigationProvider>
               </AuthProvider>
               </LanguageProvider>

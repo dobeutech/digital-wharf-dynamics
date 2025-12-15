@@ -92,6 +92,104 @@ VITE_SUPABASE_URL=
 VITE_SUPABASE_PUBLISHABLE_KEY=
 ```
 
+## Third-Party Integrations
+
+### Intercom Chat Widget
+
+The Intercom chat widget is integrated for customer support. If the widget is not appearing, follow these steps:
+
+#### Installation
+
+1. **Install the Intercom SDK package:**
+   ```bash
+   npm install @intercom/messenger-js-sdk
+   ```
+
+2. **Import and initialize in your component:**
+   ```typescript
+   import Intercom from '@intercom/messenger-js-sdk';
+
+   // Initialize Intercom
+   Intercom({
+     app_id: 'xu0gfiqb',
+   });
+   ```
+
+#### Common Issues and Fixes
+
+**Issue: Intercom widget not appearing**
+
+1. **Verify the package is installed:**
+   ```bash
+   npm list @intercom/messenger-js-sdk
+   ```
+   If not installed, run: `npm install @intercom/messenger-js-sdk`
+
+2. **Check the implementation:**
+   - Ensure you're importing from `@intercom/messenger-js-sdk` (not the old script tag method)
+   - Verify the `app_id` is correct: `xu0gfiqb`
+   - Make sure Intercom is initialized in a component that mounts on page load (e.g., `Analytics.tsx`)
+
+3. **Verify Content Security Policy:**
+   - Check `netlify.toml` includes Intercom domains in CSP:
+     - `script-src`: `https://*.intercom.io`
+     - `connect-src`: `https://*.intercom.io wss://*.intercom.io`
+     - `frame-src`: `https://*.intercom.io`
+
+4. **Check browser console:**
+   - Look for any errors related to Intercom
+   - Verify the widget is not blocked by ad blockers
+
+5. **Clear cache and rebuild:**
+   ```bash
+   rm -rf node_modules dist
+   npm install
+   npm run build
+   ```
+
+**Current Implementation Location:**
+- File: `src/components/Analytics.tsx`
+- The Intercom initialization happens automatically when the Analytics component mounts
+- User data is updated when a user logs in
+
+### Netlify CLI and Auth0 Setup
+
+The Netlify CLI must be properly linked to your Auth0 tenant for authentication to work correctly.
+
+#### Verify Netlify CLI Link
+
+1. **Check if Netlify CLI is linked:**
+   ```bash
+   netlify status
+   ```
+
+2. **Link to the project (if not already linked):**
+   ```bash
+   netlify link --id=dfeefdc2-92aa-4415-baf6-42e60dfa6328
+   ```
+
+3. **Verify Auth0 Integration in Netlify Dashboard:**
+   - Go to [Netlify Dashboard](https://app.netlify.com/sites/dobeu-net/overview)
+   - Navigate to **Site settings** → **Identity** → **Auth0**
+   - Ensure Auth0 is enabled and properly configured
+   - Verify the tenant domain matches your `VITE_AUTH0_DOMAIN` environment variable
+
+4. **Verify Environment Variables:**
+   - In Netlify Dashboard: **Site settings** → **Environment variables**
+   - Ensure these are set for production:
+     - `VITE_AUTH0_DOMAIN` (e.g., `your-tenant.us.auth0.com`)
+     - `VITE_AUTH0_CLIENT_ID` (your Auth0 SPA client ID)
+     - `VITE_AUTH0_AUDIENCE` (e.g., `https://api.dobeu.netlify.app`)
+     - `AUTH0_DOMAIN` (same as VITE_AUTH0_DOMAIN)
+     - `AUTH0_AUDIENCE` (same as VITE_AUTH0_AUDIENCE)
+
+5. **Test Authentication:**
+   - Visit https://dobeu.net/auth
+   - Verify login/logout functionality works
+   - Check browser console for any Auth0-related errors
+
+**Note:** If Auth0 is already linked on the dashboard for the tenant, the Netlify CLI should automatically use those settings when deployed.
+
 ## Scripts
 
 | Command | Description |
