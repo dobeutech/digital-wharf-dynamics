@@ -159,6 +159,7 @@ npx netlify-cli logs --site=dfeefdc2-92aa-4415-baf6-42e60dfa6328
 ### Verify Site
 
 Visit these URLs to verify:
+
 - Homepage: https://dobeu.net
 - Services: https://dobeu.net/services
 - Contact: https://dobeu.net/contact
@@ -185,6 +186,7 @@ npx netlify-cli rollback --site=dfeefdc2-92aa-4415-baf6-42e60dfa6328
 ```
 
 Or via dashboard:
+
 1. Go to https://app.netlify.com/sites/dobeu-net/deploys
 2. Find the previous working deploy
 3. Click "Publish deploy"
@@ -194,6 +196,7 @@ Or via dashboard:
 ## 📝 Deployment Checklist
 
 Before deploying:
+
 - [ ] All changes committed to git
 - [ ] Tests passing locally
 - [ ] No console errors
@@ -201,6 +204,7 @@ Before deploying:
 - [ ] Database migrations applied (if any)
 
 After deploying:
+
 - [ ] Site loads correctly
 - [ ] No console errors
 - [ ] Forms work
@@ -221,9 +225,10 @@ After deploying:
 
 ## 🔐 Security Note
 
-The Netlify token in this file has full access to your account. 
+The Netlify token in this file has full access to your account.
 
 **Keep it secure**:
+
 - Don't commit to git
 - Don't share publicly
 - Rotate regularly

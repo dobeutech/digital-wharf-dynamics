@@ -19,22 +19,34 @@ export function CursorToggle() {
           size="icon"
           className={cn(
             "min-h-[44px] min-w-[44px] rounded-full hover:bg-primary/10",
-            !settings.customCursorEnabled && "text-muted-foreground"
+            !settings.customCursorEnabled && "text-muted-foreground",
           )}
           onClick={toggleCustomCursor}
-          aria-label={settings.customCursorEnabled ? "Disable custom cursor" : "Enable custom cursor"}
+          aria-label={
+            settings.customCursorEnabled
+              ? "Disable custom cursor"
+              : "Enable custom cursor"
+          }
         >
-          <MousePointer2 className={cn(
-            "h-4 w-4 transition-opacity",
-            !settings.customCursorEnabled && "opacity-50"
-          )} />
+          <MousePointer2
+            className={cn(
+              "h-4 w-4 transition-opacity",
+              !settings.customCursorEnabled && "opacity-50",
+            )}
+          />
           <span className="sr-only">
-            {settings.customCursorEnabled ? "Disable custom cursor" : "Enable custom cursor"}
+            {settings.customCursorEnabled
+              ? "Disable custom cursor"
+              : "Enable custom cursor"}
           </span>
         </Button>
       </TooltipTrigger>
       <TooltipContent>
-        <p>{settings.customCursorEnabled ? "Disable custom cursor" : "Enable custom cursor"}</p>
+        <p>
+          {settings.customCursorEnabled
+            ? "Disable custom cursor"
+            : "Enable custom cursor"}
+        </p>
       </TooltipContent>
     </Tooltip>
   );

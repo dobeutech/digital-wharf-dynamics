@@ -73,21 +73,30 @@ export function PasswordStrength({ password }: PasswordStrengthProps) {
             </span>
           )}
         </div>
-        <Progress value={strength} className="h-1.5" indicatorClassName={strengthColor} />
+        <Progress
+          value={strength}
+          className="h-1.5"
+          indicatorClassName={strengthColor}
+        />
       </div>
 
       <div className="space-y-1.5">
         {requirements.map((req, index) => (
-          <div
-            key={index}
-            className="flex items-center gap-2 text-xs"
-          >
+          <div key={index} className="flex items-center gap-2 text-xs">
             {req.met ? (
-              <Check className="h-3.5 w-3.5 text-green-500 shrink-0" aria-hidden="true" />
+              <Check
+                className="h-3.5 w-3.5 text-green-500 shrink-0"
+                aria-hidden="true"
+              />
             ) : (
-              <X className="h-3.5 w-3.5 text-muted-foreground shrink-0" aria-hidden="true" />
+              <X
+                className="h-3.5 w-3.5 text-muted-foreground shrink-0"
+                aria-hidden="true"
+              />
             )}
-            <span className={req.met ? "text-foreground" : "text-muted-foreground"}>
+            <span
+              className={req.met ? "text-foreground" : "text-muted-foreground"}
+            >
               {req.label}
             </span>
           </div>

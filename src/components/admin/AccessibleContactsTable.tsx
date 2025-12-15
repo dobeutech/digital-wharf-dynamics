@@ -1,5 +1,12 @@
 import { useState, useMemo } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -39,7 +46,7 @@ const statusColors: Record<string, string> = {
 export function AccessibleContactsTable({
   submissions,
   onViewDetails,
-  loading = false
+  loading = false,
 }: AccessibleContactsTableProps) {
   const [sortField, setSortField] = useState<SortField>("submitted_at");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
@@ -49,7 +56,7 @@ export function AccessibleContactsTable({
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortDirection(prev => {
+      setSortDirection((prev) => {
         if (prev === "asc") return "desc";
         if (prev === "desc") return "none";
         return "asc";
@@ -103,7 +110,7 @@ export function AccessibleContactsTable({
     if (selectedIds.size === paginatedSubmissions.length) {
       setSelectedIds(new Set());
     } else {
-      setSelectedIds(new Set(paginatedSubmissions.map(s => s.id)));
+      setSelectedIds(new Set(paginatedSubmissions.map((s) => s.id)));
     }
   };
 
@@ -127,7 +134,9 @@ export function AccessibleContactsTable({
     return <ArrowDown className="h-4 w-4 ml-1" aria-hidden="true" />;
   };
 
-  const getAriaSort = (field: SortField): "ascending" | "descending" | "none" => {
+  const getAriaSort = (
+    field: SortField,
+  ): "ascending" | "descending" | "none" => {
     if (sortField !== field) return "none";
     if (sortDirection === "asc") return "ascending";
     if (sortDirection === "desc") return "descending";
@@ -141,7 +150,11 @@ export function AccessibleContactsTable({
 
   if (loading) {
     return (
-      <div className="text-center py-8 text-muted-foreground" role="status" aria-live="polite">
+      <div
+        className="text-center py-8 text-muted-foreground"
+        role="status"
+        aria-live="polite"
+      >
         Loading contact submissions...
       </div>
     );
@@ -158,24 +171,29 @@ export function AccessibleContactsTable({
   return (
     <div className="space-y-4">
       <div role="status" aria-live="polite" className="sr-only">
-        Showing {paginatedSubmissions.length} of {sortedSubmissions.length} contact submissions.
-        {(sortField !== "submitted_at" || sortDirection !== "desc") && sortDirection !== "none" ?
-          ` Sorted by ${sortField} ${sortDirection === "asc" ? "ascending" : sortDirection === "desc" ? "descending" : ""}.` :
-          ""
-        }
+        Showing {paginatedSubmissions.length} of {sortedSubmissions.length}{" "}
+        contact submissions.
+        {(sortField !== "submitted_at" || sortDirection !== "desc") &&
+        sortDirection !== "none"
+          ? ` Sorted by ${sortField} ${sortDirection === "asc" ? "ascending" : sortDirection === "desc" ? "descending" : ""}.`
+          : ""}
       </div>
 
       <div className="overflow-x-auto">
         <Table role="table" aria-label="Contact form submissions">
           <caption className="sr-only">
             Contact form submissions with sorting and filtering capabilities.
-            Use the column headers to sort. Use the view button to see full details.
+            Use the column headers to sort. Use the view button to see full
+            details.
           </caption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-12">
                 <Checkbox
-                  checked={selectedIds.size === paginatedSubmissions.length && paginatedSubmissions.length > 0}
+                  checked={
+                    selectedIds.size === paginatedSubmissions.length &&
+                    paginatedSubmissions.length > 0
+                  }
                   onCheckedChange={toggleSelectAll}
                   aria-label="Select all visible submissions"
                 />
@@ -185,7 +203,7 @@ export function AccessibleContactsTable({
                   variant="ghost"
                   onClick={() => handleSort("name")}
                   className="font-semibold hover:bg-transparent p-0"
-                  aria-label={`Sort by name ${sortField === "name" && sortDirection !== "none" ? sortDirection === "asc" ? "descending" : "ascending" : "ascending"}`}
+                  aria-label={`Sort by name ${sortField === "name" && sortDirection !== "none" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
                 >
                   Name
                   {getSortIcon("name")}
@@ -196,20 +214,22 @@ export function AccessibleContactsTable({
                   variant="ghost"
                   onClick={() => handleSort("email")}
                   className="font-semibold hover:bg-transparent p-0"
-                  aria-label={`Sort by email ${sortField === "email" && sortDirection !== "none" ? sortDirection === "asc" ? "descending" : "ascending" : "ascending"}`}
+                  aria-label={`Sort by email ${sortField === "email" && sortDirection !== "none" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
                 >
                   Email
                   {getSortIcon("email")}
                 </Button>
               </TableHead>
               <TableHead scope="col">Phone</TableHead>
-              <TableHead scope="col" className="max-w-[200px]">Message</TableHead>
+              <TableHead scope="col" className="max-w-[200px]">
+                Message
+              </TableHead>
               <TableHead scope="col" aria-sort={getAriaSort("status")}>
                 <Button
                   variant="ghost"
                   onClick={() => handleSort("status")}
                   className="font-semibold hover:bg-transparent p-0"
-                  aria-label={`Sort by status ${sortField === "status" && sortDirection !== "none" ? sortDirection === "asc" ? "descending" : "ascending" : "ascending"}`}
+                  aria-label={`Sort by status ${sortField === "status" && sortDirection !== "none" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
                 >
                   Status
                   {getSortIcon("status")}
@@ -220,7 +240,7 @@ export function AccessibleContactsTable({
                   variant="ghost"
                   onClick={() => handleSort("submitted_at")}
                   className="font-semibold hover:bg-transparent p-0"
-                  aria-label={`Sort by submission date ${sortField === "submitted_at" && sortDirection !== "none" ? sortDirection === "asc" ? "descending" : "ascending" : "ascending"}`}
+                  aria-label={`Sort by submission date ${sortField === "submitted_at" && sortDirection !== "none" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
                 >
                   Submitted
                   {getSortIcon("submitted_at")}
@@ -244,7 +264,11 @@ export function AccessibleContactsTable({
                 </TableCell>
                 <TableCell className="font-medium">{submission.name}</TableCell>
                 <TableCell>{submission.email}</TableCell>
-                <TableCell>{submission.phone || <span className="text-muted-foreground">—</span>}</TableCell>
+                <TableCell>
+                  {submission.phone || (
+                    <span className="text-muted-foreground">—</span>
+                  )}
+                </TableCell>
                 <TableCell className="max-w-[200px]">
                   <span className="text-sm text-muted-foreground">
                     {truncateMessage(submission.message)}
@@ -256,12 +280,13 @@ export function AccessibleContactsTable({
                   </Badge>
                 </TableCell>
                 <TableCell className="text-sm text-muted-foreground">
-                  {submission.submitted_at
-                    ? <time dateTime={submission.submitted_at}>
-                        {format(new Date(submission.submitted_at), "MMM d, yyyy")}
-                      </time>
-                    : <span className="text-muted-foreground">—</span>
-                  }
+                  {submission.submitted_at ? (
+                    <time dateTime={submission.submitted_at}>
+                      {format(new Date(submission.submitted_at), "MMM d, yyyy")}
+                    </time>
+                  ) : (
+                    <span className="text-muted-foreground">—</span>
+                  )}
                 </TableCell>
                 <TableCell>
                   <Button
@@ -281,15 +306,20 @@ export function AccessibleContactsTable({
       </div>
 
       {totalPages > 1 && (
-        <div className="flex items-center justify-between" role="navigation" aria-label="Pagination">
+        <div
+          className="flex items-center justify-between"
+          role="navigation"
+          aria-label="Pagination"
+        >
           <div className="text-sm text-muted-foreground">
-            Page {currentPage} of {totalPages} ({sortedSubmissions.length} total submissions)
+            Page {currentPage} of {totalPages} ({sortedSubmissions.length} total
+            submissions)
           </div>
           <div className="flex gap-2">
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
               aria-label="Previous page"
             >
@@ -298,7 +328,7 @@ export function AccessibleContactsTable({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
               aria-label="Next page"
             >
@@ -315,10 +345,15 @@ export function AccessibleContactsTable({
           aria-live="polite"
         >
           <span className="text-sm font-medium">
-            {selectedIds.size} submission{selectedIds.size !== 1 ? 's' : ''} selected
+            {selectedIds.size} submission{selectedIds.size !== 1 ? "s" : ""}{" "}
+            selected
           </span>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => setSelectedIds(new Set())}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSelectedIds(new Set())}
+            >
               Clear Selection
             </Button>
           </div>

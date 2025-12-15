@@ -1,8 +1,8 @@
-import type { Handler } from '@netlify/functions';
-import { ObjectId } from 'mongodb';
-import { errorResponse, jsonResponse, readJson } from './_http';
-import { requireAuth, requirePermission } from './_auth0';
-import { getMongoDb } from './_mongo';
+import type { Handler } from "@netlify/functions";
+import { ObjectId } from "mongodb";
+import { errorResponse, jsonResponse, readJson } from "./_http";
+import { requireAuth, requirePermission } from "./_auth0";
+import { getMongoDb } from "./_mongo";
 
 type AuditLogDoc = {
   _id: ObjectId;
@@ -33,10 +33,10 @@ function toAuditLog(d: AuditLogDoc) {
 export const handler: Handler = async (event) => {
   try {
     const db = await getMongoDb();
-    const col = db.collection<AuditLogDoc>('audit_logs');
+    const col = db.collection<AuditLogDoc>("audit_logs");
     const claims = await requireAuth(event);
 
-    if (event.httpMethod === 'POST') {
+    if (event.httpMethod === "POST") {
       // Any authenticated user can write audit logs for themselves.
       const body = await readJson<{
         action?: string;
@@ -47,7 +47,11 @@ export const handler: Handler = async (event) => {
         user_agent?: string | null;
       }>(event);
 
-      if (!body.action || !body.entity_type) return errorResponse(400, 'Missing required fields: action, entity_type');
+      if (!body.action || !body.entity_type)
+        return errorResponse(
+          400,
+          "Missing required fields: action, entity_type",
+        );
       const now = new Date().toISOString();
       const doc: AuditLogDoc = {
         _id: new ObjectId(),
@@ -57,7 +61,9 @@ export const handler: Handler = async (event) => {
         entity_id: body.entity_id ?? null,
         old_values: body.old_values ?? null,
         new_values: body.new_values ?? null,
-        user_agent: body.user_agent ?? (event.headers['user-agent'] || event.headers['User-Agent'] || null),
+        user_agent:
+          body.user_agent ??
+          (event.headers["user-agent"] || event.headers["User-Agent"] || null),
         created_at: now,
       };
       await col.insertOne(doc);
@@ -65,26 +71,32 @@ export const handler: Handler = async (event) => {
     }
 
     // Admin-only read access
-    requirePermission(claims, 'admin:access');
+    requirePermission(claims, "admin:access");
 
-    if (event.httpMethod === 'GET') {
+    if (event.httpMethod === "GET") {
       const action = event.queryStringParameters?.action;
       const entityType = event.queryStringParameters?.entity_type;
       const limitRaw = event.queryStringParameters?.limit;
 
       const limit = Math.min(Number(limitRaw || 100), 500);
       const q: Record<string, unknown> = {};
-      if (action && action !== 'all') q.action = action;
-      if (entityType && entityType !== 'all') q.entity_type = entityType;
+      if (action && action !== "all") q.action = action;
+      if (entityType && entityType !== "all") q.entity_type = entityType;
 
-      const docs = await col.find(q).sort({ created_at: -1 }).limit(limit).toArray();
+      const docs = await col
+        .find(q)
+        .sort({ created_at: -1 })
+        .limit(limit)
+        .toArray();
       return jsonResponse(200, docs.map(toAuditLog));
     }
 
-    return errorResponse(405, 'Method not allowed');
+    return errorResponse(405, "Method not allowed");
   } catch (err) {
-    return errorResponse(500, 'Internal error', err instanceof Error ? err.message : String(err));
+    return errorResponse(
+      500,
+      "Internal error",
+      err instanceof Error ? err.message : String(err),
+    );
   }
 };
-
-

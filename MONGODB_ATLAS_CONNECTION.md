@@ -65,16 +65,19 @@ mongodb://<username>@<cluster-endpoint>/?tls=true&tlsCAFile=<cert-path>&tlsCerti
 ```
 
 **Example (Windows):**
+
 ```
 mongodb://vscode@cluster0.xxxxx.mongodb.net/?tls=true&tlsCAFile=C%3A%5CUsers%5CYourName%5CDownloads%5Ccert.pem&tlsCertificateKeyFile=C%3A%5CUsers%5CYourName%5CDownloads%5Ccert.pem
 ```
 
 **Example (macOS/Linux):**
+
 ```
 mongodb://vscode@cluster0.xxxxx.mongodb.net/?tls=true&tlsCAFile=%2FUsers%2FYourName%2FDownloads%2Fcert.pem&tlsCertificateKeyFile=%2FUsers%2FYourName%2FDownloads%2Fcert.pem
 ```
 
-**Important:** 
+**Important:**
+
 - Paths in connection strings must be URL-encoded
 - Windows paths: `C:\Users\...` becomes `C%3A%5CUsers%5C...`
 - Unix paths: `/Users/...` becomes `%2FUsers%2F...`
@@ -84,6 +87,7 @@ mongodb://vscode@cluster0.xxxxx.mongodb.net/?tls=true&tlsCAFile=%2FUsers%2FYourN
 ### Certificate File Not Found
 
 If you get an error about the certificate file:
+
 1. Verify the file exists at the specified path
 2. Check file permissions (should be readable)
 3. Try using forward slashes in the path (works on Windows too)
@@ -106,6 +110,7 @@ If you get an error about the certificate file:
 ### Path Encoding Issues
 
 If you're having trouble with path encoding:
+
 - Use a URL encoder tool to encode your certificate path
 - Or use the MongoDB VS Code extension's connection wizard which handles encoding automatically
 
@@ -122,7 +127,7 @@ Once connected:
 The playground is configured to use the `app` database by default. To switch databases, modify:
 
 ```javascript
-const database = 'your_database_name';
+const database = "your_database_name";
 use(database);
 ```
 

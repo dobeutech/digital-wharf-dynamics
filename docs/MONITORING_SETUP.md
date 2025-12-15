@@ -46,7 +46,7 @@ This guide covers setting up monitoring, alerting, and observability for the pro
 # In netlify.toml
 [functions]
   node_bundler = "esbuild"
-  
+
 [functions.settings]
   # Log all function invocations
   log_level = "info"
@@ -139,21 +139,21 @@ db.system.profile.find().sort({ts:-1}).limit(10)
 **Configure in src/integrations/posthog.ts:**
 
 ```typescript
-posthog.init('phc_Gaksl1OP0ZVYeErlumeRTuj5xJqPMQPe3H8UKxMpwAM', {
-  api_host: 'https://us.i.posthog.com',
-  person_profiles: 'identified_only',
+posthog.init("phc_Gaksl1OP0ZVYeErlumeRTuj5xJqPMQPe3H8UKxMpwAM", {
+  api_host: "https://us.i.posthog.com",
+  person_profiles: "identified_only",
   capture_pageview: true,
   capture_pageleave: true,
-  
+
   // Error tracking
   autocapture: true,
   capture_performance: true,
-  
+
   // Session recording
   session_recording: {
     recordCrossOriginIframes: true,
     maskAllInputs: true,
-    maskTextSelector: '.sensitive',
+    maskTextSelector: ".sensitive",
   },
 });
 ```
@@ -163,16 +163,16 @@ posthog.init('phc_Gaksl1OP0ZVYeErlumeRTuj5xJqPMQPe3H8UKxMpwAM', {
 **Add to src/lib/error-handler.ts:**
 
 ```typescript
-import posthog from 'posthog-js';
+import posthog from "posthog-js";
 
 export function trackError(error: Error, context?: Record<string, any>) {
-  posthog.capture('error', {
+  posthog.capture("error", {
     error_message: error.message,
     error_stack: error.stack,
     ...context,
   });
-  
-  console.error('Error tracked:', error, context);
+
+  console.error("Error tracked:", error, context);
 }
 ```
 
@@ -254,19 +254,19 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '20'
-      
+          node-version: "20"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Build
         run: npm run build
-      
+
       - name: Run Lighthouse
         run: |
           npm install -g @lhci/cli
           lhci autorun --config=.lighthouserc.json
-      
+
       - name: Upload results
         uses: actions/upload-artifact@v3
         with:
@@ -286,9 +286,9 @@ jobs:
     "assert": {
       "preset": "lighthouse:recommended",
       "assertions": {
-        "categories:performance": ["error", {"minScore": 0.8}],
-        "categories:accessibility": ["error", {"minScore": 0.9}],
-        "categories:seo": ["error", {"minScore": 0.9}]
+        "categories:performance": ["error", { "minScore": 0.8 }],
+        "categories:accessibility": ["error", { "minScore": 0.9 }],
+        "categories:seo": ["error", { "minScore": 0.9 }]
       }
     },
     "upload": {
@@ -344,13 +344,13 @@ aws logs create-log-stream \
 **netlify/functions/health.ts:**
 
 ```typescript
-import { Handler } from '@netlify/functions';
-import { MongoClient } from 'mongodb';
+import { Handler } from "@netlify/functions";
+import { MongoClient } from "mongodb";
 
 export const handler: Handler = async () => {
   const checks = {
     timestamp: new Date().toISOString(),
-    status: 'healthy',
+    status: "healthy",
     checks: {} as Record<string, any>,
   };
 
@@ -360,40 +360,40 @@ export const handler: Handler = async () => {
     await client.connect();
     await client.db().admin().ping();
     await client.close();
-    checks.checks.mongodb = { status: 'ok' };
+    checks.checks.mongodb = { status: "ok" };
   } catch (error) {
-    checks.status = 'unhealthy';
-    checks.checks.mongodb = { 
-      status: 'error', 
-      message: (error as Error).message 
+    checks.status = "unhealthy";
+    checks.checks.mongodb = {
+      status: "error",
+      message: (error as Error).message,
     };
   }
 
   // Check Auth0
   try {
     const response = await fetch(
-      `https://${process.env.AUTH0_DOMAIN}/.well-known/openid-configuration`
+      `https://${process.env.AUTH0_DOMAIN}/.well-known/openid-configuration`,
     );
     if (response.ok) {
-      checks.checks.auth0 = { status: 'ok' };
+      checks.checks.auth0 = { status: "ok" };
     } else {
       throw new Error(`Auth0 returned ${response.status}`);
     }
   } catch (error) {
-    checks.status = 'unhealthy';
-    checks.checks.auth0 = { 
-      status: 'error', 
-      message: (error as Error).message 
+    checks.status = "unhealthy";
+    checks.checks.auth0 = {
+      status: "error",
+      message: (error as Error).message,
     };
   }
 
-  const statusCode = checks.status === 'healthy' ? 200 : 503;
+  const statusCode = checks.status === "healthy" ? 200 : 503;
 
   return {
     statusCode,
     headers: {
-      'Content-Type': 'application/json',
-      'Cache-Control': 'no-cache',
+      "Content-Type": "application/json",
+      "Cache-Control": "no-cache",
     },
     body: JSON.stringify(checks, null, 2),
   };
@@ -406,34 +406,38 @@ export const handler: Handler = async () => {
 
 ### Severity Levels
 
-| Severity | Response Time | Notification |
-|----------|--------------|--------------|
-| P0 - Critical | Immediate | PagerDuty + Slack + Email |
-| P1 - High | < 15 min | Slack + Email |
-| P2 - Medium | < 1 hour | Slack |
-| P3 - Low | Next day | Email |
+| Severity      | Response Time | Notification              |
+| ------------- | ------------- | ------------------------- |
+| P0 - Critical | Immediate     | PagerDuty + Slack + Email |
+| P1 - High     | < 15 min      | Slack + Email             |
+| P2 - Medium   | < 1 hour      | Slack                     |
+| P3 - Low      | Next day      | Email                     |
 
 ### Alert Conditions
 
 **P0 Alerts:**
+
 - Site down (uptime check fails)
 - Error rate > 10% for 5 minutes
 - All functions failing
 - Database unreachable
 
 **P1 Alerts:**
+
 - Error rate > 5% for 10 minutes
 - Function timeout rate > 20%
 - Response time > 5s (p95)
 - MongoDB connections > 200
 
 **P2 Alerts:**
+
 - Error rate > 1% for 30 minutes
 - Response time > 2s (p95)
 - Build failures
 - Lighthouse score drop > 10 points
 
 **P3 Alerts:**
+
 - Slow queries detected
 - High memory usage
 - Disk space < 30%
@@ -481,44 +485,44 @@ Alert: > 150
 ```html
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Dobeu Status</title>
-  <meta http-equiv="refresh" content="60">
-</head>
-<body>
-  <h1>System Status</h1>
-  <div id="status"></div>
-  
-  <script>
-    async function checkStatus() {
-      const checks = [
-        { name: 'Website', url: 'https://dobeu.net' },
-        { name: 'API', url: 'https://dobeu.net/.netlify/functions/health' },
-      ];
-      
-      const results = await Promise.all(
-        checks.map(async (check) => {
-          try {
-            const response = await fetch(check.url);
-            return { 
-              name: check.name, 
-              status: response.ok ? '✅ OK' : '❌ Down' 
-            };
-          } catch {
-            return { name: check.name, status: '❌ Down' };
-          }
-        })
-      );
-      
-      document.getElementById('status').innerHTML = results
-        .map(r => `<p>${r.name}: ${r.status}</p>`)
-        .join('');
-    }
-    
-    checkStatus();
-    setInterval(checkStatus, 60000);
-  </script>
-</body>
+  <head>
+    <title>Dobeu Status</title>
+    <meta http-equiv="refresh" content="60" />
+  </head>
+  <body>
+    <h1>System Status</h1>
+    <div id="status"></div>
+
+    <script>
+      async function checkStatus() {
+        const checks = [
+          { name: "Website", url: "https://dobeu.net" },
+          { name: "API", url: "https://dobeu.net/.netlify/functions/health" },
+        ];
+
+        const results = await Promise.all(
+          checks.map(async (check) => {
+            try {
+              const response = await fetch(check.url);
+              return {
+                name: check.name,
+                status: response.ok ? "✅ OK" : "❌ Down",
+              };
+            } catch {
+              return { name: check.name, status: "❌ Down" };
+            }
+          }),
+        );
+
+        document.getElementById("status").innerHTML = results
+          .map((r) => `<p>${r.name}: ${r.status}</p>`)
+          .join("");
+      }
+
+      checkStatus();
+      setInterval(checkStatus, 60000);
+    </script>
+  </body>
 </html>
 ```
 
@@ -527,18 +531,21 @@ Alert: > 150
 ## 10. Monitoring Checklist
 
 **Daily:**
+
 - [ ] Check Netlify deploy status
 - [ ] Review error logs in PostHog
 - [ ] Check MongoDB connection count
 - [ ] Review slow queries in Atlas
 
 **Weekly:**
+
 - [ ] Review Lighthouse scores
 - [ ] Check disk space in MongoDB
 - [ ] Review function performance metrics
 - [ ] Update monitoring dashboards
 
 **Monthly:**
+
 - [ ] Review and update alert thresholds
 - [ ] Check certificate expiration dates
 - [ ] Review and optimize slow queries
@@ -576,7 +583,7 @@ curl -X POST <slack-webhook-url> \
 
 ```sql
 -- Error rate by page
-SELECT 
+SELECT
   properties.$current_url as page,
   COUNT(*) as error_count
 FROM events
@@ -586,7 +593,7 @@ GROUP BY page
 ORDER BY error_count DESC
 
 -- User sessions with errors
-SELECT 
+SELECT
   distinct_id,
   COUNT(*) as error_count
 FROM events
@@ -600,18 +607,21 @@ HAVING error_count > 5
 
 ```javascript
 // Find slow queries
-db.system.profile.find({
-  millis: { $gt: 100 }
-}).sort({ ts: -1 }).limit(10)
+db.system.profile
+  .find({
+    millis: { $gt: 100 },
+  })
+  .sort({ ts: -1 })
+  .limit(10);
 
 // Connection stats
-db.serverStatus().connections
+db.serverStatus().connections;
 
 // Current operations
-db.currentOp()
+db.currentOp();
 
 // Database size
-db.stats()
+db.stats();
 ```
 
 ---

@@ -31,9 +31,9 @@ cp src/components/forms/FormTemplate.tsx src/components/forms/MyForm.tsx
 
 ```typescript
 const myFormSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  age: z.coerce.number().min(18, 'Must be 18 or older'),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  age: z.coerce.number().min(18, "Must be 18 or older"),
 });
 
 type MyFormValues = z.infer<typeof myFormSchema>;
@@ -63,11 +63,11 @@ type MyFormValues = z.infer<typeof myFormSchema>;
 const onSubmit = async (data: MyFormValues) => {
   setIsSubmitting(true);
   try {
-    await api.post('/endpoint', data);
-    toast.success('Success!');
+    await api.post("/endpoint", data);
+    toast.success("Success!");
     form.reset();
   } catch (error) {
-    toast.error('Failed to submit');
+    toast.error("Failed to submit");
   } finally {
     setIsSubmitting(false);
   }
@@ -93,12 +93,12 @@ A minimal template with all required patterns:
 **Usage:**
 
 ```tsx
-import { FormTemplate } from '@/components/forms/FormTemplate';
+import { FormTemplate } from "@/components/forms/FormTemplate";
 
 <FormTemplate
-  onSuccess={(data) => console.log('Success:', data)}
-  onError={(error) => console.error('Error:', error)}
-/>
+  onSuccess={(data) => console.log("Success:", data)}
+  onError={(error) => console.error("Error:", error)}
+/>;
 ```
 
 ---
@@ -118,19 +118,19 @@ A comprehensive example demonstrating:
 **Usage:**
 
 ```tsx
-import { ExampleForm } from '@/components/forms/ExampleForm';
+import { ExampleForm } from "@/components/forms/ExampleForm";
 
 <ExampleForm
   onSuccess={(data) => {
-    console.log('Form submitted:', data);
+    console.log("Form submitted:", data);
     // Handle success
   }}
   onError={(error) => {
-    console.error('Form error:', error);
+    console.error("Form error:", error);
     // Handle error
   }}
   className="max-w-2xl mx-auto"
-/>
+/>;
 ```
 
 ---
@@ -142,12 +142,26 @@ import { ExampleForm } from '@/components/forms/ExampleForm';
 All form components are available from `@/components/ui/`:
 
 ```tsx
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 ```
 
 ### Form Components
@@ -185,85 +199,85 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 
 ```typescript
 // Required string
-z.string().min(1, 'This field is required')
+z.string().min(1, "This field is required");
 
 // Min/max length
-z.string().min(2, 'Too short').max(100, 'Too long')
+z.string().min(2, "Too short").max(100, "Too long");
 
 // Email
-z.string().email('Invalid email address')
+z.string().email("Invalid email address");
 
 // URL
-z.string().url('Invalid URL')
+z.string().url("Invalid URL");
 
 // Regex pattern
-z.string().regex(/^[A-Z0-9]+$/, 'Must be uppercase alphanumeric')
+z.string().regex(/^[A-Z0-9]+$/, "Must be uppercase alphanumeric");
 
 // Trim whitespace
-z.string().trim().min(1, 'Required')
+z.string().trim().min(1, "Required");
 
 // Optional string
-z.string().optional()
-z.string().optional().or(z.literal(''))
+z.string().optional();
+z.string().optional().or(z.literal(""));
 ```
 
 ### Number Validation
 
 ```typescript
 // Number with coercion (converts string to number)
-z.coerce.number()
+z.coerce.number();
 
 // Min/max
-z.coerce.number().min(0, 'Must be positive').max(100, 'Too large')
+z.coerce.number().min(0, "Must be positive").max(100, "Too large");
 
 // Integer only
-z.coerce.number().int('Must be a whole number')
+z.coerce.number().int("Must be a whole number");
 
 // Positive/negative
-z.coerce.number().positive('Must be positive')
-z.coerce.number().negative('Must be negative')
+z.coerce.number().positive("Must be positive");
+z.coerce.number().negative("Must be negative");
 ```
 
 ### Boolean Validation
 
 ```typescript
 // Boolean
-z.boolean()
+z.boolean();
 
 // Required checkbox (must be true)
 z.boolean().refine((val) => val === true, {
-  message: 'You must agree to continue',
-})
+  message: "You must agree to continue",
+});
 
 // Optional checkbox
-z.boolean().default(false)
+z.boolean().default(false);
 ```
 
 ### Date Validation
 
 ```typescript
 // Date
-z.date()
+z.date();
 
 // Date with min/max
-z.date().min(new Date('2020-01-01'), 'Too old')
-z.date().max(new Date(), 'Cannot be in the future')
+z.date().min(new Date("2020-01-01"), "Too old");
+z.date().max(new Date(), "Cannot be in the future");
 
 // Date from string
-z.string().pipe(z.coerce.date())
+z.string().pipe(z.coerce.date());
 ```
 
 ### Array Validation
 
 ```typescript
 // Array of strings
-z.array(z.string())
+z.array(z.string());
 
 // Min/max items
-z.array(z.string()).min(1, 'Select at least one').max(5, 'Too many')
+z.array(z.string()).min(1, "Select at least one").max(5, "Too many");
 
 // Non-empty array
-z.array(z.string()).nonempty('Required')
+z.array(z.string()).nonempty("Required");
 ```
 
 ### Object Validation
@@ -276,17 +290,14 @@ z.object({
     city: z.string(),
     zip: z.string(),
   }),
-})
+});
 ```
 
 ### Custom Validation
 
 ```typescript
 // Custom refinement
-z.string().refine(
-  (val) => val.includes('@'),
-  { message: 'Must contain @' }
-)
+z.string().refine((val) => val.includes("@"), { message: "Must contain @" });
 
 // Conditional validation
 z.object({
@@ -300,10 +311,10 @@ z.object({
     return true;
   },
   {
-    message: 'SMS consent required when phone provided',
-    path: ['smsConsent'],
-  }
-)
+    message: "SMS consent required when phone provided",
+    path: ["smsConsent"],
+  },
+);
 ```
 
 ---
@@ -325,20 +336,20 @@ type FormValues = { name: string };
 
 ```typescript
 // ✅ Good: Trim whitespace
-z.string().trim().min(1, 'Required')
+z.string().trim().min(1, "Required");
 
 // ❌ Bad: No trimming (allows whitespace-only)
-z.string().min(1, 'Required')
+z.string().min(1, "Required");
 ```
 
 ### 3. Use Descriptive Error Messages
 
 ```typescript
 // ✅ Good: Clear, actionable message
-z.string().min(2, 'Name must be at least 2 characters')
+z.string().min(2, "Name must be at least 2 characters");
 
 // ❌ Bad: Generic message
-z.string().min(2, 'Invalid')
+z.string().min(2, "Invalid");
 ```
 
 ### 4. Handle Loading States
@@ -359,13 +370,13 @@ z.string().min(2, 'Invalid')
 ```typescript
 // ✅ Good: Reset after successful submission
 const onSubmit = async (data) => {
-  await api.post('/endpoint', data);
+  await api.post("/endpoint", data);
   form.reset(); // Clear form
 };
 
 // ❌ Bad: Leave form filled
 const onSubmit = async (data) => {
-  await api.post('/endpoint', data);
+  await api.post("/endpoint", data);
   // Form still has values
 };
 ```
@@ -389,13 +400,13 @@ const onSubmit = async (data) => {
 // ✅ Good: Validate when user leaves field
 const form = useForm({
   resolver: zodResolver(schema),
-  mode: 'onBlur',
+  mode: "onBlur",
 });
 
 // ❌ Bad: Validate on every keystroke (annoying)
 const form = useForm({
   resolver: zodResolver(schema),
-  mode: 'onChange',
+  mode: "onChange",
 });
 ```
 
@@ -538,9 +549,7 @@ const form = useForm({
       </FormControl>
       <div className="space-y-1 leading-none">
         <FormLabel>I agree to the terms *</FormLabel>
-        <FormDescription>
-          You must agree to continue
-        </FormDescription>
+        <FormDescription>You must agree to continue</FormDescription>
         <FormMessage />
       </div>
     </FormItem>
@@ -558,7 +567,7 @@ const form = useForm({
       Submitting...
     </>
   ) : (
-    'Submit'
+    "Submit"
   )}
 </Button>
 ```
@@ -584,6 +593,7 @@ const form = useForm({
 **Problem:** Validation errors not showing.
 
 **Solution:** Check that:
+
 1. `zodResolver` is passed to `useForm`
 2. `FormMessage` component is included
 3. Field name matches schema
@@ -594,9 +604,11 @@ const form = useForm({
   resolver: zodResolver(schema), // Must include this
 });
 
-<FormField name="email"> {/* Must match schema */}
+<FormField name="email">
+  {" "}
+  {/* Must match schema */}
   <FormMessage /> {/* Must include this */}
-</FormField>
+</FormField>;
 ```
 
 ### TypeScript Errors
@@ -610,7 +622,8 @@ const form = useForm({
 const schema = z.object({ name: z.string() });
 type FormValues = z.infer<typeof schema>;
 
-const form = useForm<FormValues>({ // Use inferred type
+const form = useForm<FormValues>({
+  // Use inferred type
   resolver: zodResolver(schema),
 });
 ```
@@ -660,6 +673,7 @@ const form = useForm<FormValues>({ // Use inferred type
 ## Need Help?
 
 Check existing forms in the project:
+
 - `src/pages/Contact.tsx` - Complex form with conditional fields
 - `src/pages/CCPAOptOut.tsx` - Simple form example
 - `src/components/forms/ExampleForm.tsx` - Comprehensive example

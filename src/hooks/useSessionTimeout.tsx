@@ -30,10 +30,10 @@ export function useSessionTimeout() {
       warningRef.current = setTimeout(() => {
         setShowWarning(true);
         setTimeRemaining(Math.floor(WARNING_BEFORE / 1000));
-        
+
         // Start countdown
         countdownRef.current = setInterval(() => {
-          setTimeRemaining(prev => {
+          setTimeRemaining((prev) => {
             if (prev <= 1) {
               if (countdownRef.current) clearInterval(countdownRef.current);
               return 0;
@@ -55,19 +55,27 @@ export function useSessionTimeout() {
   useEffect(() => {
     if (!user || !isAdmin) return;
 
-    const events = ["mousedown", "keydown", "scroll", "touchstart", "mousemove"];
-    
+    const events = [
+      "mousedown",
+      "keydown",
+      "scroll",
+      "touchstart",
+      "mousemove",
+    ];
+
     const handleActivity = () => {
       if (!showWarning) {
         resetTimer();
       }
     };
 
-    events.forEach(event => window.addEventListener(event, handleActivity));
+    events.forEach((event) => window.addEventListener(event, handleActivity));
     resetTimer();
 
     return () => {
-      events.forEach(event => window.removeEventListener(event, handleActivity));
+      events.forEach((event) =>
+        window.removeEventListener(event, handleActivity),
+      );
       clearAllTimers();
     };
   }, [user, isAdmin, resetTimer, showWarning, clearAllTimers]);

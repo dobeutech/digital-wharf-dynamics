@@ -21,19 +21,20 @@ The Intercom integration is implemented in `src/components/Analytics.tsx` with t
 ### Identified Issues
 
 1. **Restrictive Visibility Logic**: Widget only shows on homepage after 5-second delay
+
    ```typescript
    useEffect(() => {
      // Show Intercom only if the user stays on home page > 5s
-     if (location.pathname !== '/') return;
-     
+     if (location.pathname !== "/") return;
+
      const timer = window.setTimeout(() => {
        try {
-         Intercom('show');
+         Intercom("show");
        } catch {
          // ignore
        }
      }, 5000);
-     
+
      return () => window.clearTimeout(timer);
    }, [location.pathname]);
    ```
@@ -61,11 +62,13 @@ We will modify the Intercom integration to make the chat widget visible by defau
 **Description**: Keep current logic but add manual trigger buttons on other pages.
 
 **Pros**:
+
 - Maintains current behavior
 - Gives users explicit control
 - Reduces unsolicited interruptions
 
 **Cons**:
+
 - Requires UI changes on every page
 - Less discoverable for users
 - More maintenance overhead
@@ -78,11 +81,13 @@ We will modify the Intercom integration to make the chat widget visible by defau
 **Description**: Configure visibility rules in Intercom dashboard instead of code.
 
 **Pros**:
+
 - No code changes needed
 - Configurable without deployment
 - Centralized management
 
 **Cons**:
+
 - Less transparent (configuration not in code)
 - Requires Intercom dashboard access
 - Harder to version control
@@ -95,11 +100,13 @@ We will modify the Intercom integration to make the chat widget visible by defau
 **Description**: Show widget immediately on homepage, with delay on other pages.
 
 **Pros**:
+
 - Balances visibility and user experience
 - Reduces interruptions on content pages
 - Maintains homepage priority
 
 **Cons**:
+
 - Inconsistent behavior across pages
 - More complex logic
 - Still delays access on some pages
@@ -111,6 +118,7 @@ We will modify the Intercom integration to make the chat widget visible by defau
 **Description**: Configure Intercom to show launcher by default on all pages without delays.
 
 **Pros**:
+
 - ✅ Consistent user experience
 - ✅ Maximum discoverability
 - ✅ Simple implementation
@@ -118,6 +126,7 @@ We will modify the Intercom integration to make the chat widget visible by defau
 - ✅ Easy to debug
 
 **Cons**:
+
 - ⚠️ May be perceived as intrusive by some users
 - ⚠️ Slightly more visual clutter
 
@@ -133,11 +142,11 @@ We will modify the Intercom integration to make the chat widget visible by defau
 // BEFORE
 useEffect(() => {
   const boot = async () => {
-    const app_id = 'xu0gfiqb';
-    const api_base = 'https://api-iam.intercom.io';
+    const app_id = "xu0gfiqb";
+    const api_base = "https://api-iam.intercom.io";
 
     try {
-      Intercom('shutdown');
+      Intercom("shutdown");
     } catch {
       // ignore
     }
@@ -147,9 +156,9 @@ useEffect(() => {
       return;
     }
 
-    const { data, error } = await supabase.functions.invoke('intercom-jwt');
+    const { data, error } = await supabase.functions.invoke("intercom-jwt");
     if (error || !data?.token) {
-      console.warn('Failed to fetch Intercom JWT, booting anonymous:', error);
+      console.warn("Failed to fetch Intercom JWT, booting anonymous:", error);
       Intercom({ app_id, api_base });
       return;
     }
@@ -169,11 +178,11 @@ useEffect(() => {
 
 useEffect(() => {
   // Show Intercom only if the user stays on home page > 5s
-  if (location.pathname !== '/') return;
+  if (location.pathname !== "/") return;
 
   const timer = window.setTimeout(() => {
     try {
-      Intercom('show');
+      Intercom("show");
     } catch {
       // ignore
     }
@@ -185,15 +194,15 @@ useEffect(() => {
 // AFTER
 useEffect(() => {
   const boot = async () => {
-    const app_id = 'xu0gfiqb';
-    const api_base = 'https://api-iam.intercom.io';
+    const app_id = "xu0gfiqb";
+    const api_base = "https://api-iam.intercom.io";
 
     try {
-      Intercom('shutdown');
+      Intercom("shutdown");
     } catch (error) {
       // Log for debugging but don't fail
       if (import.meta.env.DEV) {
-        console.warn('Intercom shutdown error:', error);
+        console.warn("Intercom shutdown error:", error);
       }
     }
 
@@ -208,15 +217,15 @@ useEffect(() => {
       // Boot anonymously with visible launcher
       Intercom(baseConfig);
       if (import.meta.env.DEV) {
-        console.log('Intercom booted anonymously');
+        console.log("Intercom booted anonymously");
       }
       return;
     }
 
     // Fetch JWT for authenticated users
-    const { data, error } = await supabase.functions.invoke('intercom-jwt');
+    const { data, error } = await supabase.functions.invoke("intercom-jwt");
     if (error || !data?.token) {
-      console.warn('Failed to fetch Intercom JWT, booting anonymous:', error);
+      console.warn("Failed to fetch Intercom JWT, booting anonymous:", error);
       Intercom(baseConfig);
       return;
     }
@@ -231,7 +240,7 @@ useEffect(() => {
     });
 
     if (import.meta.env.DEV) {
-      console.log('Intercom booted with user identity:', user.id);
+      console.log("Intercom booted with user identity:", user.id);
     }
   };
 
@@ -239,10 +248,10 @@ useEffect(() => {
 
   return () => {
     try {
-      Intercom('shutdown');
+      Intercom("shutdown");
     } catch (error) {
       if (import.meta.env.DEV) {
-        console.warn('Intercom shutdown error on cleanup:', error);
+        console.warn("Intercom shutdown error on cleanup:", error);
       }
     }
   };
@@ -324,12 +333,13 @@ Ensure the following are configured:
 If widget still doesn't appear:
 
 1. **Check Browser Console**:
+
    ```javascript
    // Check if Intercom is loaded
    console.log(typeof Intercom); // Should be 'function'
-   
+
    // Check Intercom status
-   Intercom('getVisitorId'); // Should return visitor ID
+   Intercom("getVisitorId"); // Should return visitor ID
    ```
 
 2. **Verify Network Requests**:
@@ -343,6 +353,7 @@ If widget still doesn't appear:
    - Review identity verification configuration
 
 4. **Test JWT Generation**:
+
    ```bash
    # Test Supabase Edge Function
    curl -X POST https://[project].supabase.co/functions/v1/intercom-jwt \

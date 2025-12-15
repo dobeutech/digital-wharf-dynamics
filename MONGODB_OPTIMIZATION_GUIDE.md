@@ -90,39 +90,48 @@ node scripts/mongodb-optimize.js
 Adds indexes to improve query performance:
 
 **Users Collection:**
+
 - `email` (unique)
 - `createdAt` (descending)
 
 **Projects Collection:**
+
 - `userId` + `createdAt` (compound)
 - `status`
 
 **Project Tasks Collection:**
+
 - `projectId` + `status` (compound)
 - `dueDate`
 
 **Services Collection:**
+
 - `active`
 - `createdAt` (descending)
 
 **Contact Submissions Collection:**
+
 - `email`
 - `createdAt` (descending)
 
 **Newsletter Subscribers Collection:**
+
 - `email` (unique)
 - `active`
 
 **News Collection:**
+
 - `publishedAt` (descending)
 - `author`
 
 **Audit Logs Collection:**
+
 - `userId` + `createdAt` (compound)
 - `action`
 - `resource`
 
 **CCPA Requests Collection:**
+
 - `userId`
 - `status`
 - `createdAt` (descending)
@@ -137,6 +146,7 @@ Automatically deletes old data:
 ### 3. Analyzes Collections
 
 Shows:
+
 - Document count
 - Storage size
 - Average document size
@@ -145,6 +155,7 @@ Shows:
 ### 4. Provides Recommendations
 
 Based on your database size, recommends:
+
 - M0 (Free) for < 100 MB
 - M2 ($9/month) for < 500 MB
 - M5 ($25/month) for < 2 GB
@@ -235,6 +246,7 @@ node scripts/mongodb-optimize.js
 ### Error: "Authentication failed"
 
 **Solution:** Check your connection string:
+
 - Verify username and password
 - Ensure password is URL-encoded
 - Check IP whitelist in Atlas
@@ -242,6 +254,7 @@ node scripts/mongodb-optimize.js
 ### Error: "Index already exists"
 
 **Solution:** This is normal! The script will show:
+
 ```
 ℹ️  Index "email_unique" already exists on users
 ```

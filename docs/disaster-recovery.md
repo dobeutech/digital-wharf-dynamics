@@ -43,6 +43,7 @@ This document outlines the disaster recovery procedures for the DOBEU applicatio
 ### Database Recovery
 
 1. **From Automated Backup**
+
    ```bash
    # Via Supabase Dashboard
    # 1. Navigate to Database > Backups
@@ -129,4 +130,3 @@ After a disaster recovery:
 3. Update procedures if needed
 4. Test backups more frequently
 5. Review monitoring and alerting
-

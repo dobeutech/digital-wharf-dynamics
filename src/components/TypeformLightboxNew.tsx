@@ -14,32 +14,39 @@ interface TypeformLightboxNewProps {
 /**
  * Build Typeform URL with query parameters and hash parameters for pre-filling
  */
-function buildTypeformUrl(source: string, user?: { id?: string; email?: string; name?: string }): string {
-  const baseUrl = 'https://dobeu.typeform.com/customer-inq';
-  
+function buildTypeformUrl(
+  source: string,
+  user?: { id?: string; email?: string; name?: string },
+): string {
+  const baseUrl = "https://dobeu.typeform.com/customer-inq";
+
   // Query parameters for UTM tracking
   const params = new URLSearchParams({
-    utm_source: 'dobeu_website',
-    utm_medium: 'website',
-    utm_campaign: source || 'lightbox',
-    utm_term: 'contact_form',
-    utm_content: 'learn_more_button',
+    utm_source: "dobeu_website",
+    utm_medium: "website",
+    utm_campaign: source || "lightbox",
+    utm_term: "contact_form",
+    utm_content: "learn_more_button",
   });
-  
+
   // Hash parameters for pre-filling form fields
   const hashParams: string[] = [];
-  
+
   if (user?.name) {
-    const nameParts = user.name.split(' ');
-    if (nameParts.length > 0) hashParams.push(`first_name=${encodeURIComponent(nameParts[0])}`);
-    if (nameParts.length > 1) hashParams.push(`last_name=${encodeURIComponent(nameParts.slice(1).join(' '))}`);
+    const nameParts = user.name.split(" ");
+    if (nameParts.length > 0)
+      hashParams.push(`first_name=${encodeURIComponent(nameParts[0])}`);
+    if (nameParts.length > 1)
+      hashParams.push(
+        `last_name=${encodeURIComponent(nameParts.slice(1).join(" "))}`,
+      );
   }
-  
+
   if (user?.email) hashParams.push(`email=${encodeURIComponent(user.email)}`);
   if (user?.id) hashParams.push(`user_id=${encodeURIComponent(user.id)}`);
-  
+
   const url = `${baseUrl}?${params.toString()}`;
-  return hashParams.length > 0 ? `${url}#${hashParams.join('&')}` : url;
+  return hashParams.length > 0 ? `${url}#${hashParams.join("&")}` : url;
 }
 
 export function TypeformLightboxNew({
@@ -57,40 +64,41 @@ export function TypeformLightboxNew({
       trackEvent("Typeform Lightbox Opened", { source });
       setUseIframe(false);
       setEmbedFailed(false);
-      
+
       let initTimeout: NodeJS.Timeout | null = null;
       let fallbackTimeout: NodeJS.Timeout | null = null;
       let mounted = true;
-      
+
       const initTypeform = () => {
         if (!containerRef.current || !mounted) return;
-        
+
         // Clear any existing content
-        containerRef.current.innerHTML = '';
-        
+        containerRef.current.innerHTML = "";
+
         // Create the embed div with exact structure: <div data-tf-live="01KCBVEXYD88HBQQB22XQA49ZR"></div>
         // The script in index.html will automatically initialize it
-        const embedDiv = document.createElement('div');
-        embedDiv.setAttribute('data-tf-live', '01KCBVEXYD88HBQQB22XQA49ZR');
+        const embedDiv = document.createElement("div");
+        embedDiv.setAttribute("data-tf-live", "01KCBVEXYD88HBQQB22XQA49ZR");
         containerRef.current.appendChild(embedDiv);
-        
+
         // Trigger Typeform load if available
         if ((window as any).tf && (window as any).tf.load) {
           try {
             (window as any).tf.load();
           } catch (error) {
-            console.error('Error loading Typeform:', error);
+            console.error("Error loading Typeform:", error);
           }
         }
-        
+
         // Check if embed loaded after a delay, fallback to iframe if not
         fallbackTimeout = setTimeout(() => {
           if (!mounted || !containerRef.current) return;
-          
-          const hasTypeformContent = containerRef.current.querySelector('iframe') || 
-                                   containerRef.current.querySelector('[class*="typeform"]') ||
-                                   containerRef.current.querySelector('[id*="typeform"]');
-          
+
+          const hasTypeformContent =
+            containerRef.current.querySelector("iframe") ||
+            containerRef.current.querySelector('[class*="typeform"]') ||
+            containerRef.current.querySelector('[id*="typeform"]');
+
           if (!hasTypeformContent) {
             // Embed didn't load, fallback to iframe
             setEmbedFailed(true);
@@ -101,7 +109,7 @@ export function TypeformLightboxNew({
 
       // Small delay to ensure DOM is ready
       initTimeout = setTimeout(initTypeform, 100);
-      
+
       // Cleanup function
       return () => {
         mounted = false;
@@ -109,7 +117,7 @@ export function TypeformLightboxNew({
         if (fallbackTimeout) clearTimeout(fallbackTimeout);
         // Clean up when closing
         if (containerRef.current) {
-          containerRef.current.innerHTML = '';
+          containerRef.current.innerHTML = "";
         }
       };
     } else {
@@ -117,7 +125,7 @@ export function TypeformLightboxNew({
       setUseIframe(false);
       setEmbedFailed(false);
       if (containerRef.current) {
-        containerRef.current.innerHTML = '';
+        containerRef.current.innerHTML = "";
       }
     }
   }, [isOpen, source]);
@@ -144,17 +152,16 @@ export function TypeformLightboxNew({
             className="w-full h-full border-0"
             title="Contact Form"
             allow="camera; microphone; autoplay; encrypted-media;"
-            style={{ minHeight: '600px' }}
+            style={{ minHeight: "600px" }}
           />
         ) : (
-          <div 
+          <div
             ref={containerRef}
             className="w-full h-full"
-            style={{ minHeight: '600px' }}
+            style={{ minHeight: "600px" }}
           />
         )}
       </DialogContent>
     </Dialog>
   );
 }
-

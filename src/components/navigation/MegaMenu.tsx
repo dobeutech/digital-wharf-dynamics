@@ -34,7 +34,7 @@ export function MegaMenu({ categories, isOpen, onClose }: MegaMenuProps) {
                           onClick={onClose}
                           className={cn(
                             "group flex items-start gap-3 p-2 rounded-md transition-colors",
-                            "hover:bg-muted focus:bg-muted focus:outline-none"
+                            "hover:bg-muted focus:bg-muted focus:outline-none",
                           )}
                         >
                           {Icon && (

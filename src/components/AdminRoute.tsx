@@ -7,7 +7,8 @@ import { SessionWarningDialog } from "@/components/SessionWarningDialog";
 export function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading: authLoading } = useAuth();
   const { isAdmin, loading: adminLoading } = useAdmin();
-  const { showWarning, timeRemaining, extendSession, logoutNow } = useSessionTimeout();
+  const { showWarning, timeRemaining, extendSession, logoutNow } =
+    useSessionTimeout();
 
   if (authLoading || adminLoading) {
     return (

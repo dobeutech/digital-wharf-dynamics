@@ -3,8 +3,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.86.0";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
 // Rate limiting: Track requests per IP
@@ -18,16 +19,16 @@ const DUPLICATE_WINDOW = 5 * 60 * 1000; // 5 minutes in ms
 function checkRateLimit(ip: string): boolean {
   const now = Date.now();
   const record = rateLimitMap.get(ip);
-  
+
   if (!record || now > record.resetTime) {
     rateLimitMap.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
     return true;
   }
-  
+
   if (record.count >= RATE_LIMIT) {
     return false;
   }
-  
+
   record.count++;
   return true;
 }
@@ -35,63 +36,70 @@ function checkRateLimit(ip: string): boolean {
 // Sanitize input to prevent XSS
 function sanitizeString(str: string): string {
   return str
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#x27;")
     .trim();
 }
 
-function validateInput(data: unknown): { valid: boolean; errors: string[]; sanitized?: Record<string, unknown> } {
+function validateInput(data: unknown): {
+  valid: boolean;
+  errors: string[];
+  sanitized?: Record<string, unknown>;
+} {
   const errors: string[] = [];
-  
-  if (!data || typeof data !== 'object') {
-    return { valid: false, errors: ['Invalid request body'] };
+
+  if (!data || typeof data !== "object") {
+    return { valid: false, errors: ["Invalid request body"] };
   }
-  
+
   const input = data as Record<string, unknown>;
-  
+
   // Validate name
-  if (typeof input.name !== 'string' || input.name.trim().length < 2) {
-    errors.push('Name must be at least 2 characters');
+  if (typeof input.name !== "string" || input.name.trim().length < 2) {
+    errors.push("Name must be at least 2 characters");
   } else if (input.name.trim().length > 100) {
-    errors.push('Name must be less than 100 characters');
+    errors.push("Name must be less than 100 characters");
   }
-  
+
   // Validate email
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (typeof input.email !== 'string' || !emailRegex.test(input.email.trim())) {
-    errors.push('Please enter a valid email address');
+  if (typeof input.email !== "string" || !emailRegex.test(input.email.trim())) {
+    errors.push("Please enter a valid email address");
   } else if (input.email.trim().length > 255) {
-    errors.push('Email must be less than 255 characters');
+    errors.push("Email must be less than 255 characters");
   }
-  
+
   // Validate phone (optional)
-  if (input.phone !== undefined && input.phone !== null && input.phone !== '') {
-    if (typeof input.phone !== 'string') {
-      errors.push('Invalid phone format');
+  if (input.phone !== undefined && input.phone !== null && input.phone !== "") {
+    if (typeof input.phone !== "string") {
+      errors.push("Invalid phone format");
     } else if (input.phone.trim().length > 20) {
-      errors.push('Phone must be less than 20 characters');
+      errors.push("Phone must be less than 20 characters");
     }
   }
-  
+
   // Validate message
-  if (typeof input.message !== 'string' || input.message.trim().length < 10) {
-    errors.push('Message must be at least 10 characters');
+  if (typeof input.message !== "string" || input.message.trim().length < 10) {
+    errors.push("Message must be at least 10 characters");
   } else if (input.message.trim().length > 2000) {
-    errors.push('Message must be less than 2000 characters');
+    errors.push("Message must be less than 2000 characters");
   }
-  
+
   // Validate smsConsent - required if phone is provided
-  const hasPhone = input.phone && typeof input.phone === 'string' && input.phone.trim().length > 0;
+  const hasPhone =
+    input.phone &&
+    typeof input.phone === "string" &&
+    input.phone.trim().length > 0;
   if (hasPhone && input.smsConsent !== true) {
-    errors.push('SMS consent is required when providing a phone number');
+    errors.push("SMS consent is required when providing a phone number");
   }
-  
+
   if (errors.length > 0) {
     return { valid: false, errors };
   }
-  
+
   // Sanitize inputs
   const sanitized = {
     name: sanitizeString(input.name as string),
@@ -101,7 +109,7 @@ function validateInput(data: unknown): { valid: boolean; errors: string[]; sanit
     smsConsent: Boolean(input.smsConsent),
     marketingConsent: Boolean(input.marketingConsent),
   };
-  
+
   return { valid: true, errors: [], sanitized };
 }
 
@@ -109,9 +117,9 @@ async function sendEmails(resend: Resend, sanitized: Record<string, unknown>) {
   try {
     // Send confirmation email to submitter
     await resend.emails.send({
-      from: 'Dobeu Tech Solutions <hello@updates.dobeu.cloud>',
+      from: "Dobeu Tech Solutions <hello@updates.dobeu.cloud>",
       to: [sanitized.email as string],
-      subject: 'We received your message - Dobeu Tech Solutions',
+      subject: "We received your message - Dobeu Tech Solutions",
       html: `
         <!DOCTYPE html>
         <html>
@@ -136,8 +144,8 @@ async function sendEmails(resend: Resend, sanitized: Record<string, unknown>) {
 
     // Send admin notification
     await resend.emails.send({
-      from: 'Dobeu System <system@updates.dobeu.cloud>',
-      to: ['contact@dobeu.cloud'],
+      from: "Dobeu System <system@updates.dobeu.cloud>",
+      to: ["contact@dobeu.cloud"],
       subject: `New Contact Form Submission from ${sanitized.name}`,
       html: `
         <!DOCTYPE html>
@@ -148,9 +156,9 @@ async function sendEmails(resend: Resend, sanitized: Record<string, unknown>) {
           <div style="background: #f4f4f4; padding: 16px; border-radius: 8px; margin: 20px 0;">
             <p style="margin: 8px 0;"><strong>Name:</strong> ${sanitized.name}</p>
             <p style="margin: 8px 0;"><strong>Email:</strong> <a href="mailto:${sanitized.email}">${sanitized.email}</a></p>
-            <p style="margin: 8px 0;"><strong>Phone:</strong> ${sanitized.phone || 'Not provided'}</p>
-            <p style="margin: 8px 0;"><strong>SMS Consent:</strong> ${sanitized.smsConsent ? 'Yes' : 'No'}</p>
-            <p style="margin: 8px 0;"><strong>Marketing Consent:</strong> ${sanitized.marketingConsent ? 'Yes' : 'No'}</p>
+            <p style="margin: 8px 0;"><strong>Phone:</strong> ${sanitized.phone || "Not provided"}</p>
+            <p style="margin: 8px 0;"><strong>SMS Consent:</strong> ${sanitized.smsConsent ? "Yes" : "No"}</p>
+            <p style="margin: 8px 0;"><strong>Marketing Consent:</strong> ${sanitized.marketingConsent ? "Yes" : "No"}</p>
           </div>
           <div style="background: #fff; border: 1px solid #ddd; padding: 16px; border-radius: 8px; margin: 20px 0;">
             <p style="margin: 0 0 8px 0;"><strong>Message:</strong></p>
@@ -164,72 +172,87 @@ async function sendEmails(resend: Resend, sanitized: Record<string, unknown>) {
     });
     console.log(`Admin notification sent for contact from ${sanitized.email}`);
   } catch (emailError) {
-    console.error('Error sending emails:', emailError);
+    console.error("Error sending emails:", emailError);
     // Don't fail the request if emails fail - the DB record is already created
   }
 }
 
 serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     // Get client IP for rate limiting
-    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
-                     req.headers.get('x-real-ip') || 
-                     'unknown';
-    
+    const clientIP =
+      req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      req.headers.get("x-real-ip") ||
+      "unknown";
+
     // Check rate limit
     if (!checkRateLimit(clientIP)) {
       console.log(`Rate limit exceeded for IP: ${clientIP.substring(0, 8)}...`);
       return new Response(
-        JSON.stringify({ error: 'Too many requests. Please try again later.' }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: "Too many requests. Please try again later." }),
+        {
+          status: 429,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
     // Parse and validate input
     const body = await req.json();
     const validation = validateInput(body);
-    
+
     if (!validation.valid) {
-      console.log('Validation failed:', validation.errors);
+      console.log("Validation failed:", validation.errors);
       return new Response(
-        JSON.stringify({ error: validation.errors.join(', ') }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: validation.errors.join(", ") }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
     const { sanitized } = validation;
-    
+
     // Initialize Supabase client with service role for inserting
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Check for duplicate submissions (same email + message within 5 minutes)
-    const duplicateCheckTime = new Date(Date.now() - DUPLICATE_WINDOW).toISOString();
+    const duplicateCheckTime = new Date(
+      Date.now() - DUPLICATE_WINDOW,
+    ).toISOString();
     const { data: existingSubmissions } = await supabase
-      .from('contact_submissions')
-      .select('id')
-      .eq('email', sanitized!.email)
-      .eq('message', sanitized!.message)
-      .gte('submitted_at', duplicateCheckTime)
+      .from("contact_submissions")
+      .select("id")
+      .eq("email", sanitized!.email)
+      .eq("message", sanitized!.message)
+      .gte("submitted_at", duplicateCheckTime)
       .limit(1);
 
     if (existingSubmissions && existingSubmissions.length > 0) {
-      console.log('Duplicate submission detected');
+      console.log("Duplicate submission detected");
       return new Response(
-        JSON.stringify({ error: 'This message was already submitted. Please wait before submitting again.' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({
+          error:
+            "This message was already submitted. Please wait before submitting again.",
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
     // Insert contact submission
     const { error: insertError } = await supabase
-      .from('contact_submissions')
+      .from("contact_submissions")
       .insert({
         name: sanitized!.name,
         email: sanitized!.email,
@@ -238,41 +261,57 @@ serve(async (req) => {
         sms_consent: sanitized!.smsConsent,
         marketing_consent: sanitized!.marketingConsent,
         ip_address: clientIP,
-        user_agent: req.headers.get('user-agent') || null,
+        user_agent: req.headers.get("user-agent") || null,
       });
 
     if (insertError) {
-      console.error('Database insert error:', insertError.message);
+      console.error("Database insert error:", insertError.message);
       return new Response(
-        JSON.stringify({ error: 'Failed to submit message. Please try again.' }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({
+          error: "Failed to submit message. Please try again.",
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
-    console.log(`Contact form submitted successfully from: ${sanitized!.email}`);
+    console.log(
+      `Contact form submitted successfully from: ${sanitized!.email}`,
+    );
 
     // Send email notifications
-    const resendApiKey = Deno.env.get('RESEND_API_KEY');
+    const resendApiKey = Deno.env.get("RESEND_API_KEY");
     if (resendApiKey) {
       const resend = new Resend(resendApiKey);
       await sendEmails(resend, sanitized!);
     } else {
-      console.warn('RESEND_API_KEY not configured - skipping email notifications');
+      console.warn(
+        "RESEND_API_KEY not configured - skipping email notifications",
+      );
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
-        message: 'Thank you for your message! We will get back to you soon.'
+      JSON.stringify({
+        success: true,
+        message: "Thank you for your message! We will get back to you soon.",
       }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
-
   } catch (error) {
-    console.error('Error processing contact submission:', error);
+    console.error("Error processing contact submission:", error);
     return new Response(
-      JSON.stringify({ error: 'An unexpected error occurred. Please try again.' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      JSON.stringify({
+        error: "An unexpected error occurred. Please try again.",
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 });

@@ -33,13 +33,13 @@ This project uses **Vitest** and **React Testing Library** for unit and integrat
 
 ## 🛠️ Testing Stack
 
-| Tool | Purpose |
-|------|---------|
-| **Vitest** | Test runner and assertion library |
-| **React Testing Library** | Component testing utilities |
-| **@testing-library/user-event** | User interaction simulation |
-| **@testing-library/jest-dom** | Custom matchers for DOM |
-| **jsdom** | DOM implementation for Node.js |
+| Tool                            | Purpose                           |
+| ------------------------------- | --------------------------------- |
+| **Vitest**                      | Test runner and assertion library |
+| **React Testing Library**       | Component testing utilities       |
+| **@testing-library/user-event** | User interaction simulation       |
+| **@testing-library/jest-dom**   | Custom matchers for DOM           |
+| **jsdom**                       | DOM implementation for Node.js    |
 
 ---
 
@@ -102,9 +102,9 @@ describe('ComponentName', () => {
     it('handles click events', async () => {
       const user = userEvent.setup();
       renderWithProviders(<ComponentName />);
-      
+
       await user.click(screen.getByRole('button'));
-      
+
       expect(/* assertion */).toBe(true);
     });
   });
@@ -150,17 +150,17 @@ import {
   mockLocalStorage,
   mockMatchMedia,
   mockIntersectionObserver,
-} from '@/__tests__/utils/test-utils';
+} from "@/__tests__/utils/test-utils";
 
 // Mock user
-const user = createMockUser({ name: 'Test User' });
+const user = createMockUser({ name: "Test User" });
 
 // Mock Supabase
 const supabase = createMockSupabaseClient();
 
 // Mock localStorage
 mockLocalStorage();
-localStorage.setItem('key', 'value');
+localStorage.setItem("key", "value");
 
 // Mock matchMedia
 mockMatchMedia(true); // matches = true
@@ -188,7 +188,7 @@ describe('Rendering', () => {
         Submit
       </Button>
     );
-    
+
     const button = screen.getByRole('button');
     expect(button).toBeDisabled();
     expect(button).toHaveTextContent('Submit');
@@ -208,31 +208,31 @@ describe('User Interactions', () => {
   it('handles button clicks', async () => {
     const user = userEvent.setup();
     const handleClick = vi.fn();
-    
+
     renderWithProviders(<Button onClick={handleClick}>Click</Button>);
-    
+
     await user.click(screen.getByRole('button'));
-    
+
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
   it('handles form input', async () => {
     const user = userEvent.setup();
     renderWithProviders(<Input />);
-    
+
     const input = screen.getByRole('textbox');
     await user.type(input, 'Hello World');
-    
+
     expect(input).toHaveValue('Hello World');
   });
 
   it('handles keyboard navigation', async () => {
     const user = userEvent.setup();
     renderWithProviders(<Button>Click</Button>);
-    
+
     await user.tab();
     expect(screen.getByRole('button')).toHaveFocus();
-    
+
     await user.keyboard('{Enter}');
     // Assert action occurred
   });
@@ -245,9 +245,9 @@ describe('User Interactions', () => {
 describe('Async Operations', () => {
   it('shows loading state', async () => {
     renderWithProviders(<AsyncComponent />);
-    
+
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
-    
+
     await waitFor(() => {
       expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
     });
@@ -256,9 +256,9 @@ describe('Async Operations', () => {
   it('handles API success', async () => {
     const mockData = { id: 1, name: 'Test' };
     vi.mocked(api.get).mockResolvedValue({ data: mockData });
-    
+
     renderWithProviders(<DataComponent />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Test')).toBeInTheDocument();
     });
@@ -266,9 +266,9 @@ describe('Async Operations', () => {
 
   it('handles API errors', async () => {
     vi.mocked(api.get).mockRejectedValue(new Error('API Error'));
-    
+
     renderWithProviders(<DataComponent />);
-    
+
     await waitFor(() => {
       expect(screen.getByText(/error/i)).toBeInTheDocument();
     });
@@ -282,14 +282,14 @@ describe('Async Operations', () => {
 describe('Accessibility', () => {
   it('has proper ARIA labels', () => {
     renderWithProviders(<Button>Submit</Button>);
-    
+
     const button = screen.getByRole('button');
     expect(button).toHaveAccessibleName('Submit');
   });
 
   it('has correct ARIA attributes', () => {
     renderWithProviders(<Dialog open>Content</Dialog>);
-    
+
     const dialog = screen.getByRole('dialog');
     expect(dialog).toHaveAttribute('aria-modal', 'true');
   });
@@ -297,10 +297,10 @@ describe('Accessibility', () => {
   it('supports keyboard navigation', async () => {
     const user = userEvent.setup();
     renderWithProviders(<Menu />);
-    
+
     await user.tab();
     expect(screen.getByRole('button')).toHaveFocus();
-    
+
     await user.keyboard('{ArrowDown}');
     expect(screen.getByRole('menuitem')).toHaveFocus();
   });
@@ -308,9 +308,9 @@ describe('Accessibility', () => {
   it('has proper focus management', async () => {
     const user = userEvent.setup();
     renderWithProviders(<Modal />);
-    
+
     await user.click(screen.getByRole('button', { name: /open/i }));
-    
+
     await waitFor(() => {
       const modal = screen.getByRole('dialog');
       expect(modal).toContainElement(document.activeElement);
@@ -372,22 +372,22 @@ describe('Error States', () => {
     const ThrowError = () => {
       throw new Error('Test error');
     };
-    
+
     renderWithProviders(
       <ErrorBoundary>
         <ThrowError />
       </ErrorBoundary>
     );
-    
+
     expect(screen.getByText(/error occurred/i)).toBeInTheDocument();
   });
 
   it('handles validation errors', async () => {
     const user = userEvent.setup();
     renderWithProviders(<Form />);
-    
+
     await user.click(screen.getByRole('button', { name: /submit/i }));
-    
+
     expect(screen.getByText(/required/i)).toBeInTheDocument();
   });
 });
@@ -421,45 +421,49 @@ describe('Loading States', () => {
 ### DO ✅
 
 1. **Test user behavior, not implementation**
+
    ```typescript
    // ✅ Good
-   await user.click(screen.getByRole('button', { name: /submit/i }));
+   await user.click(screen.getByRole("button", { name: /submit/i }));
    expect(screen.getByText(/success/i)).toBeInTheDocument();
-   
+
    // ❌ Bad
    expect(component.state.submitted).toBe(true);
    ```
 
 2. **Use accessible queries**
+
    ```typescript
    // ✅ Good - Accessible queries
-   screen.getByRole('button')
-   screen.getByLabelText('Email')
-   screen.getByText('Submit')
-   
+   screen.getByRole("button");
+   screen.getByLabelText("Email");
+   screen.getByText("Submit");
+
    // ❌ Bad - Implementation details
-   screen.getByClassName('btn')
-   screen.getByTestId('submit-btn')
+   screen.getByClassName("btn");
+   screen.getByTestId("submit-btn");
    ```
 
 3. **Test from user's perspective**
+
    ```typescript
    // ✅ Good
-   await user.type(screen.getByLabelText('Email'), 'test@example.com');
-   
+   await user.type(screen.getByLabelText("Email"), "test@example.com");
+
    // ❌ Bad
-   fireEvent.change(input, { target: { value: 'test@example.com' } });
+   fireEvent.change(input, { target: { value: "test@example.com" } });
    ```
 
 4. **Wait for async updates**
+
    ```typescript
    // ✅ Good
    await waitFor(() => {
-     expect(screen.getByText('Loaded')).toBeInTheDocument();
+     expect(screen.getByText("Loaded")).toBeInTheDocument();
    });
-   
+
    // ❌ Bad
-   expect(screen.getByText('Loaded')).toBeInTheDocument(); // May fail
+   expect(screen.getByText("Loaded")).toBeInTheDocument(); // May fail
    ```
 
 5. **Clean up after tests**
@@ -530,10 +534,10 @@ npm run test
 
 ```typescript
 // ✅ Correct
-import { Component } from '@/components/Component';
+import { Component } from "@/components/Component";
 
 // ❌ Wrong
-import { Component } from '../../../components/Component';
+import { Component } from "../../../components/Component";
 ```
 
 #### Issue: "Element not found"
@@ -543,11 +547,11 @@ import { Component } from '../../../components/Component';
 ```typescript
 // ✅ Correct
 await waitFor(() => {
-  expect(screen.getByText('Loaded')).toBeInTheDocument();
+  expect(screen.getByText("Loaded")).toBeInTheDocument();
 });
 
 // ❌ Wrong
-expect(screen.getByText('Loaded')).toBeInTheDocument();
+expect(screen.getByText("Loaded")).toBeInTheDocument();
 ```
 
 #### Issue: "Unable to find accessible element"
@@ -556,10 +560,10 @@ expect(screen.getByText('Loaded')).toBeInTheDocument();
 
 ```typescript
 // ✅ Correct
-screen.getByRole('button', { name: /submit/i })
+screen.getByRole("button", { name: /submit/i });
 
 // ❌ Wrong
-screen.getByText('Submit') // May not be a button
+screen.getByText("Submit"); // May not be a button
 ```
 
 #### Issue: "Act warnings"
@@ -580,21 +584,24 @@ fireEvent.click(button);
 **Solution:** Increase timeout or check for infinite loops
 
 ```typescript
-await waitFor(() => {
-  expect(screen.getByText('Done')).toBeInTheDocument();
-}, { timeout: 5000 }); // Increase timeout
+await waitFor(
+  () => {
+    expect(screen.getByText("Done")).toBeInTheDocument();
+  },
+  { timeout: 5000 },
+); // Increase timeout
 ```
 
 ---
 
 ## 📊 Coverage Goals
 
-| Metric | Target |
-|--------|--------|
-| Statements | > 80% |
-| Branches | > 75% |
-| Functions | > 80% |
-| Lines | > 80% |
+| Metric     | Target |
+| ---------- | ------ |
+| Statements | > 80%  |
+| Branches   | > 75%  |
+| Functions  | > 80%  |
+| Lines      | > 80%  |
 
 ### Check Coverage
 
@@ -610,17 +617,20 @@ open coverage/index.html
 ## 📚 Additional Resources
 
 ### Documentation
+
 - [Vitest](https://vitest.dev/)
 - [React Testing Library](https://testing-library.com/react)
 - [Testing Library Queries](https://testing-library.com/docs/queries/about)
 - [User Event](https://testing-library.com/docs/user-event/intro)
 
 ### Project Examples
+
 - [ExampleForm.test.tsx](./src/components/forms/__tests__/ExampleForm.test.tsx)
 - [ThemeToggle.test.tsx](./src/components/__tests__/ThemeToggle.test.tsx)
 - [LoadingSpinner.test.tsx](./src/components/__tests__/LoadingSpinner.test.tsx)
 
 ### Test Utilities
+
 - [test-utils.tsx](./src/__tests__/utils/test-utils.tsx)
 
 ---

@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -12,9 +12,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+} from "@/components/ui/form";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 /**
  * STEP 1: Define Zod validation schema
@@ -22,11 +22,12 @@ import { Loader2 } from 'lucide-react';
  */
 const formSchema = z.object({
   // Example field - replace with your own
-  fieldName: z.string()
+  fieldName: z
+    .string()
     .trim()
-    .min(1, 'This field is required')
-    .max(100, 'Maximum 100 characters'),
-  
+    .min(1, "This field is required")
+    .max(100, "Maximum 100 characters"),
+
   // Add more fields as needed
   // email: z.string().email('Invalid email address'),
   // age: z.coerce.number().min(18, 'Must be 18 or older'),
@@ -48,10 +49,10 @@ interface FormTemplateProps {
 
 /**
  * FormTemplate Component
- * 
+ *
  * A minimal form template following project patterns.
  * Replace "FormTemplate" with your actual form name.
- * 
+ *
  * @example
  * ```tsx
  * <FormTemplate
@@ -60,7 +61,11 @@ interface FormTemplateProps {
  * />
  * ```
  */
-export function FormTemplate({ onSuccess, onError, className }: FormTemplateProps) {
+export function FormTemplate({
+  onSuccess,
+  onError,
+  className,
+}: FormTemplateProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   /**
@@ -69,10 +74,10 @@ export function FormTemplate({ onSuccess, onError, className }: FormTemplateProp
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      fieldName: '',
+      fieldName: "",
       // Add default values for all fields
     },
-    mode: 'onBlur', // Validate on blur
+    mode: "onBlur", // Validate on blur
   });
 
   /**
@@ -86,17 +91,18 @@ export function FormTemplate({ onSuccess, onError, className }: FormTemplateProp
       // Example:
       // const response = await api.post('/endpoint', data);
       // if (!response.success) throw new Error(response.error);
-      
+
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       // Success handling
-      toast.success('Form submitted successfully!');
+      toast.success("Form submitted successfully!");
       onSuccess?.(data);
       form.reset();
     } catch (error) {
       // Error handling
-      const errorMessage = error instanceof Error ? error.message : 'Submission failed';
+      const errorMessage =
+        error instanceof Error ? error.message : "Submission failed";
       toast.error(errorMessage);
       onError?.(error instanceof Error ? error : new Error(errorMessage));
     } finally {
@@ -147,7 +153,7 @@ export function FormTemplate({ onSuccess, onError, className }: FormTemplateProp
                 Submitting...
               </>
             ) : (
-              'Submit'
+              "Submit"
             )}
           </Button>
         </form>

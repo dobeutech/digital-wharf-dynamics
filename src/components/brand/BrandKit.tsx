@@ -14,7 +14,8 @@ export function BrandKit() {
         <div className="mb-12">
           <h1 className="text-5xl font-bold mb-4">Brand Kit</h1>
           <p className="text-xl text-muted-foreground">
-            Everything you need to maintain consistency across all DBE brand touchpoints.
+            Everything you need to maintain consistency across all DBE brand
+            touchpoints.
           </p>
         </div>
 

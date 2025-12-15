@@ -14,18 +14,21 @@ This document summarizes the performance engineering analysis and Ona Automation
 
 **Problem**: 9 separate database queries causing slow page load (2.5s)
 
-**Solution**: 
+**Solution**:
+
 - Reduced to 7 queries (22% reduction)
 - Combined related queries (CCPA total + pending, contacts total + new)
 - Used `head: true` for count-only queries
 - Filter in memory instead of separate database calls
 
 **Results**:
+
 - ✅ **60% faster** page load (2.5s → 1.0s)
 - ✅ Reduced database load
 - ✅ Better user experience
 
 **Trade-offs**:
+
 - ⚠️ Slightly more memory usage for filtering
 - ⚠️ More complex query logic
 
@@ -38,16 +41,19 @@ This document summarizes the performance engineering analysis and Ona Automation
 **Problem**: Database query on every admin check (150ms per check)
 
 **Solution**:
+
 - Implemented in-memory cache with 5-minute TTL
 - Used `maybeSingle()` instead of `single()` to avoid errors
 - Added cleanup to prevent memory leaks
 
 **Results**:
+
 - ✅ **66% faster** (150ms → 50ms)
 - ✅ Reduced database load
 - ✅ No errors on missing roles
 
 **Trade-offs**:
+
 - ⚠️ 5-minute cache may show stale data
 - ⚠️ Small memory overhead for cache
 
@@ -60,16 +66,19 @@ This document summarizes the performance engineering analysis and Ona Automation
 **Problem**: Spread operator creating new arrays on each iteration (O(n²))
 
 **Solution**:
+
 - Use `array.push()` for direct mutation (O(n))
 - Pre-allocate Map with expected size
 - Add pagination support (100 items per page)
 
 **Results**:
+
 - ✅ O(n) instead of O(n²) complexity
 - ✅ No unnecessary allocations
 - ✅ Better performance with large datasets
 
 **Trade-offs**:
+
 - ⚠️ Mutates arrays (acceptable in this context)
 
 ---
@@ -81,17 +90,20 @@ This document summarizes the performance engineering analysis and Ona Automation
 **Problem**: Functions recreated on every render, causing unnecessary re-renders
 
 **Solution**:
+
 - Memoized all functions with `useCallback`
 - Memoized context value with `useMemo`
 - Added safe analytics wrapper
 - Batched analytics calls
 
 **Results**:
+
 - ✅ **~80% reduction** in re-renders
 - ✅ Better performance for auth consumers
 - ✅ Auth never fails due to analytics
 
 **Trade-offs**:
+
 - ⚠️ More complex code
 - ⚠️ Slight memory overhead for memoization
 
@@ -102,6 +114,7 @@ This document summarizes the performance engineering analysis and Ona Automation
 **File**: `src/lib/performance.ts`
 
 **Features**:
+
 - Performance metric tracking
 - Slow operation detection (>1s)
 - Function performance measurement
@@ -110,22 +123,23 @@ This document summarizes the performance engineering analysis and Ona Automation
 - Batch processing
 
 **Usage**:
+
 ```typescript
-import { perfMonitor, measurePerformance } from '@/lib/performance';
+import { perfMonitor, measurePerformance } from "@/lib/performance";
 
 // Measure function
 const fetchData = measurePerformance(async () => {
-  return await supabase.from('table').select('*');
-}, 'fetchData');
+  return await supabase.from("table").select("*");
+}, "fetchData");
 
 // Track metrics
-perfMonitor.start('operation');
+perfMonitor.start("operation");
 // ... do work
-perfMonitor.end('operation');
+perfMonitor.end("operation");
 
 // Get insights
 perfMonitor.logSlowOperations(1000);
-console.log(perfMonitor.getAverage('operation'));
+console.log(perfMonitor.getAverage("operation"));
 ```
 
 ---
@@ -134,14 +148,14 @@ console.log(perfMonitor.getAverage('operation'));
 
 ### Before vs After
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Admin Dashboard Load | 2.5s | 1.0s | **60% faster** |
-| Admin Status Check | 150ms | 50ms | **66% faster** |
-| User List Load | 1.8s | 0.8s | **55% faster** |
-| Auth Re-renders | High | Low | **~80% reduction** |
-| Database Queries (Dashboard) | 9 | 7 | **22% reduction** |
-| Bundle Size | 850KB | 720KB | **15% smaller** |
+| Metric                       | Before | After | Improvement        |
+| ---------------------------- | ------ | ----- | ------------------ |
+| Admin Dashboard Load         | 2.5s   | 1.0s  | **60% faster**     |
+| Admin Status Check           | 150ms  | 50ms  | **66% faster**     |
+| User List Load               | 1.8s   | 0.8s  | **55% faster**     |
+| Auth Re-renders              | High   | Low   | **~80% reduction** |
+| Database Queries (Dashboard) | 9      | 7     | **22% reduction**  |
+| Bundle Size                  | 850KB  | 720KB | **15% smaller**    |
 
 ### Target Lighthouse Scores
 
@@ -161,6 +175,7 @@ console.log(perfMonitor.getAverage('operation'));
 **Trigger**: Daily at 2 AM UTC
 
 **Actions**:
+
 - Install dependencies
 - Run unit tests
 - Run E2E tests
@@ -177,6 +192,7 @@ console.log(perfMonitor.getAverage('operation'));
 **Trigger**: Daily at 3 AM UTC
 
 **Actions**:
+
 - Trigger Supabase backup function
 - Verify backup completion
 - Notify on failure
@@ -190,6 +206,7 @@ console.log(perfMonitor.getAverage('operation'));
 **Trigger**: Weekly (Monday 9 AM UTC)
 
 **Actions**:
+
 - Check for outdated packages
 - Run security audit
 - Check TypeScript version
@@ -204,6 +221,7 @@ console.log(perfMonitor.getAverage('operation'));
 **Trigger**: On git pre-commit
 
 **Actions**:
+
 - Lint staged files
 - Type check
 - Format check
@@ -218,6 +236,7 @@ console.log(perfMonitor.getAverage('operation'));
 **Trigger**: On push to main
 
 **Actions**:
+
 - Wait for deployment
 - Health check
 - Verify critical pages
@@ -233,6 +252,7 @@ console.log(perfMonitor.getAverage('operation'));
 **Trigger**: Every 6 hours
 
 **Actions**:
+
 - Run Lighthouse audit
 - Check performance score (>90)
 - Alert if score drops
@@ -247,6 +267,7 @@ console.log(perfMonitor.getAverage('operation'));
 **Trigger**: Weekly (Sunday 4 AM UTC)
 
 **Actions**:
+
 - Delete old audit logs (>90 days)
 - Clean expired sessions
 - Vacuum database
@@ -260,6 +281,7 @@ console.log(perfMonitor.getAverage('operation'));
 **Trigger**: Daily at 10 AM UTC
 
 **Actions**:
+
 - NPM audit
 - Check for secrets in code
 - Dependency license check
@@ -274,6 +296,7 @@ console.log(perfMonitor.getAverage('operation'));
 **Trigger**: On changes to `.env.example` or `src/config/env.ts`
 
 **Actions**:
+
 - Validate environment config
 - Check for missing variables
 - Notify on mismatch
@@ -287,38 +310,43 @@ console.log(perfMonitor.getAverage('operation'));
 ### 1. Apply Performance Optimizations
 
 #### Step 1: Update Admin Dashboard
+
 ```bash
 # Already applied in src/pages/admin/AdminDashboard.tsx
 # No action needed - changes are in place
 ```
 
 #### Step 2: Update Admin Hook
+
 ```bash
 # Already applied in src/hooks/useAdmin.tsx
 # No action needed - changes are in place
 ```
 
 #### Step 3: Update Admin Users
+
 ```bash
 # Already applied in src/pages/admin/AdminUsers.tsx
 # No action needed - changes are in place
 ```
 
 #### Step 4: Migrate to Optimized Auth Context (Optional)
+
 ```typescript
 // In src/App.tsx, replace:
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider } from "./contexts/AuthContext";
 
 // With:
-import { AuthProvider } from './contexts/AuthContext.optimized';
+import { AuthProvider } from "./contexts/AuthContext.optimized";
 ```
 
 #### Step 5: Add Performance Monitoring
+
 ```typescript
 // In development environment
-import { perfMonitor } from '@/lib/performance';
+import { perfMonitor } from "@/lib/performance";
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   setInterval(() => {
     perfMonitor.logSlowOperations(1000);
   }, 60000);
@@ -330,12 +358,14 @@ if (process.env.NODE_ENV === 'development') {
 ### 2. Set Up Ona Automations
 
 #### Step 1: Review Automation Configuration
+
 ```bash
 # Review the automation workflows
 cat .ona/automations.yml
 ```
 
 #### Step 2: Configure Environment Variables
+
 ```bash
 # Add to Gitpod/Ona environment
 export BACKUP_SECRET_TOKEN="your-backup-token"
@@ -343,6 +373,7 @@ export VITE_SUPABASE_URL="your-supabase-url"
 ```
 
 #### Step 3: Enable Automations
+
 ```bash
 # Initialize Ona automations (if supported)
 gitpod automations init
@@ -352,6 +383,7 @@ gitpod automations validate
 ```
 
 #### Step 4: Test Automations
+
 ```bash
 # Manually trigger a test automation
 gitpod automations task start nightly-tests
@@ -367,10 +399,11 @@ gitpod automations task logs nightly-tests
 ### Performance
 
 1. **Always measure before optimizing**
+
    ```typescript
-   perfMonitor.start('operation');
+   perfMonitor.start("operation");
    // ... code
-   const duration = perfMonitor.end('operation');
+   const duration = perfMonitor.end("operation");
    ```
 
 2. **Use React DevTools Profiler**
@@ -378,6 +411,7 @@ gitpod automations task logs nightly-tests
    - Measure component render times
 
 3. **Monitor bundle size**
+
    ```bash
    npm run build
    du -sh dist/
@@ -407,11 +441,13 @@ gitpod automations task logs nightly-tests
 ### React Performance
 
 1. **Memoize expensive computations**
+
    ```typescript
    const value = useMemo(() => expensiveComputation(data), [data]);
    ```
 
 2. **Memoize callbacks**
+
    ```typescript
    const handleClick = useCallback(() => doSomething(id), [id]);
    ```
@@ -420,10 +456,12 @@ gitpod automations task logs nightly-tests
    ```typescript
    useEffect(() => {
      const isMounted = { current: true };
-     fetchData().then(data => {
+     fetchData().then((data) => {
        if (isMounted.current) setData(data);
      });
-     return () => { isMounted.current = false; };
+     return () => {
+       isMounted.current = false;
+     };
    }, []);
    ```
 
@@ -438,6 +476,7 @@ gitpod automations task logs nightly-tests
    - Alerts if score < 90
 
 2. **Custom Performance Tracking**
+
    ```typescript
    perfMonitor.logSlowOperations(1000); // Log ops > 1s
    ```

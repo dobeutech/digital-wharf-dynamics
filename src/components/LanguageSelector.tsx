@@ -6,7 +6,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Globe } from "lucide-react";
-import { useLanguage, Language, languageNames } from "@/contexts/LanguageContext";
+import {
+  useLanguage,
+  Language,
+  languageNames,
+} from "@/contexts/LanguageContext";
 import { cn } from "@/lib/utils";
 
 interface LanguageSelectorProps {
@@ -14,7 +18,10 @@ interface LanguageSelectorProps {
   showLabel?: boolean;
 }
 
-export function LanguageSelector({ className, showLabel = false }: LanguageSelectorProps) {
+export function LanguageSelector({
+  className,
+  showLabel = false,
+}: LanguageSelectorProps) {
   const { language, setLanguage, t } = useLanguage();
 
   const languages: { code: Language; flag: string }[] = [
@@ -31,7 +38,7 @@ export function LanguageSelector({ className, showLabel = false }: LanguageSelec
           size="sm"
           className={cn(
             "min-h-[44px] min-w-[44px] rounded-full hover:bg-primary/10 gap-2",
-            className
+            className,
           )}
           aria-label={t("language.select")}
         >
@@ -48,7 +55,7 @@ export function LanguageSelector({ className, showLabel = false }: LanguageSelec
             onClick={() => setLanguage(code)}
             className={cn(
               "cursor-pointer gap-3",
-              language === code && "bg-primary/10 font-medium"
+              language === code && "bg-primary/10 font-medium",
             )}
           >
             <span className="text-lg">{flag}</span>

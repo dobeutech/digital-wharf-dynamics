@@ -1,8 +1,8 @@
 /**
  * Performance monitoring utilities with reliability improvements
- * 
+ *
  * Provides tools for measuring and optimizing application performance
- * 
+ *
  * Reliability features:
  * 1. Defensive null/undefined checks
  * 2. Memory leak prevention
@@ -32,16 +32,16 @@ class PerformanceMonitor {
    * Validates a metric name
    */
   private validateMetricName(name: string): boolean {
-    if (!name || typeof name !== 'string') {
-      console.warn('Invalid metric name:', name);
+    if (!name || typeof name !== "string") {
+      console.warn("Invalid metric name:", name);
       return false;
     }
-    
+
     if (name.length > 100) {
-      console.warn('Metric name too long (max 100 chars):', name);
+      console.warn("Metric name too long (max 100 chars):", name);
       return false;
     }
-    
+
     return true;
   }
 
@@ -50,17 +50,19 @@ class PerformanceMonitor {
    */
   private cleanupStaleTimers(): void {
     const now = Date.now();
-    
+
     // Only cleanup every minute to avoid overhead
     if (now - this.lastCleanup < 60000) {
       return;
     }
-    
+
     this.lastCleanup = now;
-    
+
     for (const [name, startTime] of this.timers.entries()) {
       if (now - startTime > STALE_TIMER_THRESHOLD) {
-        console.warn(`Removing stale timer: ${name} (started ${Math.round((now - startTime) / 1000)}s ago)`);
+        console.warn(
+          `Removing stale timer: ${name} (started ${Math.round((now - startTime) / 1000)}s ago)`,
+        );
         this.timers.delete(name);
       }
     }
@@ -80,12 +82,14 @@ class PerformanceMonitor {
 
       // Warn if timer already exists (possible duplicate start call)
       if (this.timers.has(name)) {
-        console.warn(`Timer already running for: ${name}. Overwriting previous start time.`);
+        console.warn(
+          `Timer already running for: ${name}. Overwriting previous start time.`,
+        );
       }
 
       this.timers.set(name, performance.now());
     } catch (error) {
-      console.error('Error starting performance timer:', error);
+      console.error("Error starting performance timer:", error);
     }
   }
 
@@ -105,7 +109,7 @@ class PerformanceMonitor {
       }
 
       const duration = performance.now() - startTime;
-      
+
       // Defensive check: Ensure duration is valid
       if (!Number.isFinite(duration) || duration < 0) {
         console.warn(`Invalid duration calculated for ${name}: ${duration}`);
@@ -128,7 +132,7 @@ class PerformanceMonitor {
 
       return duration;
     } catch (error) {
-      console.error('Error ending performance timer:', error);
+      console.error("Error ending performance timer:", error);
       return null;
     }
   }
@@ -139,9 +143,9 @@ class PerformanceMonitor {
   getMetrics(): PerformanceMetric[] {
     try {
       // Return defensive copy to prevent external modification
-      return this.metrics.map(m => ({ ...m }));
+      return this.metrics.map((m) => ({ ...m }));
     } catch (error) {
-      console.error('Error getting metrics:', error);
+      console.error("Error getting metrics:", error);
       return [];
     }
   }
@@ -155,11 +159,11 @@ class PerformanceMonitor {
         return 0;
       }
 
-      const filtered = this.metrics.filter(m => m.name === name);
+      const filtered = this.metrics.filter((m) => m.name === name);
       if (filtered.length === 0) {
         return 0;
       }
-      
+
       const sum = filtered.reduce((acc, m) => {
         // Defensive check: Ensure duration is a valid number
         if (!Number.isFinite(m.duration)) {
@@ -168,13 +172,13 @@ class PerformanceMonitor {
         }
         return acc + m.duration;
       }, 0);
-      
+
       const average = sum / filtered.length;
-      
+
       // Defensive check: Ensure result is valid
       return Number.isFinite(average) ? average : 0;
     } catch (error) {
-      console.error('Error calculating average:', error);
+      console.error("Error calculating average:", error);
       return 0;
     }
   }
@@ -188,7 +192,7 @@ class PerformanceMonitor {
       this.timers.clear();
       this.lastCleanup = Date.now();
     } catch (error) {
-      console.error('Error clearing metrics:', error);
+      console.error("Error clearing metrics:", error);
     }
   }
 
@@ -199,19 +203,19 @@ class PerformanceMonitor {
     try {
       // Defensive check: Validate threshold
       if (!Number.isFinite(threshold) || threshold < 0) {
-        console.warn('Invalid threshold for slow operations:', threshold);
+        console.warn("Invalid threshold for slow operations:", threshold);
         return;
       }
 
-      const slow = this.metrics.filter(m => 
-        Number.isFinite(m.duration) && m.duration > threshold
+      const slow = this.metrics.filter(
+        (m) => Number.isFinite(m.duration) && m.duration > threshold,
       );
-      
+
       if (slow.length > 0) {
-        console.warn('Slow operations detected:', slow);
+        console.warn("Slow operations detected:", slow);
       }
     } catch (error) {
-      console.error('Error logging slow operations:', error);
+      console.error("Error logging slow operations:", error);
     }
   }
 
@@ -228,11 +232,15 @@ class PerformanceMonitor {
       return {
         totalMetrics: this.metrics.length,
         activeTimers: this.timers.size,
-        oldestMetric: this.metrics.length > 0 ? this.metrics[0].timestamp : null,
-        newestMetric: this.metrics.length > 0 ? this.metrics[this.metrics.length - 1].timestamp : null,
+        oldestMetric:
+          this.metrics.length > 0 ? this.metrics[0].timestamp : null,
+        newestMetric:
+          this.metrics.length > 0
+            ? this.metrics[this.metrics.length - 1].timestamp
+            : null,
       };
     } catch (error) {
-      console.error('Error getting stats:', error);
+      console.error("Error getting stats:", error);
       return {
         totalMetrics: 0,
         activeTimers: 0,
@@ -250,35 +258,37 @@ export const perfMonitor = new PerformanceMonitor();
  */
 export function measurePerformance<T extends (...args: any[]) => Promise<any>>(
   fn: T,
-  name?: string
+  name?: string,
 ): T {
   return (async (...args: Parameters<T>) => {
     // Defensive check: Ensure function is valid
-    if (typeof fn !== 'function') {
-      console.error('measurePerformance: fn is not a function');
-      throw new Error('Invalid function provided to measurePerformance');
+    if (typeof fn !== "function") {
+      console.error("measurePerformance: fn is not a function");
+      throw new Error("Invalid function provided to measurePerformance");
     }
 
-    const metricName = name || fn.name || 'anonymous';
-    
+    const metricName = name || fn.name || "anonymous";
+
     // Defensive check: Validate metric name
-    if (!metricName || typeof metricName !== 'string') {
-      console.warn('Invalid metric name in measurePerformance');
+    if (!metricName || typeof metricName !== "string") {
+      console.warn("Invalid metric name in measurePerformance");
       // Still execute function even if we can't measure it
       return await fn(...args);
     }
 
     perfMonitor.start(metricName);
-    
+
     try {
       const result = await fn(...args);
       const duration = perfMonitor.end(metricName);
-      
+
       // Defensive check: Ensure duration is valid before logging
       if (duration !== null && Number.isFinite(duration) && duration > 1000) {
-        console.warn(`Slow operation: ${metricName} took ${duration.toFixed(2)}ms`);
+        console.warn(
+          `Slow operation: ${metricName} took ${duration.toFixed(2)}ms`,
+        );
       }
-      
+
       return result;
     } catch (error) {
       // Ensure timer is stopped even on error
@@ -292,19 +302,20 @@ export function measurePerformance<T extends (...args: any[]) => Promise<any>>(
  * React hook for measuring component render performance
  */
 export function useRenderPerformance(componentName: string) {
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env.NODE_ENV === "development") {
     const renderStart = performance.now();
-    
+
     return () => {
       const renderDuration = performance.now() - renderStart;
-      if (renderDuration > 16) { // More than one frame (60fps)
+      if (renderDuration > 16) {
+        // More than one frame (60fps)
         console.warn(
-          `Slow render: ${componentName} took ${renderDuration.toFixed(2)}ms`
+          `Slow render: ${componentName} took ${renderDuration.toFixed(2)}ms`,
         );
       }
     };
   }
-  
+
   return () => {}; // No-op in production
 }
 
@@ -313,10 +324,10 @@ export function useRenderPerformance(componentName: string) {
  */
 export function debounce<T extends (...args: any[]) => any>(
   fn: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   let timeoutId: NodeJS.Timeout;
-  
+
   return (...args: Parameters<T>) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => fn(...args), delay);
@@ -328,10 +339,10 @@ export function debounce<T extends (...args: any[]) => any>(
  */
 export function throttle<T extends (...args: any[]) => any>(
   fn: T,
-  limit: number
+  limit: number,
 ): (...args: Parameters<T>) => void {
   let inThrottle: boolean;
-  
+
   return (...args: Parameters<T>) => {
     if (!inThrottle) {
       fn(...args);
@@ -346,26 +357,26 @@ export function throttle<T extends (...args: any[]) => any>(
  */
 export function memoize<T extends (...args: any[]) => any>(
   fn: T,
-  keyFn?: (...args: Parameters<T>) => string
+  keyFn?: (...args: Parameters<T>) => string,
 ): T {
   const cache = new Map<string, ReturnType<T>>();
-  
+
   return ((...args: Parameters<T>) => {
     const key = keyFn ? keyFn(...args) : JSON.stringify(args);
-    
+
     if (cache.has(key)) {
       return cache.get(key)!;
     }
-    
+
     const result = fn(...args);
     cache.set(key, result);
-    
+
     // Limit cache size to prevent memory leaks
     if (cache.size > 100) {
       const firstKey = cache.keys().next().value;
       cache.delete(firstKey);
     }
-    
+
     return result;
   }) as T;
 }
@@ -382,7 +393,7 @@ export class BatchProcessor<T> {
 
   constructor(
     processor: (items: T[]) => Promise<void>,
-    options: { batchSize?: number; delay?: number } = {}
+    options: { batchSize?: number; delay?: number } = {},
   ) {
     this.processor = processor;
     this.batchSize = options.batchSize || 10;

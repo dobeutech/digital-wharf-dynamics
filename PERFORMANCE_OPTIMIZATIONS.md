@@ -16,13 +16,13 @@ This document details performance optimizations applied to the Digital Wharf Dyn
 
 ### Performance Improvements
 
-| Area | Before | After | Improvement |
-|------|--------|-------|-------------|
-| Admin Dashboard Load | ~2.5s | ~1.0s | **60% faster** |
-| Admin Status Check | 150ms | 50ms | **66% faster** |
-| User List Load | ~1.8s | ~0.8s | **55% faster** |
-| Auth Context Re-renders | High | Low | **~80% reduction** |
-| Bundle Size | 850KB | 720KB | **15% smaller** |
+| Area                    | Before | After | Improvement        |
+| ----------------------- | ------ | ----- | ------------------ |
+| Admin Dashboard Load    | ~2.5s  | ~1.0s | **60% faster**     |
+| Admin Status Check      | 150ms  | 50ms  | **66% faster**     |
+| User List Load          | ~1.8s  | ~0.8s | **55% faster**     |
+| Auth Context Re-renders | High   | Low   | **~80% reduction** |
+| Bundle Size             | 850KB  | 720KB | **15% smaller**    |
 
 ### Key Optimizations
 
@@ -41,10 +41,20 @@ This document details performance optimizations applied to the Digital Wharf Dyn
 **Location**: `src/pages/admin/AdminDashboard.tsx`
 
 **Problem**:
+
 ```typescript
 // BEFORE: 9 separate database queries
-const [servicesRes, projectsRes, profilesRes, postsRes, ccpaRes, 
-       contactsRes, pendingCCPARes, newContactsRes, auditRes] = await Promise.all([
+const [
+  servicesRes,
+  projectsRes,
+  profilesRes,
+  postsRes,
+  ccpaRes,
+  contactsRes,
+  pendingCCPARes,
+  newContactsRes,
+  auditRes,
+] = await Promise.all([
   supabase.from("services").select("id", { count: "exact" }),
   supabase.from("projects").select("id", { count: "exact" }),
   // ... 7 more queries
@@ -52,20 +62,26 @@ const [servicesRes, projectsRes, profilesRes, postsRes, ccpaRes,
 ```
 
 **Impact**:
+
 - 9 round trips to database
 - ~2.5s page load time
 - High database load
 - Poor user experience
 
 **Solution**:
+
 ```typescript
 // AFTER: 7 queries (reduced by 22%)
 // Combined CCPA and contact queries to fetch all data once
-const ccpaRes = await supabase.from("ccpa_requests").select("status", { count: "exact" });
-const pendingCCPA = ccpaRes.data?.filter(r => r.status === "pending").length || 0;
+const ccpaRes = await supabase
+  .from("ccpa_requests")
+  .select("status", { count: "exact" });
+const pendingCCPA =
+  ccpaRes.data?.filter((r) => r.status === "pending").length || 0;
 ```
 
 **Trade-offs**:
+
 - ✅ 60% faster page load
 - ✅ Reduced database load
 - ⚠️ Slightly more memory usage (fetching full status column)
@@ -78,6 +94,7 @@ const pendingCCPA = ccpaRes.data?.filter(r => r.status === "pending").length || 
 **Location**: `src/hooks/useAdmin.tsx`
 
 **Problem**:
+
 ```typescript
 // BEFORE: Query database on every component mount
 useEffect(() => {
@@ -91,12 +108,14 @@ useEffect(() => {
 ```
 
 **Impact**:
+
 - Database query on every admin check
 - Error thrown when user has no role
 - ~150ms per check
 - Multiple checks per page
 
 **Solution**:
+
 ```typescript
 // AFTER: In-memory cache with 5-minute TTL
 const adminCache = new Map<string, boolean>();
@@ -119,6 +138,7 @@ adminCache.set(user.id, !!data);
 ```
 
 **Trade-offs**:
+
 - ✅ 66% faster (150ms → 50ms)
 - ✅ Reduced database load
 - ✅ No errors on missing roles
@@ -132,6 +152,7 @@ adminCache.set(user.id, !!data);
 **Location**: `src/pages/admin/AdminUsers.tsx`
 
 **Problem**:
+
 ```typescript
 // BEFORE: Spread operator creates new array on each iteration
 rolesData.forEach((role: UserRole) => {
@@ -141,11 +162,13 @@ rolesData.forEach((role: UserRole) => {
 ```
 
 **Impact**:
+
 - O(n²) complexity for large datasets
 - Unnecessary array allocations
 - Slower with many roles
 
 **Solution**:
+
 ```typescript
 // AFTER: Direct array push (O(n) complexity)
 rolesData.forEach((role: UserRole) => {
@@ -159,6 +182,7 @@ rolesData.forEach((role: UserRole) => {
 ```
 
 **Trade-offs**:
+
 - ✅ O(n) instead of O(n²)
 - ✅ No unnecessary allocations
 - ⚠️ Mutates arrays (acceptable in this context)
@@ -170,6 +194,7 @@ rolesData.forEach((role: UserRole) => {
 **Location**: `src/contexts/AuthContext.tsx`
 
 **Problem**:
+
 ```typescript
 // BEFORE: Functions recreated on every render
 const signIn = async (email, password) => { /* ... */ };
@@ -184,11 +209,13 @@ return (
 ```
 
 **Impact**:
+
 - All consuming components re-render
 - Unnecessary function recreations
 - Poor performance with many auth consumers
 
 **Solution**:
+
 ```typescript
 // AFTER: Memoized functions and context value
 const signIn = useCallback(async (email, password) => {
@@ -207,6 +234,7 @@ return (
 ```
 
 **Trade-offs**:
+
 - ✅ ~80% reduction in re-renders
 - ✅ Better performance for auth consumers
 - ⚠️ More complex code
@@ -219,6 +247,7 @@ return (
 **Location**: `src/contexts/AuthContext.tsx`
 
 **Problem**:
+
 ```typescript
 // BEFORE: Analytics failures break auth flow
 trackEvent(MIXPANEL_EVENTS.SIGN_IN, { email });
@@ -227,18 +256,20 @@ identifyUser(data.user.id, { email });
 ```
 
 **Impact**:
+
 - Auth failures due to analytics issues
 - Blocking operations slow down auth
 - Poor user experience
 
 **Solution**:
+
 ```typescript
 // AFTER: Safe analytics wrapper
 const safeAnalytics = (fn: () => void) => {
   try {
     fn();
   } catch (error) {
-    console.error('Analytics error:', error);
+    console.error("Analytics error:", error);
     // Don't throw - analytics failures shouldn't break auth
   }
 };
@@ -250,6 +281,7 @@ safeAnalytics(() => {
 ```
 
 **Trade-offs**:
+
 - ✅ Auth never fails due to analytics
 - ✅ Better user experience
 - ⚠️ Silent analytics failures (logged to console)
@@ -263,6 +295,7 @@ safeAnalytics(() => {
 **File**: `src/lib/performance.ts`
 
 **Features**:
+
 - Performance metric tracking
 - Slow operation detection
 - Function performance measurement
@@ -271,22 +304,23 @@ safeAnalytics(() => {
 - Batch processing
 
 **Usage**:
+
 ```typescript
-import { perfMonitor, measurePerformance } from '@/lib/performance';
+import { perfMonitor, measurePerformance } from "@/lib/performance";
 
 // Measure function performance
 const fetchData = measurePerformance(async () => {
-  const data = await supabase.from('table').select('*');
+  const data = await supabase.from("table").select("*");
   return data;
-}, 'fetchData');
+}, "fetchData");
 
 // Track custom metrics
-perfMonitor.start('render');
+perfMonitor.start("render");
 // ... render logic
-perfMonitor.end('render');
+perfMonitor.end("render");
 
 // Get performance insights
-console.log(perfMonitor.getAverage('fetchData')); // Average duration
+console.log(perfMonitor.getAverage("fetchData")); // Average duration
 perfMonitor.logSlowOperations(1000); // Log operations > 1s
 ```
 
@@ -297,6 +331,7 @@ perfMonitor.logSlowOperations(1000); // Log operations > 1s
 **File**: `src/contexts/AuthContext.optimized.tsx`
 
 **Improvements**:
+
 - All functions memoized with `useCallback`
 - Context value memoized with `useMemo`
 - Safe analytics wrapper
@@ -304,9 +339,10 @@ perfMonitor.logSlowOperations(1000); // Log operations > 1s
 - Cleanup on unmount
 
 **Migration**:
+
 ```typescript
 // Replace import in App.tsx
-import { AuthProvider } from './contexts/AuthContext.optimized';
+import { AuthProvider } from "./contexts/AuthContext.optimized";
 ```
 
 ---
@@ -316,32 +352,40 @@ import { AuthProvider } from './contexts/AuthContext.optimized';
 **Patterns Applied**:
 
 #### Pattern 1: Combine Related Queries
+
 ```typescript
 // BEFORE: 2 queries
-const total = await supabase.from('table').select('*', { count: 'exact' });
-const filtered = await supabase.from('table').select('*').eq('status', 'active');
+const total = await supabase.from("table").select("*", { count: "exact" });
+const filtered = await supabase
+  .from("table")
+  .select("*")
+  .eq("status", "active");
 
 // AFTER: 1 query with filtering
-const all = await supabase.from('table').select('status', { count: 'exact' });
-const filtered = all.data?.filter(r => r.status === 'active');
+const all = await supabase.from("table").select("status", { count: "exact" });
+const filtered = all.data?.filter((r) => r.status === "active");
 ```
 
 #### Pattern 2: Use `head: true` for Count-Only Queries
+
 ```typescript
 // BEFORE: Fetches all data
-const { count } = await supabase.from('table').select('*', { count: 'exact' });
+const { count } = await supabase.from("table").select("*", { count: "exact" });
 
 // AFTER: Only fetches count
-const { count } = await supabase.from('table').select('*', { count: 'exact', head: true });
+const { count } = await supabase
+  .from("table")
+  .select("*", { count: "exact", head: true });
 ```
 
 #### Pattern 3: Use `maybeSingle()` Instead of `single()`
+
 ```typescript
 // BEFORE: Throws error if no results
-const { data } = await supabase.from('table').select('*').single();
+const { data } = await supabase.from("table").select("*").single();
 
 // AFTER: Returns null if no results
-const { data } = await supabase.from('table').select('*').maybeSingle();
+const { data } = await supabase.from("table").select("*").maybeSingle();
 ```
 
 ---
@@ -349,8 +393,9 @@ const { data } = await supabase.from('table').select('*').maybeSingle();
 ### 4. React Performance Patterns
 
 #### Pattern 1: Memoize Expensive Computations
+
 ```typescript
-import { useMemo } from 'react';
+import { useMemo } from "react";
 
 const expensiveValue = useMemo(() => {
   return computeExpensiveValue(data);
@@ -358,8 +403,9 @@ const expensiveValue = useMemo(() => {
 ```
 
 #### Pattern 2: Memoize Callback Functions
+
 ```typescript
-import { useCallback } from 'react';
+import { useCallback } from "react";
 
 const handleClick = useCallback(() => {
   doSomething(id);
@@ -367,16 +413,17 @@ const handleClick = useCallback(() => {
 ```
 
 #### Pattern 3: Prevent Memory Leaks
+
 ```typescript
 useEffect(() => {
   const isMounted = { current: true };
-  
-  fetchData().then(data => {
+
+  fetchData().then((data) => {
     if (isMounted.current) {
       setData(data);
     }
   });
-  
+
   return () => {
     isMounted.current = false;
   };
@@ -392,13 +439,13 @@ useEffect(() => {
 The project now includes performance monitoring utilities:
 
 ```typescript
-import { perfMonitor } from '@/lib/performance';
+import { perfMonitor } from "@/lib/performance";
 
 // In development, check performance
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   setInterval(() => {
     perfMonitor.logSlowOperations(1000);
-    console.log('Average render time:', perfMonitor.getAverage('render'));
+    console.log("Average render time:", perfMonitor.getAverage("render"));
   }, 60000); // Every minute
 }
 ```
@@ -406,6 +453,7 @@ if (process.env.NODE_ENV === 'development') {
 ### Lighthouse Scores
 
 Target scores (run `npm run lighthouse`):
+
 - Performance: > 90
 - Accessibility: > 95
 - Best Practices: > 95
@@ -429,20 +477,22 @@ npm run analyze
 ### 1. Implement React Query
 
 **Benefits**:
+
 - Automatic caching
 - Background refetching
 - Optimistic updates
 - Request deduplication
 
 **Example**:
+
 ```typescript
-import { useQuery } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
 
 function useProjects() {
   return useQuery({
-    queryKey: ['projects'],
+    queryKey: ["projects"],
     queryFn: async () => {
-      const { data } = await supabase.from('projects').select('*');
+      const { data } = await supabase.from("projects").select("*");
       return data;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -459,13 +509,13 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 
 function LargeList({ items }) {
   const parentRef = useRef();
-  
+
   const virtualizer = useVirtualizer({
     count: items.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 50,
   });
-  
+
   return (
     <div ref={parentRef} style={{ height: '400px', overflow: 'auto' }}>
       {virtualizer.getVirtualItems().map(virtualRow => (
@@ -484,11 +534,11 @@ Cache API responses and static assets:
 
 ```typescript
 // public/sw.js
-self.addEventListener('fetch', (event) => {
+self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
       return response || fetch(event.request);
-    })
+    }),
   );
 });
 ```
@@ -515,10 +565,13 @@ self.addEventListener('fetch', (event) => {
 Already implemented in `App.tsx`, but can be extended:
 
 ```typescript
-const AdminDashboard = lazy(() => import(
-  /* webpackChunkName: "admin-dashboard" */
-  './pages/admin/AdminDashboard'
-));
+const AdminDashboard = lazy(
+  () =>
+    import(
+      /* webpackChunkName: "admin-dashboard" */
+      "./pages/admin/AdminDashboard"
+    ),
+);
 ```
 
 ---
@@ -528,6 +581,7 @@ const AdminDashboard = lazy(() => import(
 Use this checklist when adding new features:
 
 ### Database Queries
+
 - [ ] Minimize number of queries
 - [ ] Use `head: true` for count-only queries
 - [ ] Combine related queries when possible
@@ -535,6 +589,7 @@ Use this checklist when adding new features:
 - [ ] Use `maybeSingle()` instead of `single()` when appropriate
 
 ### React Components
+
 - [ ] Memoize expensive computations with `useMemo`
 - [ ] Memoize callbacks with `useCallback`
 - [ ] Prevent memory leaks in `useEffect`
@@ -542,12 +597,14 @@ Use this checklist when adding new features:
 - [ ] Avoid inline function definitions in JSX
 
 ### Data Structures
+
 - [ ] Use appropriate data structures (Map vs Object)
 - [ ] Avoid unnecessary array operations
 - [ ] Pre-allocate collections when size is known
 - [ ] Use array methods efficiently (push vs spread)
 
 ### Network Requests
+
 - [ ] Batch related requests
 - [ ] Implement caching where appropriate
 - [ ] Use debouncing for user input
@@ -555,6 +612,7 @@ Use this checklist when adding new features:
 - [ ] Handle errors gracefully
 
 ### Bundle Size
+
 - [ ] Lazy load routes and heavy components
 - [ ] Tree-shake unused code
 - [ ] Use dynamic imports for large libraries
@@ -585,15 +643,15 @@ Use this checklist when adding new features:
 ### Custom Monitoring
 
 ```typescript
-import { perfMonitor } from '@/lib/performance';
+import { perfMonitor } from "@/lib/performance";
 
 // Measure page load
-perfMonitor.start('page-load');
+perfMonitor.start("page-load");
 // ... page loads
-perfMonitor.end('page-load');
+perfMonitor.end("page-load");
 
 // Check results
-console.log('Page load time:', perfMonitor.getAverage('page-load'));
+console.log("Page load time:", perfMonitor.getAverage("page-load"));
 ```
 
 ---

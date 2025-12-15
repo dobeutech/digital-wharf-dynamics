@@ -16,7 +16,7 @@ import {
   ClipboardList,
   BarChart3,
   Settings,
-  LucideIcon
+  LucideIcon,
 } from "lucide-react";
 
 export interface NavigationItem {
@@ -299,7 +299,8 @@ export const generateBreadcrumbs = (pathname: string): BreadcrumbItem[] => {
     const isLast = index === segments.length - 1;
 
     breadcrumbs.push({
-      label: labelMap[segment] || segment.charAt(0).toUpperCase() + segment.slice(1),
+      label:
+        labelMap[segment] || segment.charAt(0).toUpperCase() + segment.slice(1),
       href: isLast ? undefined : currentPath,
     });
   });

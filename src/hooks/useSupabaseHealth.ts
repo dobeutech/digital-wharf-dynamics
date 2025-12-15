@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { checkSupabaseHealth } from '@/integrations/supabase/client';
+import { useEffect, useState } from "react";
+import { checkSupabaseHealth } from "@/integrations/supabase/client";
 
 /**
  * Hook to monitor Supabase connection health
@@ -14,7 +14,7 @@ export function useSupabaseHealth(intervalMs: number = 30000) {
       const healthy = await checkSupabaseHealth();
       setIsHealthy(healthy);
     } catch (error) {
-      console.error('Health check failed:', error);
+      console.error("Health check failed:", error);
       setIsHealthy(false);
     } finally {
       setIsChecking(false);
@@ -33,4 +33,3 @@ export function useSupabaseHealth(intervalMs: number = 30000) {
 
   return { isHealthy, isChecking, checkHealth };
 }
-

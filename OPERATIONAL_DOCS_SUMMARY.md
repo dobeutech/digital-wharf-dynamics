@@ -9,50 +9,54 @@
 Three comprehensive operational documents have been created in the `docs/` directory:
 
 ### 1. **Operational Runbook** (`docs/OPERATIONAL_RUNBOOK.md`)
-   - **Purpose:** Complete reference for all operational procedures
-   - **Size:** ~1,000 lines
-   - **Covers:**
-     - Service architecture and components
-     - 7 common failure modes with detailed procedures
-     - Diagnostic commands for all systems
-     - Rollback procedures
-     - Escalation paths and contacts
-     - Pre-deployment checklist
-     - Post-incident review process
+
+- **Purpose:** Complete reference for all operational procedures
+- **Size:** ~1,000 lines
+- **Covers:**
+  - Service architecture and components
+  - 7 common failure modes with detailed procedures
+  - Diagnostic commands for all systems
+  - Rollback procedures
+  - Escalation paths and contacts
+  - Pre-deployment checklist
+  - Post-incident review process
 
 ### 2. **Quick Incident Response Guide** (`docs/QUICK_INCIDENT_RESPONSE.md`)
-   - **Purpose:** Fast reference for active incidents
-   - **Size:** ~400 lines
-   - **Covers:**
-     - Immediate actions for P0/P1 incidents
-     - Quick diagnostic commands
-     - Common fixes for each failure mode
-     - Decision tree for triage
-     - Communication templates
-     - Essential commands reference
+
+- **Purpose:** Fast reference for active incidents
+- **Size:** ~400 lines
+- **Covers:**
+  - Immediate actions for P0/P1 incidents
+  - Quick diagnostic commands
+  - Common fixes for each failure mode
+  - Decision tree for triage
+  - Communication templates
+  - Essential commands reference
 
 ### 3. **Monitoring Setup Guide** (`docs/MONITORING_SETUP.md`)
-   - **Purpose:** Complete monitoring and alerting configuration
-   - **Size:** ~600 lines
-   - **Covers:**
-     - Netlify monitoring setup
-     - MongoDB Atlas alerts
-     - PostHog error tracking
-     - Uptime monitoring
-     - Log aggregation
-     - Custom health checks
-     - Alert rules and severity levels
-     - Dashboard configuration
+
+- **Purpose:** Complete monitoring and alerting configuration
+- **Size:** ~600 lines
+- **Covers:**
+  - Netlify monitoring setup
+  - MongoDB Atlas alerts
+  - PostHog error tracking
+  - Uptime monitoring
+  - Log aggregation
+  - Custom health checks
+  - Alert rules and severity levels
+  - Dashboard configuration
 
 ### 4. **Operations Index** (`docs/OPERATIONS_INDEX.md`)
-   - **Purpose:** Navigation hub for all operational docs
-   - **Size:** ~400 lines
-   - **Covers:**
-     - Quick links to all scenarios
-     - Common tasks reference
-     - Training resources
-     - Maintenance schedule
-     - Search tips
+
+- **Purpose:** Navigation hub for all operational docs
+- **Size:** ~400 lines
+- **Covers:**
+  - Quick links to all scenarios
+  - Common tasks reference
+  - Training resources
+  - Maintenance schedule
+  - Search tips
 
 ---
 
@@ -75,28 +79,23 @@ netlify rollback
 
 1. **Site Down / 500 Errors** (P0)
    - Symptoms, triage, root causes, mitigation
-   
 2. **Authentication Failures** (P1)
    - Auth0 issues, token problems, CORS errors
-   
 3. **Database Connection Failures** (P1)
    - MongoDB Atlas issues, connection pool, certificates
-   
 4. **Build Failures** (P2)
    - Dependency conflicts, TypeScript errors, memory issues
-   
 5. **Function Timeouts** (P1)
    - Slow queries, payload issues, optimization
-   
 6. **High Error Rate** (P1)
    - Recent deploy issues, CSP violations, rate limiting
-   
 7. **Performance Degradation** (P2)
    - Bundle size, slow queries, CDN cache
 
 ### Monitoring & Alerting
 
 **Complete monitoring setup for:**
+
 - Netlify (deploys, functions, bandwidth)
 - MongoDB Atlas (connections, queries, performance)
 - PostHog (errors, sessions, user behavior)
@@ -104,6 +103,7 @@ netlify rollback
 - Custom health checks
 
 **Alert severity levels:**
+
 - P0: Immediate response (PagerDuty + Slack + Email)
 - P1: < 15 min response (Slack + Email)
 - P2: < 1 hour response (Slack)
@@ -156,15 +156,15 @@ netlify rollback
 
 ## 📊 Coverage Matrix
 
-| Scenario | Quick Guide | Detailed Runbook | Monitoring |
-|----------|-------------|------------------|------------|
-| Site Down | ✅ | ✅ | ✅ |
-| Auth Failures | ✅ | ✅ | ✅ |
-| Database Issues | ✅ | ✅ | ✅ |
-| Build Failures | ✅ | ✅ | ✅ |
-| Function Timeouts | ❌ | ✅ | ✅ |
-| High Error Rate | ✅ | ✅ | ✅ |
-| Performance Issues | ✅ | ✅ | ✅ |
+| Scenario           | Quick Guide | Detailed Runbook | Monitoring |
+| ------------------ | ----------- | ---------------- | ---------- |
+| Site Down          | ✅          | ✅               | ✅         |
+| Auth Failures      | ✅          | ✅               | ✅         |
+| Database Issues    | ✅          | ✅               | ✅         |
+| Build Failures     | ✅          | ✅               | ✅         |
+| Function Timeouts  | ❌          | ✅               | ✅         |
+| High Error Rate    | ✅          | ✅               | ✅         |
+| Performance Issues | ✅          | ✅               | ✅         |
 
 ---
 
@@ -235,12 +235,12 @@ git push origin main
 
 ### Severity Levels
 
-| Level | Response Time | Contact |
-|-------|--------------|---------|
-| P0 - Critical | Immediate | PagerDuty + Engineering Lead |
-| P1 - High | < 15 minutes | On-call Engineer |
-| P2 - Medium | < 1 hour | Team Slack |
-| P3 - Low | Next business day | Backlog |
+| Level         | Response Time     | Contact                      |
+| ------------- | ----------------- | ---------------------------- |
+| P0 - Critical | Immediate         | PagerDuty + Engineering Lead |
+| P1 - High     | < 15 minutes      | On-call Engineer             |
+| P2 - Medium   | < 1 hour          | Team Slack                   |
+| P3 - Low      | Next business day | Backlog                      |
 
 ### Contacts
 
@@ -253,18 +253,21 @@ git push origin main
 ## 🎓 Training Path
 
 ### Week 1: Reading
+
 - [ ] Read Operational Runbook
 - [ ] Read Quick Incident Response Guide
 - [ ] Review Monitoring Setup Guide
 - [ ] Get access to all dashboards
 
 ### Week 2: Practice
+
 - [ ] Shadow current on-call engineer
 - [ ] Practice rollback in staging
 - [ ] Test alert channels
 - [ ] Review recent incidents
 
 ### Week 3: On-Call
+
 - [ ] Take on-call with backup
 - [ ] Document any gaps
 - [ ] Suggest improvements
@@ -294,18 +297,21 @@ git push origin main
 ## 🔗 Quick Links
 
 ### Documentation
+
 - [Operations Index](./docs/OPERATIONS_INDEX.md)
 - [Operational Runbook](./docs/OPERATIONAL_RUNBOOK.md)
 - [Quick Incident Response](./docs/QUICK_INCIDENT_RESPONSE.md)
 - [Monitoring Setup](./docs/MONITORING_SETUP.md)
 
 ### Dashboards
+
 - [Netlify Dashboard](https://app.netlify.com/projects/dobeutech)
 - [MongoDB Atlas](https://cloud.mongodb.com/)
 - [PostHog](https://us.posthog.com/)
 - [Auth0](https://manage.auth0.com/)
 
 ### Status Pages
+
 - [Netlify Status](https://www.netlifystatus.com/)
 - [MongoDB Status](https://status.mongodb.com/)
 - [Auth0 Status](https://status.auth0.com/)
@@ -349,16 +355,18 @@ git push origin main
 ### Immediate Actions
 
 1. **Review the documentation:**
+
    ```bash
    cd docs/
    cat OPERATIONS_INDEX.md
    ```
 
 2. **Test the commands:**
+
    ```bash
    # Verify Netlify access
    netlify status
-   
+
    # Check site health
    curl -I https://dobeu.net
    ```

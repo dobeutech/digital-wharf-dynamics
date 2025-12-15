@@ -31,6 +31,7 @@ netlify deploy:list | head -5
 ```
 
 **Communicate:**
+
 - Post in #incidents: "Site down. Rolled back to <deploy-id>. Investigating."
 
 ---
@@ -254,12 +255,14 @@ git push origin main
 ## 📞 Escalation
 
 **When to escalate:**
+
 - P0: Immediately (site down)
 - P1: After 15 minutes if not resolved
 - P2: After 1 hour if not resolved
 - P3: Next business day
 
 **Who to contact:**
+
 - Engineering Lead: jeremyw@dobeu.wtf
 - Slack: #engineering-oncall
 - After hours: PagerDuty (if configured)
@@ -269,6 +272,7 @@ git push origin main
 ## 📝 Incident Communication Template
 
 **Initial Message (< 5 minutes):**
+
 ```
 🚨 INCIDENT: [Brief description]
 Severity: P[0-3]
@@ -278,6 +282,7 @@ ETA: [Unknown/15min/30min]
 ```
 
 **Update Message (every 15 minutes):**
+
 ```
 📊 UPDATE: [What we found]
 Actions taken: [What we did]
@@ -287,6 +292,7 @@ ETA: [Updated estimate]
 ```
 
 **Resolution Message:**
+
 ```
 ✅ RESOLVED: [Brief description]
 Root cause: [What caused it]

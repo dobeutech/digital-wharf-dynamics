@@ -3,7 +3,9 @@ import { ColorSwatch } from "../kit/ColorSwatch";
 
 export const ColorSection = () => (
   <section className="space-y-8">
-    <h2 className="text-3xl font-bold border-l-4 border-pink-500 pl-4">Color Palette</h2>
+    <h2 className="text-3xl font-bold border-l-4 border-pink-500 pl-4">
+      Color Palette
+    </h2>
     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
       <ColorSwatch color="bg-yellow-400" name="Electric Lemon" hex="#FACC15" />
       <ColorSwatch color="bg-black" name="Void Black" hex="#000000" />

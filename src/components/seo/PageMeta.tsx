@@ -10,8 +10,10 @@ interface PageMetaProps {
   canonical?: string;
 }
 
-const DEFAULT_DESCRIPTION = "DOBEU creates custom websites and software that help businesses grow. Get modern web solutions, consulting, and training from experienced developers.";
-const DEFAULT_KEYWORDS = "web development, custom software, website design, software consulting, web applications, business technology, digital solutions";
+const DEFAULT_DESCRIPTION =
+  "DOBEU creates custom websites and software that help businesses grow. Get modern web solutions, consulting, and training from experienced developers.";
+const DEFAULT_KEYWORDS =
+  "web development, custom software, website design, software consulting, web applications, business technology, digital solutions";
 const SITE_NAME = "DOBEU - Web Development & Software Solutions";
 
 export function PageMeta({
@@ -21,7 +23,7 @@ export function PageMeta({
   ogTitle,
   ogDescription,
   ogImage,
-  canonical
+  canonical,
 }: PageMetaProps) {
   useEffect(() => {
     const fullTitle = title ? `${title} | DOBEU` : SITE_NAME;
@@ -44,17 +46,30 @@ export function PageMeta({
     }
 
     Object.entries(metaTags).forEach(([name, content]) => {
-      let meta = document.querySelector(`meta[property="${name}"]`) as HTMLMetaElement;
+      let meta = document.querySelector(
+        `meta[property="${name}"]`,
+      ) as HTMLMetaElement;
       if (!meta) {
-        meta = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement;
+        meta = document.querySelector(
+          `meta[name="${name}"]`,
+        ) as HTMLMetaElement;
       }
 
       if (meta) {
         meta.content = content;
       } else {
         const newMeta = document.createElement("meta");
-        if (name.startsWith("og:") || name === "twitter:card" || name === "twitter:title" || name === "twitter:description" || name === "twitter:image") {
-          newMeta.setAttribute(name.startsWith("og:") ? "property" : "name", name);
+        if (
+          name.startsWith("og:") ||
+          name === "twitter:card" ||
+          name === "twitter:title" ||
+          name === "twitter:description" ||
+          name === "twitter:image"
+        ) {
+          newMeta.setAttribute(
+            name.startsWith("og:") ? "property" : "name",
+            name,
+          );
         } else {
           newMeta.setAttribute("name", name);
         }
@@ -64,7 +79,9 @@ export function PageMeta({
     });
 
     if (canonical) {
-      let link = document.querySelector('link[rel="canonical"]') as HTMLLinkElement;
+      let link = document.querySelector(
+        'link[rel="canonical"]',
+      ) as HTMLLinkElement;
       if (!link) {
         link = document.createElement("link");
         link.rel = "canonical";
@@ -76,7 +93,15 @@ export function PageMeta({
     return () => {
       document.title = SITE_NAME;
     };
-  }, [title, description, keywords, ogTitle, ogDescription, ogImage, canonical]);
+  }, [
+    title,
+    description,
+    keywords,
+    ogTitle,
+    ogDescription,
+    ogImage,
+    canonical,
+  ]);
 
   return null;
 }

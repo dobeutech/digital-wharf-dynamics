@@ -12,7 +12,8 @@ export function Footer() {
           <div className="col-span-2 sm:col-span-3 md:col-span-1 space-y-4">
             <Logo className="h-8" />
             <p className="text-sm text-muted-foreground">
-              Building exceptional digital experiences that drive growth and innovation.
+              Building exceptional digital experiences that drive growth and
+              innovation.
             </p>
           </div>
 
@@ -20,22 +21,34 @@ export function Footer() {
             <h3 className="font-semibold mb-4">Services</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/services#website" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  to="/services#website"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Website Development
                 </Link>
               </li>
               <li>
-                <Link to="/services#software" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  to="/services#software"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Software Solutions
                 </Link>
               </li>
               <li>
-                <Link to="/services#consulting" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  to="/services#consulting"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Consulting
                 </Link>
               </li>
               <li>
-                <Link to="/services#learning" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  to="/services#learning"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Learning & Training
                 </Link>
               </li>
@@ -46,22 +59,34 @@ export function Footer() {
             <h3 className="font-semibold mb-4">Company</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  to="/about"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   About Us
                 </Link>
               </li>
               <li>
-                <Link to="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  to="/pricing"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  to="/contact"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Contact
                 </Link>
               </li>
               <li>
-                <Link to="/brand" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  to="/brand"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Brand Kit
                 </Link>
               </li>
@@ -72,9 +97,9 @@ export function Footer() {
             <h3 className="font-semibold mb-4">Connect</h3>
             <ul className="space-y-2">
               <li>
-                <a 
-                  href="https://contra.com/jeremy_williams_fx413nca?referralExperimentNid=DEFAULT_REFERRAL_PROGRAM&referrerUsername=jeremy_williams_fx413nca" 
-                  target="_blank" 
+                <a
+                  href="https://contra.com/jeremy_williams_fx413nca?referralExperimentNid=DEFAULT_REFERRAL_PROGRAM&referrerUsername=jeremy_williams_fx413nca"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
                 >
@@ -83,9 +108,9 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a 
-                  href="https://www.behance.net/jeremywilliams62" 
-                  target="_blank" 
+                <a
+                  href="https://www.behance.net/jeremywilliams62"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1"
                 >
@@ -100,17 +125,26 @@ export function Footer() {
             <h3 className="font-semibold mb-4">Legal</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  to="/privacy"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  to="/terms"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link to="/ccpa-optout" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link
+                  to="/ccpa-optout"
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
                   Do Not Sell My Data
                 </Link>
               </li>

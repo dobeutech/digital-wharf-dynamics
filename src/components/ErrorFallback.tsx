@@ -1,6 +1,6 @@
-import { AlertTriangle, RefreshCw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { AlertTriangle, RefreshCw } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 interface ErrorFallbackProps {
   error: Error;
@@ -12,8 +12,8 @@ interface ErrorFallbackProps {
 export function ErrorFallback({
   error,
   resetErrorBoundary,
-  title = 'Something went wrong',
-  message = 'An unexpected error occurred. Please try again.',
+  title = "Something went wrong",
+  message = "An unexpected error occurred. Please try again.",
 }: ErrorFallbackProps) {
   return (
     <div className="p-4">
@@ -24,7 +24,9 @@ export function ErrorFallback({
           <p>{message}</p>
           {import.meta.env.DEV && (
             <details className="mt-2">
-              <summary className="text-xs cursor-pointer">Error details (dev only)</summary>
+              <summary className="text-xs cursor-pointer">
+                Error details (dev only)
+              </summary>
               <pre className="mt-2 text-xs overflow-auto max-h-40 bg-background p-2 rounded">
                 {error.message}
                 {error.stack && `\n\n${error.stack}`}
@@ -47,4 +49,3 @@ export function ErrorFallback({
     </div>
   );
 }
-

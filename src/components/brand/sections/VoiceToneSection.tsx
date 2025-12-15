@@ -1,30 +1,42 @@
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Lightbulb, Users, Zap, Shield } from "lucide-react";
 
 const voiceAttributes = [
   {
     icon: Lightbulb,
     title: "Professional yet Approachable",
-    description: "We communicate with expertise while remaining accessible and friendly.",
-    example: "Instead of: 'Utilize our comprehensive digital solutions.' Say: 'Let's build something amazing together.'",
+    description:
+      "We communicate with expertise while remaining accessible and friendly.",
+    example:
+      "Instead of: 'Utilize our comprehensive digital solutions.' Say: 'Let's build something amazing together.'",
   },
   {
     icon: Users,
     title: "Clear and Confident",
-    description: "Direct communication that demonstrates our expertise without unnecessary jargon.",
-    example: "Instead of: 'We leverage synergistic paradigms.' Say: 'We create solutions that work.'",
+    description:
+      "Direct communication that demonstrates our expertise without unnecessary jargon.",
+    example:
+      "Instead of: 'We leverage synergistic paradigms.' Say: 'We create solutions that work.'",
   },
   {
     icon: Zap,
     title: "Action-Oriented",
     description: "Focus on outcomes and results with strong, active language.",
-    example: "Instead of: 'Your website will be optimized.' Say: 'We'll boost your website performance.'",
+    example:
+      "Instead of: 'Your website will be optimized.' Say: 'We'll boost your website performance.'",
   },
   {
     icon: Shield,
     title: "Trustworthy and Transparent",
     description: "Honest communication that builds long-term relationships.",
-    example: "Instead of: 'Best in class solutions.' Say: 'Here's exactly what we'll deliver and when.'",
+    example:
+      "Instead of: 'Best in class solutions.' Say: 'Here's exactly what we'll deliver and when.'",
   },
 ];
 
@@ -34,7 +46,8 @@ export function VoiceToneSection() {
       <div>
         <h2 className="text-3xl font-bold mb-2">Voice & Tone</h2>
         <p className="text-muted-foreground">
-          Our brand voice reflects who we are: innovative, reliable, and genuinely invested in our clients' success.
+          Our brand voice reflects who we are: innovative, reliable, and
+          genuinely invested in our clients' success.
         </p>
       </div>
 

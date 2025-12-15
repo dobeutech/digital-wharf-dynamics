@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { trackPageView } from '@/lib/mixpanel';
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import { trackPageView } from "@/lib/mixpanel";
 
 export const PageTracker = () => {
   const location = useLocation();

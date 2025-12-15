@@ -22,4 +22,3 @@ updates:
         update-types: ["version-update:semver-major"]
       - dependency-name: "@supabase/supabase-js"
         update-types: ["version-update:semver-major"]
-

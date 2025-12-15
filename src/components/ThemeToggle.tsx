@@ -23,9 +23,9 @@ export function ThemeToggle() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="icon" 
+        <Button
+          variant="ghost"
+          size="icon"
           className="min-h-[44px] min-w-[44px] rounded-full hover:bg-primary/10"
           aria-label={t("theme.toggle")}
         >
@@ -36,12 +36,12 @@ export function ThemeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-[140px]">
         {themes.map(({ value, icon: Icon, label }) => (
-          <DropdownMenuItem 
+          <DropdownMenuItem
             key={value}
-            onClick={() => setTheme(value)} 
+            onClick={() => setTheme(value)}
             className={cn(
               "cursor-pointer gap-3",
-              theme === value && "bg-primary/10 font-medium"
+              theme === value && "bg-primary/10 font-medium",
             )}
           >
             <Icon className="h-4 w-4" />

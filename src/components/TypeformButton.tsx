@@ -28,7 +28,8 @@ export function TypeformButton({
     openTypeformPopup(source);
   };
 
-  const IconComponent = icon === "message" ? MessageSquare : icon === "calendar" ? Calendar : null;
+  const IconComponent =
+    icon === "message" ? MessageSquare : icon === "calendar" ? Calendar : null;
 
   return (
     <motion.div
@@ -54,7 +55,11 @@ export function TypeformButton({
  * Preset button variants for common use cases
  */
 
-export function LearnMoreButton({ source = "learn-more" }: { source?: string }) {
+export function LearnMoreButton({
+  source = "learn-more",
+}: {
+  source?: string;
+}) {
   return (
     <TypeformButton
       variant="default"
@@ -80,7 +85,11 @@ export function MeetButton({ source = "meet" }: { source?: string }) {
   );
 }
 
-export function HeaderTypeformButton({ source = "header" }: { source?: string }) {
+export function HeaderTypeformButton({
+  source = "header",
+}: {
+  source?: string;
+}) {
   return (
     <TypeformButton
       variant="default"

@@ -7,11 +7,11 @@ interface RippleGridProps {
   gap?: number;
 }
 
-export function RippleGrid({ 
-  className = "", 
+export function RippleGrid({
+  className = "",
   dotColor = "hsl(var(--foreground))",
   dotSize = 6,
-  gap = 16
+  gap = 16,
 }: RippleGridProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>();
@@ -49,23 +49,26 @@ export function RippleGrid({
           const diagonalPos = (x + y) * 0.015;
           const verticalWave = Math.sin(y * 0.025 - time * 1.2);
           const horizontalWave = Math.sin(x * 0.02 - time * 0.8);
-          
+
           // Primary synchronized wave moving diagonally
           const primaryWave = Math.sin(diagonalPos - time * 1.5);
-          
+
           // Combine waves for organic movement
-          const combinedWave = (primaryWave * 0.6 + verticalWave * 0.25 + horizontalWave * 0.15);
-          
+          const combinedWave =
+            primaryWave * 0.6 + verticalWave * 0.25 + horizontalWave * 0.15;
+
           // Higher contrast opacity range
           const normalizedWave = (combinedWave + 1) / 2; // 0 to 1
           const opacity = 0.1 + normalizedWave * 0.7;
-          
+
           // Size variation for depth effect
           const scale = 0.4 + normalizedWave * 0.8;
 
           ctx.beginPath();
           ctx.arc(x, y, (dotSize / 2) * scale, 0, Math.PI * 2);
-          ctx.fillStyle = dotColor.replace(")", ` / ${opacity})`).replace("hsl(", "hsla(");
+          ctx.fillStyle = dotColor
+            .replace(")", ` / ${opacity})`)
+            .replace("hsl(", "hsla(");
           ctx.fill();
         }
       }

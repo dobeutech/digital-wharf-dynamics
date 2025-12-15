@@ -13,6 +13,7 @@ This project is tracked in Linear for issue management and project tracking.
 ### Stop Points
 
 At each development stop point, update Linear with:
+
 1. Completed work (create/update issues)
 2. Current progress status
 3. Implementation details
@@ -32,6 +33,7 @@ At each development stop point, update Linear with:
 ### Creating Issues
 
 Issues should be created for:
+
 - New features
 - Bug fixes
 - Refactoring work
@@ -41,6 +43,7 @@ Issues should be created for:
 ### Issue Labels
 
 Use appropriate labels:
+
 - `feature` - New functionality
 - `bug` - Bug fixes
 - `refactor` - Code improvements
@@ -57,6 +60,7 @@ Use appropriate labels:
 ## Project Status
 
 Track project status in Linear:
+
 - **Backlog**: Planned but not started
 - **In Progress**: Currently being worked on
 - **In Review**: Completed, awaiting review
@@ -65,10 +69,10 @@ Track project status in Linear:
 ## Automation
 
 The development workflow includes:
+
 - Automatic Linear updates at stop points
 - Issue creation for major changes
 - Status updates on completion
 - Documentation linking
 
 See `docs/linear-workflow.md` for detailed workflow information.
-

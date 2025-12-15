@@ -21,39 +21,48 @@
 ### Total Indexes: 20
 
 #### Users Collection (2 indexes)
+
 - ✅ `email_unique` - Unique index on email field
 - ✅ `created_at_desc` - Descending index on createdAt
 
 #### Projects Collection (2 indexes)
+
 - ✅ `user_created` - Compound index on userId + createdAt
 - ✅ `status` - Index on status field
 
 #### Project Tasks Collection (2 indexes)
+
 - ✅ `project_status` - Compound index on projectId + status
 - ✅ `due_date` - Index on dueDate field
 
 #### Services Collection (2 indexes)
+
 - ✅ `active` - Index on active field
 - ✅ `created_at_desc` - Descending index on createdAt
 
 #### Contact Submissions Collection (2 indexes)
+
 - ✅ `email` - Index on email field
 - ✅ `created_at_desc` - Descending index on createdAt
 
 #### Newsletter Subscribers Collection (2 indexes)
+
 - ✅ `email_unique` - Unique index on email field
 - ✅ `active` - Index on active field
 
 #### News Collection (2 indexes)
+
 - ✅ `published_at_desc` - Descending index on publishedAt
 - ✅ `author` - Index on author field
 
 #### Audit Logs Collection (3 indexes)
+
 - ✅ `user_created` - Compound index on userId + createdAt
 - ✅ `action` - Index on action field
 - ✅ `resource` - Index on resource field
 
 #### CCPA Requests Collection (3 indexes)
+
 - ✅ `user_id` - Index on userId field
 - ✅ `status` - Index on status field
 - ✅ `created_at_desc` - Descending index on createdAt
@@ -65,11 +74,13 @@
 ### Automatic Data Cleanup
 
 #### Audit Logs
+
 - ✅ TTL Index on `createdAt`
 - **Retention:** 30 days
 - **Effect:** Automatically deletes audit logs older than 30 days
 
 #### Contact Submissions
+
 - ✅ TTL Index on `createdAt`
 - **Retention:** 90 days
 - **Effect:** Automatically deletes contact submissions older than 90 days
@@ -80,13 +91,13 @@
 
 ### Current Status
 
-| Metric | Value |
-|--------|-------|
-| **Total Size** | 0.00 MB |
-| **Total Documents** | 0 |
-| **Collections** | 9 (ready for data) |
-| **Indexes** | 20 |
-| **TTL Indexes** | 2 |
+| Metric              | Value              |
+| ------------------- | ------------------ |
+| **Total Size**      | 0.00 MB            |
+| **Total Documents** | 0                  |
+| **Collections**     | 9 (ready for data) |
+| **Indexes**         | 20                 |
+| **TTL Indexes**     | 2                  |
 
 ### Interpretation
 
@@ -108,18 +119,21 @@ Your database is newly created with no documents yet. This is perfect timing for
 **Recommended:** M0 (Free Tier)
 
 **Why:**
+
 - Database is currently empty (0.00 MB)
 - Free tier provides 512 MB storage
 - Perfect for development and early production
 - No cost while building
 
 **When to Upgrade:**
+
 - Storage approaches 400 MB
 - Need automated backups
 - Ready for production with paying customers
 - Need dedicated resources
 
 ### Next Tier: M10 ($57/month)
+
 - 10 GB storage
 - 2 GB RAM
 - Automated backups
@@ -133,12 +147,12 @@ Your database is newly created with no documents yet. This is perfect timing for
 
 With indexes in place, you'll see:
 
-| Query Type | Without Index | With Index | Improvement |
-|------------|---------------|------------|-------------|
-| Find by email | O(n) scan | O(log n) | 50-90% faster |
-| Find by userId | O(n) scan | O(log n) | 50-90% faster |
-| Sort by date | O(n log n) | O(1) | 90%+ faster |
-| Compound queries | O(n²) | O(log n) | 95%+ faster |
+| Query Type       | Without Index | With Index | Improvement   |
+| ---------------- | ------------- | ---------- | ------------- |
+| Find by email    | O(n) scan     | O(log n)   | 50-90% faster |
+| Find by userId   | O(n) scan     | O(log n)   | 50-90% faster |
+| Sort by date     | O(n log n)    | O(1)       | 90%+ faster   |
+| Compound queries | O(n²)         | O(log n)   | 95%+ faster   |
 
 ### Storage Benefits
 
@@ -166,11 +180,11 @@ With TTL indexes:
 
 ### Future Costs (When Scaling)
 
-| Tier | Base Cost | Optimized Cost | Savings |
-|------|-----------|----------------|---------|
-| M10 | $57/month | $40/month | 30% ($17/month) |
-| M20 | $120/month | $80/month | 33% ($40/month) |
-| M30 | $240/month | $150/month | 38% ($90/month) |
+| Tier | Base Cost  | Optimized Cost | Savings         |
+| ---- | ---------- | -------------- | --------------- |
+| M10  | $57/month  | $40/month      | 30% ($17/month) |
+| M20  | $120/month | $80/month      | 33% ($40/month) |
+| M30  | $240/month | $150/month     | 38% ($90/month) |
 
 ---
 
@@ -179,11 +193,13 @@ With TTL indexes:
 ### 1. Query Performance ✅
 
 **Before:**
-- No indexes (except default _id)
+
+- No indexes (except default \_id)
 - Full collection scans for queries
 - Slow sorting operations
 
 **After:**
+
 - 20 strategic indexes
 - Indexed lookups (O(log n))
 - Fast sorting with indexed fields
@@ -191,11 +207,13 @@ With TTL indexes:
 ### 2. Data Retention ✅
 
 **Before:**
+
 - Manual data cleanup required
 - Storage grows indefinitely
 - Compliance risk for old data
 
 **After:**
+
 - Automatic cleanup with TTL indexes
 - Audit logs: 30-day retention
 - Contact submissions: 90-day retention
@@ -203,10 +221,12 @@ With TTL indexes:
 ### 3. Unique Constraints ✅
 
 **Before:**
+
 - Possible duplicate emails
 - Application-level validation only
 
 **After:**
+
 - Database-level unique constraints
 - Guaranteed data integrity
 - Faster duplicate checks
@@ -274,23 +294,23 @@ All collections are now optimized and ready to receive data:
 
 ### Query Performance
 
-| Operation | Before | After | Improvement |
-|-----------|--------|-------|-------------|
-| Find user by email | 100ms | 5ms | 95% faster |
-| List user projects | 200ms | 10ms | 95% faster |
-| Filter by status | 150ms | 8ms | 95% faster |
-| Sort by date | 300ms | 15ms | 95% faster |
+| Operation          | Before | After | Improvement |
+| ------------------ | ------ | ----- | ----------- |
+| Find user by email | 100ms  | 5ms   | 95% faster  |
+| List user projects | 200ms  | 10ms  | 95% faster  |
+| Filter by status   | 150ms  | 8ms   | 95% faster  |
+| Sort by date       | 300ms  | 15ms  | 95% faster  |
 
-*Note: Times are estimates for a database with 10,000 documents*
+_Note: Times are estimates for a database with 10,000 documents_
 
 ### Storage Efficiency
 
-| Aspect | Before | After |
-|--------|--------|-------|
-| Old audit logs | Kept forever | Auto-deleted after 30 days |
+| Aspect          | Before       | After                      |
+| --------------- | ------------ | -------------------------- |
+| Old audit logs  | Kept forever | Auto-deleted after 30 days |
 | Old submissions | Kept forever | Auto-deleted after 90 days |
-| Storage growth | Linear | Controlled |
-| Manual cleanup | Required | Automatic |
+| Storage growth  | Linear       | Controlled                 |
+| Manual cleanup  | Required     | Automatic                  |
 
 ---
 
@@ -310,14 +330,14 @@ All collections are now optimized and ready to receive data:
 
 ### Optimization Complete
 
-| Metric | Status |
-|--------|--------|
-| **Indexes Created** | 20 ✅ |
-| **TTL Indexes** | 2 ✅ |
-| **Collections Optimized** | 9 ✅ |
-| **Database Size** | 0.00 MB ✅ |
-| **Recommended Tier** | M0 (Free) ✅ |
-| **Ready for Production** | Yes ✅ |
+| Metric                    | Status       |
+| ------------------------- | ------------ |
+| **Indexes Created**       | 20 ✅        |
+| **TTL Indexes**           | 2 ✅         |
+| **Collections Optimized** | 9 ✅         |
+| **Database Size**         | 0.00 MB ✅   |
+| **Recommended Tier**      | M0 (Free) ✅ |
+| **Ready for Production**  | Yes ✅       |
 
 ---
 
@@ -339,11 +359,13 @@ node scripts/mongodb-optimize.js
 ```
 
 **What happens:**
+
 - Existing indexes: Skipped with info message
 - New collections: Indexes created
 - No data loss or disruption
 
 **When to re-run:**
+
 - After adding new collections
 - Monthly maintenance
 - After schema changes

@@ -14,6 +14,7 @@
 The new migrations need to be applied to your Supabase database:
 
 **Option A: Via Supabase Dashboard (Recommended)**
+
 1. Go to your Supabase project dashboard
 2. Navigate to **SQL Editor**
 3. Run each migration file in order:
@@ -21,6 +22,7 @@ The new migrations need to be applied to your Supabase database:
    - `supabase/migrations/20251204000001_database_backups_table.sql`
 
 **Option B: Via Supabase CLI**
+
 ```bash
 # If you have Supabase CLI installed
 supabase db push
@@ -43,6 +45,7 @@ BACKUP_SECRET_TOKEN=generate-a-secure-random-token-here
 ```
 
 **Generate Backup Secret Token:**
+
 ```bash
 # Generate a secure random token
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
@@ -61,12 +64,14 @@ supabase functions deploy backup-database
 ```
 
 Or via Supabase Dashboard:
+
 1. Go to **Edge Functions**
 2. Deploy each function from the `supabase/functions/` directory
 
 ### 4. Configure Edge Function Secrets
 
 In Supabase Dashboard:
+
 1. Go to **Edge Functions** > **Secrets**
 2. Add `BACKUP_SECRET_TOKEN` with the token you generated
 3. Verify `RESEND_API_KEY` is already configured
@@ -88,6 +93,7 @@ npm run test:e2e
 ### 6. Verify Security Headers
 
 After starting the dev server:
+
 1. Open browser DevTools
 2. Go to Network tab
 3. Reload the page
@@ -101,6 +107,7 @@ After starting the dev server:
 ### Set Up Automated Backups
 
 **Option 1: GitHub Actions (Recommended)**
+
 1. Go to GitHub repository Settings > Secrets
 2. Add secrets:
    - `SUPABASE_BACKUP_URL`: `https://your-project.supabase.co/functions/v1/backup-database`
@@ -113,6 +120,7 @@ If you have pg_cron extension enabled, see `SETUP_GUIDE.md` for SQL setup.
 ### Set Up Monitoring (Optional)
 
 Follow `docs/monitoring-setup.md` to:
+
 - Configure Sentry for error tracking
 - Set up uptime monitoring
 - Configure performance monitoring
@@ -136,23 +144,27 @@ Before deploying to production, verify:
 ## 🐛 Troubleshooting
 
 ### Environment Variables Not Loading
+
 - Ensure `.env` file is in root directory
 - Variable names must start with `VITE_` for client-side access
 - Restart dev server after adding variables
 
 ### Database Migration Errors
+
 - Check Supabase connection
 - Verify you have admin permissions
 - Review SQL syntax in migration files
 - Check if tables already exist
 
 ### Edge Function Deployment Issues
+
 - Verify `supabase/config.toml` includes new functions
 - Check function code for syntax errors
 - Ensure secrets are configured
 - Review function logs in Supabase Dashboard
 
 ### Test Failures
+
 - Run `npm install` to ensure dependencies are installed
 - Install Playwright browsers: `npx playwright install`
 - Check test environment variables
@@ -169,6 +181,7 @@ Before deploying to production, verify:
 Once all steps are complete:
 
 1. **Commit all changes:**
+
    ```bash
    git add .
    git commit -m "feat: comprehensive enhancements implementation"
@@ -213,4 +226,3 @@ Your application now includes:
 ---
 
 **Status**: ✅ Implementation Complete - Ready for Configuration
-

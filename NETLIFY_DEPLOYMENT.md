@@ -81,6 +81,7 @@ netlify status
 ```
 
 Expected output:
+
 ```
 Current Netlify User:
 Email: [your-email]
@@ -122,6 +123,7 @@ npm run build
 ```
 
 This will:
+
 - Compile TypeScript
 - Bundle with Vite
 - Optimize assets
@@ -134,6 +136,7 @@ ls -lh dist/
 ```
 
 Expected output:
+
 ```
 total [size]
 -rw-r--r-- 1 user group [size] [date] index.html
@@ -155,6 +158,7 @@ netlify deploy \
 ```
 
 **Flags explained**:
+
 - `--prod`: Deploy to production (not draft)
 - `--site`: Specify the site ID
 - `--dir`: Directory containing built files
@@ -165,7 +169,7 @@ netlify deploy \
 After deployment completes, you'll see:
 
 ```
-✔ Finished hashing 
+✔ Finished hashing
 ✔ CDN requesting [X] files
 ✔ Finished uploading [X] assets
 ✔ Deploy is live!
@@ -319,11 +323,13 @@ Run the script:
 ### Issue: "Netlify CLI not found"
 
 **Solution**:
+
 ```bash
 npm install -g netlify-cli
 ```
 
 Or use npx:
+
 ```bash
 npx netlify-cli deploy --prod --site=dfeefdc2-92aa-4415-baf6-42e60dfa6328 --dir=dist
 ```
@@ -331,6 +337,7 @@ npx netlify-cli deploy --prod --site=dfeefdc2-92aa-4415-baf6-42e60dfa6328 --dir=
 ### Issue: "Authentication failed"
 
 **Solution**:
+
 ```bash
 # Set token explicitly
 export NETLIFY_AUTH_TOKEN="nfp_4WVe7jj6shYCiRcTi8AzSfYDxCnEmv6Eb605"
@@ -342,6 +349,7 @@ netlify login
 ### Issue: "Build failed"
 
 **Solution**:
+
 ```bash
 # Clean and rebuild
 rm -rf node_modules dist
@@ -352,6 +360,7 @@ npm run build
 ### Issue: "Site not found"
 
 **Solution**:
+
 ```bash
 # Verify site ID
 netlify sites:list
@@ -363,6 +372,7 @@ netlify link --id=dfeefdc2-92aa-4415-baf6-42e60dfa6328
 ### Issue: "Deploy timeout"
 
 **Solution**:
+
 ```bash
 # Increase timeout
 netlify deploy --prod --timeout=600 --site=dfeefdc2-92aa-4415-baf6-42e60dfa6328 --dir=dist
@@ -396,6 +406,7 @@ netlify rollback --site=dfeefdc2-92aa-4415-baf6-42e60dfa6328
 ```
 
 Or via Netlify dashboard:
+
 1. Go to https://app.netlify.com/sites/dobeu-net/deploys
 2. Find the previous working deploy
 3. Click "Publish deploy"
@@ -442,6 +453,7 @@ npx lighthouse https://dobeu.net --view
 ### 4. Monitor Errors
 
 Check Netlify logs:
+
 ```bash
 netlify logs --site=dfeefdc2-92aa-4415-baf6-42e60dfa6328
 ```
@@ -477,34 +489,34 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
-      
+          node-version: "20"
+          cache: "npm"
+
       - name: Install dependencies
         run: npm ci
-      
+
       - name: Run tests
         run: npm run test:ci
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
-      
+
       - name: Build
         run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
-      
+
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v2
         with:
-          publish-dir: './dist'
+          publish-dir: "./dist"
           production-deploy: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: "Deploy from GitHub Actions"
@@ -533,6 +545,7 @@ Netlify can auto-deploy on git push:
 ⚠️ **Important**: The Netlify token in this guide has full access to your account.
 
 **Best practices**:
+
 1. Never commit tokens to git
 2. Use environment variables
 3. Rotate tokens regularly
@@ -556,11 +569,13 @@ If token is compromised:
 ### Netlify Analytics
 
 View deployment analytics:
+
 - https://app.netlify.com/sites/dobeu-net/analytics
 
 ### Error Tracking
 
 Monitor errors in:
+
 - Netlify logs: https://app.netlify.com/sites/dobeu-net/logs
 - Browser console (for client-side errors)
 - Supabase logs (for database errors)
@@ -568,6 +583,7 @@ Monitor errors in:
 ### Performance Monitoring
 
 Track performance:
+
 - Netlify Analytics
 - Google Analytics
 - Lighthouse CI

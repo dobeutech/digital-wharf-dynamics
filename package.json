@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run generate:sitemap && vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -16,7 +17,11 @@
     "test:e2e:ui": "playwright test --ui",
     "verify": "node scripts/verify-setup.js",
     "test:env": "node scripts/test-env-validation.js",
-    "postinstall": "playwright install --with-deps || true"
+    "type-check": "tsc --noEmit",
+    "pre-deploy-check": "node scripts/pre-deploy-validation.cjs",
+    "generate:sitemap": "node scripts/generate-sitemap.cjs",
+    "postinstall": "playwright install --with-deps || true",
+    "prepare": "husky"
   },
   "dependencies": {
     "@auth0/auth0-react": "^2.3.0",
@@ -101,14 +106,26 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
+    "husky": "^9.1.7",
     "jsdom": "^25.0.1",
+    "lint-staged": "^16.2.7",
     "png-to-ico": "^3.0.1",
     "postcss": "^8.5.6",
+    "prettier": "^3.7.4",
     "sharp": "^0.34.5",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.38.0",
     "vite": "^7.2.6",
     "vitest": "^2.1.8"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
   }
 }

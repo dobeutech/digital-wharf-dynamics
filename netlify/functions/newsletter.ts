@@ -1,8 +1,8 @@
-import type { Handler } from '@netlify/functions';
-import { ObjectId } from 'mongodb';
-import { errorResponse, jsonResponse, readJson } from './_http';
-import { requireAuth, requirePermission } from './_auth0';
-import { getMongoDb } from './_mongo';
+import type { Handler } from "@netlify/functions";
+import { ObjectId } from "mongodb";
+import { errorResponse, jsonResponse, readJson } from "./_http";
+import { requireAuth, requirePermission } from "./_auth0";
+import { getMongoDb } from "./_mongo";
 
 type NewsletterPostDoc = {
   _id: ObjectId;
@@ -35,16 +35,16 @@ function toPost(d: NewsletterPostDoc) {
 export const handler: Handler = async (event) => {
   try {
     const db = await getMongoDb();
-    const col = db.collection<NewsletterPostDoc>('newsletter_posts');
+    const col = db.collection<NewsletterPostDoc>("newsletter_posts");
     const claims = await requireAuth(event);
 
     const id = event.queryStringParameters?.id?.trim();
 
-    if (event.httpMethod === 'GET') {
+    if (event.httpMethod === "GET") {
       // Members-only feed: published posts (public or not)
       const q: Record<string, unknown> = { is_published: true };
       if (id) {
-        if (!ObjectId.isValid(id)) return errorResponse(400, 'Invalid id');
+        if (!ObjectId.isValid(id)) return errorResponse(400, "Invalid id");
         q._id = new ObjectId(id);
       }
       const docs = await col.find(q).sort({ published_at: -1 }).toArray();
@@ -52,13 +52,21 @@ export const handler: Handler = async (event) => {
     }
 
     // Admin manage posts
-    requirePermission(claims, 'admin:access');
+    requirePermission(claims, "admin:access");
 
-    if (event.httpMethod === 'POST') {
-      const body = await readJson<Partial<NewsletterPostDoc> & { title?: string; content?: string; slug?: string }>(
-        event
-      );
-      if (!body.title || !body.content || !body.slug) return errorResponse(400, 'Missing required fields: title, content, slug');
+    if (event.httpMethod === "POST") {
+      const body = await readJson<
+        Partial<NewsletterPostDoc> & {
+          title?: string;
+          content?: string;
+          slug?: string;
+        }
+      >(event);
+      if (!body.title || !body.content || !body.slug)
+        return errorResponse(
+          400,
+          "Missing required fields: title, content, slug",
+        );
       const now = new Date().toISOString();
       const doc: NewsletterPostDoc = {
         _id: new ObjectId(),
@@ -76,8 +84,8 @@ export const handler: Handler = async (event) => {
       return jsonResponse(201, toPost(doc));
     }
 
-    if (event.httpMethod === 'PATCH' || event.httpMethod === 'PUT') {
-      if (!id) return errorResponse(400, 'Missing id');
+    if (event.httpMethod === "PATCH" || event.httpMethod === "PUT") {
+      if (!id) return errorResponse(400, "Missing id");
       const body = await readJson<Partial<NewsletterPostDoc>>(event);
       const now = new Date().toISOString();
       const update: Record<string, unknown> = { ...body, updated_at: now };
@@ -85,24 +93,26 @@ export const handler: Handler = async (event) => {
       const res = await col.findOneAndUpdate(
         { _id: new ObjectId(id) },
         { $set: update },
-        { returnDocument: 'after' }
+        { returnDocument: "after" },
       );
-      if (!res) return errorResponse(404, 'Not found');
+      if (!res) return errorResponse(404, "Not found");
       // @ts-expect-error driver response typing differs across versions
       const doc = (res.value ?? res) as NewsletterPostDoc;
       return jsonResponse(200, toPost(doc));
     }
 
-    if (event.httpMethod === 'DELETE') {
-      if (!id) return errorResponse(400, 'Missing id');
+    if (event.httpMethod === "DELETE") {
+      if (!id) return errorResponse(400, "Missing id");
       const res = await col.deleteOne({ _id: new ObjectId(id) });
       return jsonResponse(200, { deleted: res.deletedCount === 1 });
     }
 
-    return errorResponse(405, 'Method not allowed');
+    return errorResponse(405, "Method not allowed");
   } catch (err) {
-    return errorResponse(500, 'Internal error', err instanceof Error ? err.message : String(err));
+    return errorResponse(
+      500,
+      "Internal error",
+      err instanceof Error ? err.message : String(err),
+    );
   }
 };
-
-

@@ -12,6 +12,7 @@
 ### Database Usage
 
 **Functions Using MongoDB:** 16 serverless functions
+
 - admin-users.ts
 - audit-logs.ts
 - ccpa-request.ts
@@ -26,10 +27,11 @@
 - send-sms-verification.ts
 - services.ts
 - verify-sms-code.ts
-- _gridfs.ts (helper)
-- _mongo.ts (connection manager)
+- \_gridfs.ts (helper)
+- \_mongo.ts (connection manager)
 
 **Collections Identified:**
+
 - users
 - projects
 - project_tasks
@@ -48,6 +50,7 @@
 ### Shared Clusters (Development/Small Production)
 
 #### M0 (Free Tier)
+
 - **Cost:** $0/month
 - **Storage:** 512 MB
 - **RAM:** Shared
@@ -57,6 +60,7 @@
 - **Best For:** Development, prototypes, learning
 
 #### M2 (Shared)
+
 - **Cost:** ~$9/month
 - **Storage:** 2 GB
 - **RAM:** Shared
@@ -66,6 +70,7 @@
 - **Best For:** Small apps, testing
 
 #### M5 (Shared)
+
 - **Cost:** ~$25/month
 - **Storage:** 5 GB
 - **RAM:** Shared
@@ -77,6 +82,7 @@
 ### Dedicated Clusters (Production)
 
 #### M10 (Dedicated)
+
 - **Cost:** ~$57/month (AWS us-east-1)
 - **Storage:** 10 GB
 - **RAM:** 2 GB
@@ -86,6 +92,7 @@
 - **Best For:** Small to medium production
 
 #### M20 (Dedicated)
+
 - **Cost:** ~$120/month
 - **Storage:** 20 GB
 - **RAM:** 4 GB
@@ -95,6 +102,7 @@
 - **Best For:** Medium production
 
 #### M30 (Dedicated)
+
 - **Cost:** ~$240/month
 - **Storage:** 40 GB
 - **RAM:** 8 GB
@@ -110,6 +118,7 @@
 ### Current Usage Estimate
 
 **Based on your setup:**
+
 - 16 serverless functions
 - ~10 collections
 - X.509 authentication
@@ -118,9 +127,11 @@
 ### Recommended Tier by Stage
 
 #### Development/Staging
+
 **Recommended:** M0 (Free) or M2 ($9/month)
 
 **Reasoning:**
+
 - Low traffic during development
 - 512 MB - 2 GB sufficient for testing
 - No backup needed for dev data
@@ -129,9 +140,11 @@
 **Estimated Cost:** $0 - $9/month
 
 #### Small Production (< 1,000 users)
+
 **Recommended:** M5 ($25/month) or M10 ($57/month)
 
 **Reasoning:**
+
 - 5-10 GB storage adequate
 - Shared resources acceptable for low traffic
 - M10 provides backups (important for production)
@@ -140,9 +153,11 @@
 **Estimated Cost:** $25 - $57/month
 
 #### Medium Production (1,000 - 10,000 users)
+
 **Recommended:** M10 ($57/month) or M20 ($120/month)
 
 **Reasoning:**
+
 - Dedicated resources needed
 - Automated backups essential
 - 10-20 GB storage
@@ -151,9 +166,11 @@
 **Estimated Cost:** $57 - $120/month
 
 #### Large Production (> 10,000 users)
+
 **Recommended:** M20 ($120/month) or M30 ($240/month)
 
 **Reasoning:**
+
 - Higher performance requirements
 - More storage for user data
 - Better connection handling
@@ -190,9 +207,10 @@
 **Potential Savings:** 20-40% on storage costs
 
 #### Compress Data
+
 ```javascript
 // Store compressed JSON for large fields
-import { gzip, gunzip } from 'zlib';
+import { gzip, gunzip } from "zlib";
 
 // Before storing
 const compressed = await gzip(JSON.stringify(largeData));
@@ -204,15 +222,21 @@ const decompressed = JSON.parse(await gunzip(doc.data));
 ```
 
 #### Use Efficient Data Types
+
 ```javascript
 // ❌ Bad: Storing dates as strings
-{ createdAt: "2023-12-15T10:30:00Z" }  // 24 bytes
+{
+  createdAt: "2023-12-15T10:30:00Z";
+} // 24 bytes
 
 // ✅ Good: Use Date objects
-{ createdAt: new Date() }  // 8 bytes
+{
+  createdAt: new Date();
+} // 8 bytes
 ```
 
 #### Remove Unnecessary Fields
+
 ```javascript
 // Only store what you need
 await collection.insertOne({
@@ -232,7 +256,7 @@ let clientPromise: Promise<MongoClient> | null = null;
 
 export async function getMongoClient(): Promise<MongoClient> {
   if (clientPromise) return clientPromise;
-  
+
   const client = new MongoClient(uri, {
     serverApi: {
       version: ServerApiVersion.v1,
@@ -240,11 +264,11 @@ export async function getMongoClient(): Promise<MongoClient> {
       deprecationErrors: true,
     },
     // Add connection pool settings
-    maxPoolSize: 10,  // Max connections
-    minPoolSize: 2,   // Min connections
-    maxIdleTimeMS: 30000,  // Close idle connections after 30s
+    maxPoolSize: 10, // Max connections
+    minPoolSize: 2, // Min connections
+    maxIdleTimeMS: 30000, // Close idle connections after 30s
   });
-  
+
   clientPromise = client.connect();
   return clientPromise;
 }
@@ -256,9 +280,11 @@ export async function getMongoClient(): Promise<MongoClient> {
 
 ```javascript
 // Create indexes for frequently queried fields
-await db.collection('users').createIndex({ email: 1 }, { unique: true });
-await db.collection('projects').createIndex({ userId: 1, createdAt: -1 });
-await db.collection('audit_logs').createIndex({ createdAt: 1 }, { expireAfterSeconds: 2592000 }); // 30 days TTL
+await db.collection("users").createIndex({ email: 1 }, { unique: true });
+await db.collection("projects").createIndex({ userId: 1, createdAt: -1 });
+await db
+  .collection("audit_logs")
+  .createIndex({ createdAt: 1 }, { expireAfterSeconds: 2592000 }); // 30 days TTL
 ```
 
 ### 5. Implement Data Archiving
@@ -269,16 +295,17 @@ await db.collection('audit_logs').createIndex({ createdAt: 1 }, { expireAfterSec
 // Archive old audit logs to cheaper storage
 async function archiveOldLogs() {
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  
+
   // Move to archive collection (or export to S3)
-  const oldLogs = await db.collection('audit_logs')
+  const oldLogs = await db
+    .collection("audit_logs")
     .find({ createdAt: { $lt: thirtyDaysAgo } })
     .toArray();
-  
+
   if (oldLogs.length > 0) {
-    await db.collection('audit_logs_archive').insertMany(oldLogs);
-    await db.collection('audit_logs').deleteMany({ 
-      createdAt: { $lt: thirtyDaysAgo } 
+    await db.collection("audit_logs_archive").insertMany(oldLogs);
+    await db.collection("audit_logs").deleteMany({
+      createdAt: { $lt: thirtyDaysAgo },
     });
   }
 }
@@ -290,14 +317,14 @@ async function archiveOldLogs() {
 
 ```javascript
 // Auto-delete old documents
-await db.collection('sessions').createIndex(
+await db.collection("sessions").createIndex(
   { createdAt: 1 },
-  { expireAfterSeconds: 86400 }  // Delete after 24 hours
+  { expireAfterSeconds: 86400 }, // Delete after 24 hours
 );
 
-await db.collection('temp_data').createIndex(
+await db.collection("temp_data").createIndex(
   { expiresAt: 1 },
-  { expireAfterSeconds: 0 }  // Delete at specified time
+  { expireAfterSeconds: 0 }, // Delete at specified time
 );
 ```
 
@@ -310,12 +337,12 @@ await db.collection('temp_data').createIndex(
 // GridFS is expensive for storage
 
 // ❌ Expensive: Store 100MB files in MongoDB
-await gridFSBucket.uploadFromStream('large-file.pdf', stream);
+await gridFSBucket.uploadFromStream("large-file.pdf", stream);
 
 // ✅ Cheaper: Store in S3, reference in MongoDB
-const s3Url = await uploadToS3('large-file.pdf', stream);
-await db.collection('files').insertOne({
-  name: 'large-file.pdf',
+const s3Url = await uploadToS3("large-file.pdf", stream);
+await db.collection("files").insertOne({
+  name: "large-file.pdf",
   url: s3Url,
   size: 100 * 1024 * 1024,
 });
@@ -338,13 +365,13 @@ async function getCachedUser(userId: string) {
   // Check cache first
   const cached = await redis.get(`user:${userId}`);
   if (cached) return JSON.parse(cached);
-  
+
   // Query database
   const user = await db.collection('users').findOne({ _id: userId });
-  
+
   // Cache for 5 minutes
   await redis.setex(`user:${userId}`, 300, JSON.stringify(user));
-  
+
   return user;
 }
 ```
@@ -358,13 +385,14 @@ async function getCachedUser(userId: string) {
 await db.setProfilingLevel(1, { slowms: 100 });
 
 // Check slow queries
-const slowQueries = await db.collection('system.profile')
+const slowQueries = await db
+  .collection("system.profile")
   .find({ millis: { $gt: 100 } })
   .sort({ ts: -1 })
   .limit(10)
   .toArray();
 
-console.log('Slow queries:', slowQueries);
+console.log("Slow queries:", slowQueries);
 ```
 
 ### 10. Use Projection to Limit Data Transfer
@@ -373,13 +401,12 @@ console.log('Slow queries:', slowQueries);
 
 ```javascript
 // ❌ Bad: Fetch entire document
-const user = await db.collection('users').findOne({ _id: userId });
+const user = await db.collection("users").findOne({ _id: userId });
 
 // ✅ Good: Fetch only needed fields
-const user = await db.collection('users').findOne(
-  { _id: userId },
-  { projection: { name: 1, email: 1, _id: 0 } }
-);
+const user = await db
+  .collection("users")
+  .findOne({ _id: userId }, { projection: { name: 1, email: 1, _id: 0 } });
 ```
 
 ---
@@ -395,11 +422,12 @@ const user = await db.collection('users').findOne(
    - Upgrade to M10 only when ready for production
 
 2. **Add Indexes**
+
    ```javascript
    // Run this migration
-   await db.collection('users').createIndex({ email: 1 }, { unique: true });
-   await db.collection('projects').createIndex({ userId: 1 });
-   await db.collection('audit_logs').createIndex({ createdAt: 1 });
+   await db.collection("users").createIndex({ email: 1 }, { unique: true });
+   await db.collection("projects").createIndex({ userId: 1 });
+   await db.collection("audit_logs").createIndex({ createdAt: 1 });
    ```
 
 3. **Implement Connection Pooling**
@@ -413,11 +441,12 @@ const user = await db.collection('users').findOne(
 **Cost Impact:** Save 20-30% on queries
 
 1. **Add TTL Indexes**
+
    ```javascript
    // Auto-cleanup old data
-   await db.collection('audit_logs').createIndex(
+   await db.collection("audit_logs").createIndex(
      { createdAt: 1 },
-     { expireAfterSeconds: 2592000 }  // 30 days
+     { expireAfterSeconds: 2592000 }, // 30 days
    );
    ```
 
@@ -458,38 +487,38 @@ const user = await db.collection('users').findOne(
 
 ### MongoDB Atlas vs Supabase (PostgreSQL)
 
-| Feature | MongoDB Atlas | Supabase |
-|---------|--------------|----------|
-| **Free Tier** | 512 MB | 500 MB |
+| Feature        | MongoDB Atlas | Supabase        |
+| -------------- | ------------- | --------------- |
+| **Free Tier**  | 512 MB        | 500 MB          |
 | **Paid Start** | $9/month (M2) | $25/month (Pro) |
-| **Storage** | $0.25/GB | Included |
-| **Bandwidth** | Free | 50 GB/month |
-| **Backups** | M10+ only | Included |
-| **Best For** | Document data | Relational data |
+| **Storage**    | $0.25/GB      | Included        |
+| **Bandwidth**  | Free          | 50 GB/month     |
+| **Backups**    | M10+ only     | Included        |
+| **Best For**   | Document data | Relational data |
 
 **Verdict:** MongoDB is cheaper for small apps, Supabase better for larger apps with relational data.
 
 ### MongoDB Atlas vs PlanetScale (MySQL)
 
-| Feature | MongoDB Atlas | PlanetScale |
-|---------|--------------|--------------|
-| **Free Tier** | 512 MB | 5 GB |
-| **Paid Start** | $9/month | $29/month |
-| **Scaling** | Manual | Automatic |
-| **Backups** | M10+ only | Included |
-| **Best For** | Flexible schema | Relational data |
+| Feature        | MongoDB Atlas   | PlanetScale     |
+| -------------- | --------------- | --------------- |
+| **Free Tier**  | 512 MB          | 5 GB            |
+| **Paid Start** | $9/month        | $29/month       |
+| **Scaling**    | Manual          | Automatic       |
+| **Backups**    | M10+ only       | Included        |
+| **Best For**   | Flexible schema | Relational data |
 
 **Verdict:** PlanetScale has better free tier, but MongoDB is cheaper for paid tiers.
 
 ### MongoDB Atlas vs Firebase (Firestore)
 
-| Feature | MongoDB Atlas | Firebase |
-|---------|--------------|----------|
-| **Free Tier** | 512 MB | 1 GB |
-| **Paid Model** | Fixed monthly | Pay-per-use |
-| **Reads** | Unlimited | $0.06/100K |
-| **Writes** | Unlimited | $0.18/100K |
-| **Best For** | Predictable costs | Variable traffic |
+| Feature        | MongoDB Atlas     | Firebase         |
+| -------------- | ----------------- | ---------------- |
+| **Free Tier**  | 512 MB            | 1 GB             |
+| **Paid Model** | Fixed monthly     | Pay-per-use      |
+| **Reads**      | Unlimited         | $0.06/100K       |
+| **Writes**     | Unlimited         | $0.18/100K       |
+| **Best For**   | Predictable costs | Variable traffic |
 
 **Verdict:** MongoDB better for high-traffic apps, Firebase better for low-traffic apps.
 
@@ -500,12 +529,14 @@ const user = await db.collection('users').findOne(
 ### Option 1: Stay with MongoDB (Recommended)
 
 **Pros:**
+
 - Already implemented
 - X.509 authentication working
 - 16 functions already using it
 - Free tier available
 
 **Cons:**
+
 - Limited free tier (512 MB)
 - No backups on free tier
 - Shared resources on M0-M5
@@ -515,12 +546,14 @@ const user = await db.collection('users').findOne(
 ### Option 2: Migrate to Supabase
 
 **Pros:**
+
 - Better free tier features
 - Built-in auth
 - Real-time subscriptions
 - Automatic backups
 
 **Cons:**
+
 - Complete rewrite needed
 - Different data model (relational)
 - Migration effort: 40-60 hours
@@ -530,11 +563,13 @@ const user = await db.collection('users').findOne(
 ### Option 3: Hybrid Approach
 
 **Use MongoDB for:**
+
 - Flexible schema data (projects, tasks)
 - Audit logs
 - File metadata
 
 **Use Supabase for:**
+
 - User authentication
 - Relational data (if needed)
 - Real-time features
@@ -547,24 +582,25 @@ const user = await db.collection('users').findOne(
 
 ### Current Estimated Costs
 
-| Tier | Monthly Cost | Annual Cost | Best For |
-|------|-------------|-------------|----------|
-| **M0 (Free)** | $0 | $0 | Development, < 100 users |
-| **M2** | $9 | $108 | Testing, < 500 users |
-| **M5** | $25 | $300 | Small production, < 1,000 users |
-| **M10** | $57 | $684 | Production, < 5,000 users |
-| **M20** | $120 | $1,440 | Medium production, < 20,000 users |
-| **M30** | $240 | $2,880 | Large production, > 20,000 users |
+| Tier          | Monthly Cost | Annual Cost | Best For                          |
+| ------------- | ------------ | ----------- | --------------------------------- |
+| **M0 (Free)** | $0           | $0          | Development, < 100 users          |
+| **M2**        | $9           | $108        | Testing, < 500 users              |
+| **M5**        | $25          | $300        | Small production, < 1,000 users   |
+| **M10**       | $57          | $684        | Production, < 5,000 users         |
+| **M20**       | $120         | $1,440      | Medium production, < 20,000 users |
+| **M30**       | $240         | $2,880      | Large production, > 20,000 users  |
 
 ### With Optimizations
 
-| Tier | Base Cost | Optimized Cost | Savings |
-|------|-----------|----------------|---------|
-| **M10** | $57/month | $40/month | 30% |
-| **M20** | $120/month | $80/month | 33% |
-| **M30** | $240/month | $150/month | 38% |
+| Tier    | Base Cost  | Optimized Cost | Savings |
+| ------- | ---------- | -------------- | ------- |
+| **M10** | $57/month  | $40/month      | 30%     |
+| **M20** | $120/month | $80/month      | 33%     |
+| **M30** | $240/month | $150/month     | 38%     |
 
 **Optimization includes:**
+
 - Efficient indexing
 - Data compression
 - TTL indexes
@@ -596,17 +632,20 @@ const user = await db.collection('users').findOne(
 ### When to Upgrade
 
 **Upgrade to M2 ($9/month) when:**
+
 - Storage > 400 MB
 - Need more than 500 connections
 - Development team grows
 
 **Upgrade to M10 ($57/month) when:**
+
 - Ready for production
 - Need automated backups
 - Have paying customers
 - Storage > 1.5 GB
 
 **Upgrade to M20 ($120/month) when:**
+
 - > 5,000 active users
 - Storage > 8 GB
 - Need better performance
@@ -617,6 +656,7 @@ const user = await db.collection('users').findOne(
 ## 📞 Next Steps
 
 1. **Check Current Usage**
+
    ```bash
    # Log into MongoDB Atlas
    # Check: Metrics → Storage Size

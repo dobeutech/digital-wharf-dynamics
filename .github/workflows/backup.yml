@@ -2,8 +2,8 @@ name: Daily Backup
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # 2 AM UTC daily
-  workflow_dispatch:  # Allow manual trigger
+    - cron: "0 2 * * *" # 2 AM UTC daily
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
   backup:
@@ -18,15 +18,15 @@ jobs:
             echo "Warning: Backup secrets not configured. Skipping backup."
             exit 0
           fi
-          
+
           response=$(curl -s -w "\n%{http_code}" -X POST \
             -H "Authorization: Bearer $BACKUP_TOKEN" \
             -H "Content-Type: application/json" \
             "$BACKUP_URL")
-          
+
           http_code=$(echo "$response" | tail -n1)
           body=$(echo "$response" | sed '$d')
-          
+
           if [ "$http_code" -eq 200 ]; then
             echo "Backup completed successfully"
             echo "$body"
@@ -35,4 +35,3 @@ jobs:
             echo "$body"
             exit 1
           fi
-

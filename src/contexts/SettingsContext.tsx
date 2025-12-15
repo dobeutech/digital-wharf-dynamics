@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 
 interface Settings {
   customCursorEnabled: boolean;
@@ -14,13 +20,15 @@ const defaultSettings: Settings = {
   customCursorEnabled: true,
 };
 
-const STORAGE_KEY = 'dobeu-settings';
+const STORAGE_KEY = "dobeu-settings";
 
-const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
+const SettingsContext = createContext<SettingsContextType | undefined>(
+  undefined,
+);
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>(() => {
-    if (typeof window === 'undefined') return defaultSettings;
+    if (typeof window === "undefined") return defaultSettings;
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
@@ -41,11 +49,16 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   };
 
   const toggleCustomCursor = () => {
-    setSettings((prev) => ({ ...prev, customCursorEnabled: !prev.customCursorEnabled }));
+    setSettings((prev) => ({
+      ...prev,
+      customCursorEnabled: !prev.customCursorEnabled,
+    }));
   };
 
   return (
-    <SettingsContext.Provider value={{ settings, updateSettings, toggleCustomCursor }}>
+    <SettingsContext.Provider
+      value={{ settings, updateSettings, toggleCustomCursor }}
+    >
       {children}
     </SettingsContext.Provider>
   );
@@ -54,7 +67,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
 export function useSettings() {
   const context = useContext(SettingsContext);
   if (context === undefined) {
-    throw new Error('useSettings must be used within a SettingsProvider');
+    throw new Error("useSettings must be used within a SettingsProvider");
   }
   return context;
 }

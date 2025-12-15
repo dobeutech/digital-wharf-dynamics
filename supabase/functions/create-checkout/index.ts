@@ -4,7 +4,8 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
 interface CheckoutRequest {
@@ -30,7 +31,7 @@ serve(async (req) => {
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    
+
     // Get user from auth header
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
@@ -41,22 +42,40 @@ serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
     if (userError || !user) {
       console.error("User auth error:", userError);
       throw new Error("Authentication required");
     }
 
-    const { serviceId, serviceName, totalAmount, selectedAddOns, isSubscription }: CheckoutRequest = await req.json();
+    const {
+      serviceId,
+      serviceName,
+      totalAmount,
+      selectedAddOns,
+      isSubscription,
+    }: CheckoutRequest = await req.json();
 
-    console.log("Creating checkout for:", { serviceId, serviceName, totalAmount, isSubscription, userId: user.id });
+    console.log("Creating checkout for:", {
+      serviceId,
+      serviceName,
+      totalAmount,
+      isSubscription,
+      userId: user.id,
+    });
 
     const stripe = new Stripe(stripeKey, {
       apiVersion: "2023-10-16",
     });
 
     // Check if customer exists
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    const customers = await stripe.customers.list({
+      email: user.email,
+      limit: 1,
+    });
     let customerId: string;
 
     if (customers.data.length > 0) {
@@ -72,9 +91,10 @@ serve(async (req) => {
     }
 
     // Build line items description
-    const addOnsDescription = selectedAddOns.length > 0 
-      ? ` + ${selectedAddOns.map(a => a.name).join(", ")}`
-      : "";
+    const addOnsDescription =
+      selectedAddOns.length > 0
+        ? ` + ${selectedAddOns.map((a) => a.name).join(", ")}`
+        : "";
 
     const origin = req.headers.get("origin") || "https://dobeu.net";
 
@@ -143,14 +163,12 @@ serve(async (req) => {
       });
     }
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+    const errorMessage =
+      error instanceof Error ? error.message : "An unexpected error occurred";
     console.error("Checkout error:", error);
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ error: errorMessage }), {
+      status: 400,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   }
 });

@@ -80,16 +80,24 @@ export default function AdminAuditLogs() {
   }, [fetchLogs]);
 
   const exportToCSV = () => {
-    const headers = ["Timestamp", "Action", "Entity Type", "Entity ID", "User ID"];
+    const headers = [
+      "Timestamp",
+      "Action",
+      "Entity Type",
+      "Entity ID",
+      "User ID",
+    ];
     const csvContent = [
       headers.join(","),
-      ...logs.map(log => [
-        format(new Date(log.created_at), "yyyy-MM-dd HH:mm:ss"),
-        log.action,
-        log.entity_type,
-        log.entity_id || "",
-        log.user_id,
-      ].join(","))
+      ...logs.map((log) =>
+        [
+          format(new Date(log.created_at), "yyyy-MM-dd HH:mm:ss"),
+          log.action,
+          log.entity_type,
+          log.entity_id || "",
+          log.user_id,
+        ].join(","),
+      ),
     ].join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv" });
@@ -101,7 +109,7 @@ export default function AdminAuditLogs() {
     window.URL.revokeObjectURL(url);
   };
 
-  const filteredLogs = logs.filter(log => {
+  const filteredLogs = logs.filter((log) => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
     return (
@@ -178,7 +186,9 @@ export default function AdminAuditLogs() {
                   <SelectItem value="service">Services</SelectItem>
                   <SelectItem value="project">Projects</SelectItem>
                   <SelectItem value="ccpa_request">CCPA Requests</SelectItem>
-                  <SelectItem value="contact_submission">Contact Submissions</SelectItem>
+                  <SelectItem value="contact_submission">
+                    Contact Submissions
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -198,7 +208,10 @@ export default function AdminAuditLogs() {
                 <TableBody>
                   {filteredLogs.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                      <TableCell
+                        colSpan={5}
+                        className="text-center py-8 text-muted-foreground"
+                      >
                         No audit logs found
                       </TableCell>
                     </TableRow>
@@ -206,7 +219,10 @@ export default function AdminAuditLogs() {
                     filteredLogs.map((log) => (
                       <TableRow key={log.id}>
                         <TableCell className="font-mono text-sm">
-                          {format(new Date(log.created_at), "MMM d, yyyy HH:mm:ss")}
+                          {format(
+                            new Date(log.created_at),
+                            "MMM d, yyyy HH:mm:ss",
+                          )}
                         </TableCell>
                         <TableCell>
                           <Badge className={actionColors[log.action] || ""}>
@@ -217,7 +233,9 @@ export default function AdminAuditLogs() {
                           {log.entity_type.replace(/_/g, " ")}
                         </TableCell>
                         <TableCell className="font-mono text-sm">
-                          {log.entity_id ? `${log.entity_id.slice(0, 8)}...` : "-"}
+                          {log.entity_id
+                            ? `${log.entity_id.slice(0, 8)}...`
+                            : "-"}
                         </TableCell>
                         <TableCell className="text-right">
                           <Button
@@ -246,13 +264,17 @@ export default function AdminAuditLogs() {
             {selectedLog && (
               <div className="mt-6 space-y-4">
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Timestamp</label>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Timestamp
+                  </label>
                   <p className="font-mono">
                     {format(new Date(selectedLog.created_at), "PPpp")}
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Action</label>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Action
+                  </label>
                   <p>
                     <Badge className={actionColors[selectedLog.action] || ""}>
                       {selectedLog.action}
@@ -260,20 +282,32 @@ export default function AdminAuditLogs() {
                   </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Entity Type</label>
-                  <p className="capitalize">{selectedLog.entity_type.replace(/_/g, " ")}</p>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Entity Type
+                  </label>
+                  <p className="capitalize">
+                    {selectedLog.entity_type.replace(/_/g, " ")}
+                  </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">Entity ID</label>
-                  <p className="font-mono text-sm">{selectedLog.entity_id || "N/A"}</p>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    Entity ID
+                  </label>
+                  <p className="font-mono text-sm">
+                    {selectedLog.entity_id || "N/A"}
+                  </p>
                 </div>
                 <div>
-                  <label className="text-sm font-medium text-muted-foreground">User ID</label>
+                  <label className="text-sm font-medium text-muted-foreground">
+                    User ID
+                  </label>
                   <p className="font-mono text-sm">{selectedLog.user_id}</p>
                 </div>
                 {selectedLog.old_values && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">Previous Values</label>
+                    <label className="text-sm font-medium text-muted-foreground">
+                      Previous Values
+                    </label>
                     <pre className="mt-1 p-3 bg-muted rounded-md text-sm overflow-x-auto">
                       {JSON.stringify(selectedLog.old_values, null, 2)}
                     </pre>
@@ -281,7 +315,9 @@ export default function AdminAuditLogs() {
                 )}
                 {selectedLog.new_values && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">New Values</label>
+                    <label className="text-sm font-medium text-muted-foreground">
+                      New Values
+                    </label>
                     <pre className="mt-1 p-3 bg-muted rounded-md text-sm overflow-x-auto">
                       {JSON.stringify(selectedLog.new_values, null, 2)}
                     </pre>
@@ -289,7 +325,9 @@ export default function AdminAuditLogs() {
                 )}
                 {selectedLog.user_agent && (
                   <div>
-                    <label className="text-sm font-medium text-muted-foreground">User Agent</label>
+                    <label className="text-sm font-medium text-muted-foreground">
+                      User Agent
+                    </label>
                     <p className="text-sm text-muted-foreground break-all">
                       {selectedLog.user_agent}
                     </p>

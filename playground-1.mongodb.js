@@ -17,7 +17,7 @@
 // Alternative connection string format (if the above doesn't work):
 // mongodb://vscode@atlas-sql-691d75a0ab43cb5ef6bf1970-tdodph.a.query.mongodb.net/app?tls=true&tlsCAFile=C%3A%5CUsers%5Cjswil%5CDownloads%5CX509-cert-1253989881055617180.pem&tlsCertificateKeyFile=C%3A%5CUsers%5Cjswil%5CDownloads%5CX509-cert-1253989881055617180.pem
 
-const database = 'app'; // Matches MONGODB_DB_NAME from environment
+const database = "app"; // Matches MONGODB_DB_NAME from environment
 
 // Switch to the database
 use(database);
@@ -26,31 +26,44 @@ use(database);
 // 1. CONTACT SUBMISSIONS COLLECTION
 // ============================================================================
 // Stores contact form submissions with status tracking and metadata
-db.createCollection('contact_submissions', {
+db.createCollection("contact_submissions", {
   validator: {
     $jsonSchema: {
-      bsonType: 'object',
-      required: ['name', 'email', 'message', 'sms_consent', 'marketing_consent', 'status', 'submitted_at', 'created_at', 'updated_at'],
+      bsonType: "object",
+      required: [
+        "name",
+        "email",
+        "message",
+        "sms_consent",
+        "marketing_consent",
+        "status",
+        "submitted_at",
+        "created_at",
+        "updated_at",
+      ],
       properties: {
-        name: { bsonType: 'string', minLength: 2 },
-        email: { bsonType: 'string', pattern: '^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$' },
-        phone: { bsonType: ['string', 'null'], maxLength: 20 },
-        message: { bsonType: 'string', minLength: 10 },
-        sms_consent: { bsonType: 'bool' },
-        marketing_consent: { bsonType: 'bool' },
-        status: { enum: ['new', 'read', 'responded', 'archived'] },
-        notes: { bsonType: ['string', 'null'] },
-        ip_address: { bsonType: ['string', 'null'] },
-        user_agent: { bsonType: ['string', 'null'] },
-        submitted_at: { bsonType: 'string' },
-        responded_at: { bsonType: ['string', 'null'] },
-        created_at: { bsonType: 'string' },
-        updated_at: { bsonType: 'string' }
-      }
-    }
+        name: { bsonType: "string", minLength: 2 },
+        email: {
+          bsonType: "string",
+          pattern: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$",
+        },
+        phone: { bsonType: ["string", "null"], maxLength: 20 },
+        message: { bsonType: "string", minLength: 10 },
+        sms_consent: { bsonType: "bool" },
+        marketing_consent: { bsonType: "bool" },
+        status: { enum: ["new", "read", "responded", "archived"] },
+        notes: { bsonType: ["string", "null"] },
+        ip_address: { bsonType: ["string", "null"] },
+        user_agent: { bsonType: ["string", "null"] },
+        submitted_at: { bsonType: "string" },
+        responded_at: { bsonType: ["string", "null"] },
+        created_at: { bsonType: "string" },
+        updated_at: { bsonType: "string" },
+      },
+    },
   },
-  validationLevel: 'strict',
-  validationAction: 'error'
+  validationLevel: "strict",
+  validationAction: "error",
 });
 
 // Indexes for contact_submissions
@@ -63,25 +76,25 @@ db.contact_submissions.createIndex({ created_at: -1 }); // Alternative timestamp
 // 2. AUDIT LOGS COLLECTION
 // ============================================================================
 // Append-only audit trail for user actions and entity changes
-db.createCollection('audit_logs', {
+db.createCollection("audit_logs", {
   validator: {
     $jsonSchema: {
-      bsonType: 'object',
-      required: ['user_id', 'action', 'entity_type', 'created_at'],
+      bsonType: "object",
+      required: ["user_id", "action", "entity_type", "created_at"],
       properties: {
-        user_id: { bsonType: 'string' },
-        action: { bsonType: 'string' },
-        entity_type: { bsonType: 'string' },
-        entity_id: { bsonType: ['string', 'null'] },
-        old_values: { bsonType: ['object', 'null'] },
-        new_values: { bsonType: ['object', 'null'] },
-        user_agent: { bsonType: ['string', 'null'] },
-        created_at: { bsonType: 'string' }
-      }
-    }
+        user_id: { bsonType: "string" },
+        action: { bsonType: "string" },
+        entity_type: { bsonType: "string" },
+        entity_id: { bsonType: ["string", "null"] },
+        old_values: { bsonType: ["object", "null"] },
+        new_values: { bsonType: ["object", "null"] },
+        user_agent: { bsonType: ["string", "null"] },
+        created_at: { bsonType: "string" },
+      },
+    },
   },
-  validationLevel: 'strict',
-  validationAction: 'error'
+  validationLevel: "strict",
+  validationAction: "error",
 });
 
 // Indexes for audit_logs
@@ -95,25 +108,33 @@ db.audit_logs.createIndex({ entity_type: 1, created_at: -1 }); // Entity type wi
 // 3. CLIENT FILES COLLECTION
 // ============================================================================
 // File metadata with expiration dates (files stored in GridFS)
-db.createCollection('client_files', {
+db.createCollection("client_files", {
   validator: {
     $jsonSchema: {
-      bsonType: 'object',
-      required: ['user_id', 'file_name', 'file_type', 'file_size', 'created_at', 'expires_at', 'gridfs_id'],
+      bsonType: "object",
+      required: [
+        "user_id",
+        "file_name",
+        "file_type",
+        "file_size",
+        "created_at",
+        "expires_at",
+        "gridfs_id",
+      ],
       properties: {
-        user_id: { bsonType: 'string' },
-        file_name: { bsonType: 'string' },
-        file_type: { bsonType: 'string' },
-        file_size: { bsonType: 'number', minimum: 0 },
-        created_at: { bsonType: 'string' },
-        expires_at: { bsonType: 'string' },
-        project_id: { bsonType: ['string', 'null'] },
-        gridfs_id: { bsonType: 'objectId' }
-      }
-    }
+        user_id: { bsonType: "string" },
+        file_name: { bsonType: "string" },
+        file_type: { bsonType: "string" },
+        file_size: { bsonType: "number", minimum: 0 },
+        created_at: { bsonType: "string" },
+        expires_at: { bsonType: "string" },
+        project_id: { bsonType: ["string", "null"] },
+        gridfs_id: { bsonType: "objectId" },
+      },
+    },
   },
-  validationLevel: 'strict',
-  validationAction: 'error'
+  validationLevel: "strict",
+  validationAction: "error",
 });
 
 // Indexes for client_files
@@ -130,26 +151,33 @@ db.client_files.createIndex({ gridfs_id: 1 }, { unique: true }); // Unique GridF
 // 4. SERVICES COLLECTION
 // ============================================================================
 // Service catalog with pricing, features, and categories
-db.createCollection('services', {
+db.createCollection("services", {
   validator: {
     $jsonSchema: {
-      bsonType: 'object',
-      required: ['name', 'category', 'base_price', 'is_active', 'created_at', 'updated_at'],
+      bsonType: "object",
+      required: [
+        "name",
+        "category",
+        "base_price",
+        "is_active",
+        "created_at",
+        "updated_at",
+      ],
       properties: {
-        name: { bsonType: 'string' },
-        category: { bsonType: 'string' },
-        description: { bsonType: ['string'] },
-        base_price: { bsonType: 'number', minimum: 0 },
-        features: { bsonType: ['array', 'object', 'null'] },
-        add_ons: { bsonType: ['array', 'object', 'null'] },
-        is_active: { bsonType: 'bool' },
-        created_at: { bsonType: 'string' },
-        updated_at: { bsonType: 'string' }
-      }
-    }
+        name: { bsonType: "string" },
+        category: { bsonType: "string" },
+        description: { bsonType: ["string"] },
+        base_price: { bsonType: "number", minimum: 0 },
+        features: { bsonType: ["array", "object", "null"] },
+        add_ons: { bsonType: ["array", "object", "null"] },
+        is_active: { bsonType: "bool" },
+        created_at: { bsonType: "string" },
+        updated_at: { bsonType: "string" },
+      },
+    },
   },
-  validationLevel: 'strict',
-  validationAction: 'error'
+  validationLevel: "strict",
+  validationAction: "error",
 });
 
 // Indexes for services
@@ -161,26 +189,33 @@ db.services.createIndex({ name: 1 }); // Name lookups
 // 5. PROJECTS COLLECTION
 // ============================================================================
 // Project tracking with status, progress, and dates
-db.createCollection('projects', {
+db.createCollection("projects", {
   validator: {
     $jsonSchema: {
-      bsonType: 'object',
-      required: ['user_id', 'title', 'status', 'progress_percentage', 'created_at', 'updated_at'],
+      bsonType: "object",
+      required: [
+        "user_id",
+        "title",
+        "status",
+        "progress_percentage",
+        "created_at",
+        "updated_at",
+      ],
       properties: {
-        user_id: { bsonType: 'string' },
-        title: { bsonType: 'string' },
-        description: { bsonType: ['string', 'null'] },
-        status: { bsonType: 'string' },
-        progress_percentage: { bsonType: 'number', minimum: 0, maximum: 100 },
-        start_date: { bsonType: ['string', 'null'] },
-        end_date: { bsonType: ['string', 'null'] },
-        created_at: { bsonType: 'string' },
-        updated_at: { bsonType: 'string' }
-      }
-    }
+        user_id: { bsonType: "string" },
+        title: { bsonType: "string" },
+        description: { bsonType: ["string", "null"] },
+        status: { bsonType: "string" },
+        progress_percentage: { bsonType: "number", minimum: 0, maximum: 100 },
+        start_date: { bsonType: ["string", "null"] },
+        end_date: { bsonType: ["string", "null"] },
+        created_at: { bsonType: "string" },
+        updated_at: { bsonType: "string" },
+      },
+    },
   },
-  validationLevel: 'strict',
-  validationAction: 'error'
+  validationLevel: "strict",
+  validationAction: "error",
 });
 
 // Indexes for projects

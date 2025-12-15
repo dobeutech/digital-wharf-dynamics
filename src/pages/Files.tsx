@@ -1,5 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
@@ -37,7 +43,10 @@ export default function Files() {
     try {
       const data = await api.get<ClientFile[]>("/files");
       setFiles(data || []);
-      const totalSize = (data || []).reduce((sum, file) => sum + (file.file_size || 0), 0);
+      const totalSize = (data || []).reduce(
+        (sum, file) => sum + (file.file_size || 0),
+        0,
+      );
       setStorageUsed(totalSize);
       setLoading(false);
     } catch (error) {
@@ -57,13 +66,18 @@ export default function Files() {
   const handleDownload = async (file: ClientFile) => {
     try {
       const token = await getAccessToken();
-      const baseUrl = import.meta.env.PROD ? '/.netlify/functions' : 'http://localhost:8888/.netlify/functions';
-      const response = await fetch(`${baseUrl}/files?id=${file.id}&download=true`, {
-        headers: token ? { 'Authorization': `Bearer ${token}` } : {},
-      });
+      const baseUrl = import.meta.env.PROD
+        ? "/.netlify/functions"
+        : "http://localhost:8888/.netlify/functions";
+      const response = await fetch(
+        `${baseUrl}/files?id=${file.id}&download=true`,
+        {
+          headers: token ? { Authorization: `Bearer ${token}` } : {},
+        },
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to download file');
+        throw new Error("Failed to download file");
       }
 
       const blob = await response.blob();
@@ -86,7 +100,8 @@ export default function Files() {
 
   const getFileIcon = (fileType: string) => {
     if (fileType.startsWith("image/")) return <Image className="h-5 w-5" />;
-    if (fileType.includes("pdf") || fileType.includes("document")) return <FileText className="h-5 w-5" />;
+    if (fileType.includes("pdf") || fileType.includes("document"))
+      return <FileText className="h-5 w-5" />;
     return <File className="h-5 w-5" />;
   };
 
@@ -117,13 +132,17 @@ export default function Files() {
       <div className="container mx-auto max-w-6xl">
         <div className="mb-12">
           <h1 className="text-4xl font-bold mb-4">Your Files</h1>
-          <p className="text-xl text-muted-foreground">Access contracts, documents, and project files</p>
+          <p className="text-xl text-muted-foreground">
+            Access contracts, documents, and project files
+          </p>
         </div>
 
         <Card className="shadow-material mb-8">
           <CardHeader>
             <CardTitle>Storage Overview</CardTitle>
-            <CardDescription>Files are retained for 3 years from upload date</CardDescription>
+            <CardDescription>
+              Files are retained for 3 years from upload date
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
@@ -133,13 +152,16 @@ export default function Files() {
               </div>
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Storage Used</span>
-                <span className="font-semibold">{formatFileSize(storageUsed)}</span>
+                <span className="font-semibold">
+                  {formatFileSize(storageUsed)}
+                </span>
               </div>
             </div>
             <div className="flex items-start gap-2 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
               <AlertTriangle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
               <p className="text-sm text-yellow-600 dark:text-yellow-400">
-                Files automatically expire 3 years after upload. Download important files before expiration.
+                Files automatically expire 3 years after upload. Download
+                important files before expiration.
               </p>
             </div>
           </CardContent>
@@ -154,7 +176,10 @@ export default function Files() {
         ) : (
           <div className="space-y-4">
             {files.map((file) => {
-              const retention = getRetentionStatus(file.created_at, file.expires_at);
+              const retention = getRetentionStatus(
+                file.created_at,
+                file.expires_at,
+              );
               const isExpiringSoon = retention.daysRemaining < 30;
 
               return (
@@ -167,12 +192,18 @@ export default function Files() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-4 mb-2">
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold truncate">{file.file_name}</h3>
+                            <h3 className="font-semibold truncate">
+                              {file.file_name}
+                            </h3>
                             <p className="text-sm text-muted-foreground">
-                              {formatFileSize(file.file_size)} • Uploaded {format(new Date(file.created_at), "MMM d, yyyy")}
+                              {formatFileSize(file.file_size)} • Uploaded{" "}
+                              {format(new Date(file.created_at), "MMM d, yyyy")}
                             </p>
                           </div>
-                          <Button onClick={() => handleDownload(file)} size="sm">
+                          <Button
+                            onClick={() => handleDownload(file)}
+                            size="sm"
+                          >
                             <Download className="mr-2 h-4 w-4" />
                             Download
                           </Button>
@@ -180,15 +211,22 @@ export default function Files() {
                         <div className="space-y-2 mt-4">
                           <div className="flex items-center justify-between text-xs">
                             <span className="text-muted-foreground">
-                              {retention.daysOld} days old • {retention.daysRemaining} days remaining
+                              {retention.daysOld} days old •{" "}
+                              {retention.daysRemaining} days remaining
                             </span>
                             {isExpiringSoon && (
-                              <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20">
+                              <Badge
+                                variant="outline"
+                                className="bg-yellow-500/10 text-yellow-500 border-yellow-500/20"
+                              >
                                 Expiring Soon
                               </Badge>
                             )}
                           </div>
-                          <Progress value={retention.progress} className="h-2" />
+                          <Progress
+                            value={retention.progress}
+                            className="h-2"
+                          />
                         </div>
                       </div>
                     </div>

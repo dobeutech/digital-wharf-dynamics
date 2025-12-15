@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { typeformConfig } from "@/config/typeform";
 import { trackEvent } from "@/lib/mixpanel";
 import { X } from "lucide-react";
@@ -38,7 +44,9 @@ export function TypeformLightbox({
           <div className="flex items-start justify-between">
             <div>
               <DialogTitle className="text-2xl font-bold">{title}</DialogTitle>
-              <DialogDescription className="mt-2">{description}</DialogDescription>
+              <DialogDescription className="mt-2">
+                {description}
+              </DialogDescription>
             </div>
             <Button
               variant="ghost"

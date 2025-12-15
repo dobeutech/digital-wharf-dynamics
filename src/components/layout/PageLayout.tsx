@@ -27,7 +27,12 @@ export function PageLayout({
 
   return (
     <div className={cn("min-h-screen pt-24 pb-20 px-4", className)}>
-      <div className={cn("container mx-auto", maxWidthClasses[maxWidth] || "max-w-7xl")}>
+      <div
+        className={cn(
+          "container mx-auto",
+          maxWidthClasses[maxWidth] || "max-w-7xl",
+        )}
+      >
         {showBreadcrumbs && (
           <div className="mb-6">
             <Breadcrumbs />

@@ -10,7 +10,8 @@ export const Footer = () => {
               DOBEU
             </h3>
             <p className="text-sm text-muted-foreground">
-              Transform your digital presence with cutting-edge web solutions and strategic tech consulting.
+              Transform your digital presence with cutting-edge web solutions
+              and strategic tech consulting.
             </p>
           </div>
 
@@ -18,22 +19,34 @@ export const Footer = () => {
             <h4 className="font-semibold mb-4">Services</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/services" className="text-sm text-muted-foreground hover:text-primary transition-material">
+                <Link
+                  to="/services"
+                  className="text-sm text-muted-foreground hover:text-primary transition-material"
+                >
                   Website Design
                 </Link>
               </li>
               <li>
-                <Link to="/services" className="text-sm text-muted-foreground hover:text-primary transition-material">
+                <Link
+                  to="/services"
+                  className="text-sm text-muted-foreground hover:text-primary transition-material"
+                >
                   Software Development
                 </Link>
               </li>
               <li>
-                <Link to="/services" className="text-sm text-muted-foreground hover:text-primary transition-material">
+                <Link
+                  to="/services"
+                  className="text-sm text-muted-foreground hover:text-primary transition-material"
+                >
                   Consulting
                 </Link>
               </li>
               <li>
-                <Link to="/services" className="text-sm text-muted-foreground hover:text-primary transition-material">
+                <Link
+                  to="/services"
+                  className="text-sm text-muted-foreground hover:text-primary transition-material"
+                >
                   Strategic Planning
                 </Link>
               </li>
@@ -44,17 +57,26 @@ export const Footer = () => {
             <h4 className="font-semibold mb-4">Company</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/about" className="text-sm text-muted-foreground hover:text-primary transition-material">
+                <Link
+                  to="/about"
+                  className="text-sm text-muted-foreground hover:text-primary transition-material"
+                >
                   About Us
                 </Link>
               </li>
               <li>
-                <Link to="/pricing" className="text-sm text-muted-foreground hover:text-primary transition-material">
+                <Link
+                  to="/pricing"
+                  className="text-sm text-muted-foreground hover:text-primary transition-material"
+                >
                   Pricing
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-material">
+                <Link
+                  to="/contact"
+                  className="text-sm text-muted-foreground hover:text-primary transition-material"
+                >
                   Contact
                 </Link>
               </li>
@@ -65,12 +87,18 @@ export const Footer = () => {
             <h4 className="font-semibold mb-4">Legal</h4>
             <ul className="space-y-2">
               <li>
-                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-material">
+                <Link
+                  to="/privacy"
+                  className="text-sm text-muted-foreground hover:text-primary transition-material"
+                >
                   Privacy Policy
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-material">
+                <Link
+                  to="/terms"
+                  className="text-sm text-muted-foreground hover:text-primary transition-material"
+                >
                   Terms of Service
                 </Link>
               </li>

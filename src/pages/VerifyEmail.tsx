@@ -1,10 +1,16 @@
-import { useAuth } from '@/contexts/AuthContext';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
-import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { Mail, CheckCircle, ArrowLeft } from 'lucide-react';
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import { Mail, CheckCircle, ArrowLeft } from "lucide-react";
 
 export default function VerifyEmail() {
   const { user, loading } = useAuth();
@@ -14,14 +20,14 @@ export default function VerifyEmail() {
   // Redirect if not logged in
   useEffect(() => {
     if (!loading && !user) {
-      navigate('/auth');
+      navigate("/auth");
     }
   }, [user, loading, navigate]);
 
   // Mask email for display
-  const maskedEmail = user?.email 
-    ? user.email.replace(/(.{2})(.*)(@.*)/, '$1***$3')
-    : '';
+  const maskedEmail = user?.email
+    ? user.email.replace(/(.{2})(.*)(@.*)/, "$1***$3")
+    : "";
 
   if (loading) {
     return (
@@ -43,12 +49,12 @@ export default function VerifyEmail() {
             <Mail className="w-8 h-8 text-primary" />
           </div>
           <CardTitle className="text-2xl font-bold">
-            {isEmailVerified ? 'Email Verified' : 'Verify Your Email'}
+            {isEmailVerified ? "Email Verified" : "Verify Your Email"}
           </CardTitle>
           <CardDescription>
-            {isEmailVerified 
-              ? 'Your email has been verified successfully'
-              : 'Email verification is handled through Auth0. Please check your inbox for the verification link.'}
+            {isEmailVerified
+              ? "Your email has been verified successfully"
+              : "Email verification is handled through Auth0. Please check your inbox for the verification link."}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
@@ -85,15 +91,12 @@ export default function VerifyEmail() {
           )}
 
           <div className="space-y-3">
-            <Button
-              onClick={() => navigate('/')}
-              className="w-full"
-            >
-              {isEmailVerified ? 'Go to Dashboard' : 'Continue to Dashboard'}
+            <Button onClick={() => navigate("/")} className="w-full">
+              {isEmailVerified ? "Go to Dashboard" : "Continue to Dashboard"}
             </Button>
 
             <Button
-              onClick={() => navigate('/auth')}
+              onClick={() => navigate("/auth")}
               variant="ghost"
               className="w-full text-muted-foreground"
             >
@@ -103,8 +106,11 @@ export default function VerifyEmail() {
           </div>
 
           <p className="text-xs text-center text-muted-foreground">
-            If you continue to have issues, please contact{' '}
-            <a href="mailto:devops@dobeu.cloud" className="text-primary hover:underline">
+            If you continue to have issues, please contact{" "}
+            <a
+              href="mailto:devops@dobeu.cloud"
+              className="text-primary hover:underline"
+            >
               support
             </a>
           </p>

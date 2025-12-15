@@ -21,8 +21,8 @@ export default function Home() {
       <Services />
       <Work />
       <Pricing />
-      <TypeformFloatingButton 
-        position="bottom-right" 
+      <TypeformFloatingButton
+        position="bottom-right"
         source="home-page"
         title="Let's Talk"
         description="Have a project in mind? Let's discuss how we can help bring your vision to life."

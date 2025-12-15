@@ -23,29 +23,29 @@ DOBEU Tech Solutions is a premium digital services platform offering web develop
 
 ### Brand Colors
 
-| Color | Hex | Usage |
-|-------|-----|-------|
+| Color             | Hex       | Usage               |
+| ----------------- | --------- | ------------------- |
 | 🟡 Electric Lemon | `#FACC15` | Primary brand color |
-| 🔵 Azure Tech | `#3B82F6` | Technology accent |
-| 🟣 Deep Violet | `#A855F7` | Premium accent |
-| 💖 Neon Rose | `#EC4899` | Highlight accent |
-| ⬛ Void Black | `#000000` | Dark backgrounds |
-| ⬜ Stark White | `#FFFFFF` | Light backgrounds |
+| 🔵 Azure Tech     | `#3B82F6` | Technology accent   |
+| 🟣 Deep Violet    | `#A855F7` | Premium accent      |
+| 💖 Neon Rose      | `#EC4899` | Highlight accent    |
+| ⬛ Void Black     | `#000000` | Dark backgrounds    |
+| ⬜ Stark White    | `#FFFFFF` | Light backgrounds   |
 
 ## Tech Stack
 
-| Category | Technologies |
-|----------|-------------|
-| **Frontend** | React 18, TypeScript 5, Vite |
-| **Styling** | Tailwind CSS, Shadcn/ui |
-| **Animation** | Framer Motion |
-| **Backend** | Netlify Functions (Node) |
-| **Auth** | Auth0 (SPA + JWT) |
-| **Database** | MongoDB Atlas |
-| **Files** | MongoDB GridFS |
-| **Hosting** | Netlify (Edge, CDN, Functions) |
-| **Testing** | Vitest (Unit), Playwright (E2E) |
-| **Analytics** | Google Analytics, Mixpanel |
+| Category      | Technologies                    |
+| ------------- | ------------------------------- |
+| **Frontend**  | React 18, TypeScript 5, Vite    |
+| **Styling**   | Tailwind CSS, Shadcn/ui         |
+| **Animation** | Framer Motion                   |
+| **Backend**   | Netlify Functions (Node)        |
+| **Auth**      | Auth0 (SPA + JWT)               |
+| **Database**  | MongoDB Atlas                   |
+| **Files**     | MongoDB GridFS                  |
+| **Hosting**   | Netlify (Edge, CDN, Functions)  |
+| **Testing**   | Vitest (Unit), Playwright (E2E) |
+| **Analytics** | Google Analytics, Mixpanel      |
 
 ## Quick Start
 
@@ -106,17 +106,19 @@ The Intercom chat widget is integrated for customer support. If the widget is no
 #### Installation
 
 1. **Install the Intercom SDK package:**
+
    ```bash
    npm install @intercom/messenger-js-sdk
    ```
 
 2. **Import and initialize in your component:**
+
    ```typescript
-   import Intercom from '@intercom/messenger-js-sdk';
+   import Intercom from "@intercom/messenger-js-sdk";
 
    // Initialize Intercom
    Intercom({
-     app_id: 'xu0gfiqb',
+     app_id: "xu0gfiqb",
    });
    ```
 
@@ -125,9 +127,11 @@ The Intercom chat widget is integrated for customer support. If the widget is no
 **Issue: Intercom widget not appearing**
 
 1. **Verify the package is installed:**
+
    ```bash
    npm list @intercom/messenger-js-sdk
    ```
+
    If not installed, run: `npm install @intercom/messenger-js-sdk`
 
 2. **Check the implementation:**
@@ -153,6 +157,7 @@ The Intercom chat widget is integrated for customer support. If the widget is no
    ```
 
 **Current Implementation Location:**
+
 - File: `src/components/Analytics.tsx`
 - The Intercom initialization happens automatically when the Analytics component mounts
 - User data is updated when a user logs in
@@ -164,13 +169,15 @@ Twilio SMS verification is integrated to verify phone numbers for new OAuth user
 #### Setup
 
 1. **Install Twilio SDK:**
+
    ```bash
    npm install twilio
    ```
 
 2. **Configure Environment Variables:**
-   
+
    Add these to your Netlify environment variables:
+
    ```env
    TWILIO_ACCOUNT_SID=your_twilio_account_sid
    TWILIO_AUTH_TOKEN=your_twilio_auth_token
@@ -199,12 +206,13 @@ Twilio SMS verification is integrated to verify phone numbers for new OAuth user
 
 3. **Database Schema:**
    The `profiles` collection in MongoDB includes:
+
    ```typescript
    {
-     auth_user_id: string;      // Auth0 user ID
-     phone: string;              // Normalized phone number (10 digits)
-     phone_verified: boolean;   // Verification status
-     phone_verified_at: string;  // ISO timestamp
+     auth_user_id: string; // Auth0 user ID
+     phone: string; // Normalized phone number (10 digits)
+     phone_verified: boolean; // Verification status
+     phone_verified_at: string; // ISO timestamp
      username: string;
      created_at: string;
      updated_at: string;
@@ -221,6 +229,7 @@ Twilio SMS verification is integrated to verify phone numbers for new OAuth user
 #### Implementation Details
 
 **Files:**
+
 - `netlify/functions/send-sms-verification.ts` - Sends SMS code
 - `netlify/functions/verify-sms-code.ts` - Verifies SMS code
 - `netlify/functions/check-phone-verification.ts` - Checks status
@@ -228,11 +237,13 @@ Twilio SMS verification is integrated to verify phone numbers for new OAuth user
 - `src/contexts/AuthContext.tsx` - Auto-redirects to verification if needed
 
 **Phone Number Format:**
+
 - Accepts US phone numbers only
 - Automatically normalizes to 10 digits
 - Formats as `+1XXXXXXXXXX` for Twilio
 
 **Security Features:**
+
 - Rate limiting on code requests
 - Code expiration (10 minutes)
 - Maximum attempt limits (5 attempts)
@@ -244,6 +255,7 @@ Twilio SMS verification is integrated to verify phone numbers for new OAuth user
 **Issue: SMS codes not being sent**
 
 1. **Verify Twilio credentials:**
+
    ```bash
    # Check environment variables in Netlify
    netlify env:list
@@ -279,11 +291,13 @@ The Netlify CLI must be properly linked to your Auth0 tenant for authentication 
 #### Verify Netlify CLI Link
 
 1. **Check if Netlify CLI is linked:**
+
    ```bash
    netlify status
    ```
 
 2. **Link to the project (if not already linked):**
+
    ```bash
    netlify link --id=dfeefdc2-92aa-4415-baf6-42e60dfa6328
    ```
@@ -312,18 +326,19 @@ The Netlify CLI must be properly linked to your Auth0 tenant for authentication 
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Build for production |
-| `npm run preview` | Preview production build |
-| `npm run lint` | Run ESLint |
-| `npm run test` | Run unit tests |
-| `npm run test:e2e` | Run E2E tests |
+| Command            | Description              |
+| ------------------ | ------------------------ |
+| `npm run dev`      | Start development server |
+| `npm run build`    | Build for production     |
+| `npm run preview`  | Preview production build |
+| `npm run lint`     | Run ESLint               |
+| `npm run test`     | Run unit tests           |
+| `npm run test:e2e` | Run E2E tests            |
 
 ## Features
 
 ### Core Features
+
 - ✅ **Responsive Design** - Mobile, tablet, and desktop optimized
 - ✅ **Multi-language Support** - English, Spanish, French
 - ✅ **Theme System** - Light, dark, and system modes
@@ -332,6 +347,7 @@ The Netlify CLI must be properly linked to your Auth0 tenant for authentication 
 - ✅ **PWA Ready** - Offline support and installable
 
 ### Security
+
 - ✅ CSRF protection
 - ✅ Security headers (HSTS, CSP, X-Frame-Options)
 - ✅ Input validation and sanitization
@@ -339,6 +355,7 @@ The Netlify CLI must be properly linked to your Auth0 tenant for authentication 
 - ✅ Secure authentication with Auth0
 
 ### Performance
+
 - ✅ Code splitting and lazy loading
 - ✅ Image optimization
 - ✅ CDN caching via Netlify
@@ -376,26 +393,28 @@ Access the admin portal at `/admin` with admin credentials.
 
 ### Admin Features
 
-| Route | Feature |
-|-------|---------|
-| `/admin` | Dashboard overview |
-| `/admin/services` | Service catalog management |
-| `/admin/projects` | Client projects |
-| `/admin/users` | User management |
-| `/admin/newsletter` | Newsletter management |
-| `/admin/ccpa` | CCPA request handling |
-| `/admin/contacts` | Contact submissions |
-| `/admin/audit-logs` | Activity audit trail |
-| `/admin/analytics` | Site analytics |
+| Route               | Feature                    |
+| ------------------- | -------------------------- |
+| `/admin`            | Dashboard overview         |
+| `/admin/services`   | Service catalog management |
+| `/admin/projects`   | Client projects            |
+| `/admin/users`      | User management            |
+| `/admin/newsletter` | Newsletter management      |
+| `/admin/ccpa`       | CCPA request handling      |
+| `/admin/contacts`   | Contact submissions        |
+| `/admin/audit-logs` | Activity audit trail       |
+| `/admin/analytics`  | Site analytics             |
 
 ## Internationalization
 
 The site supports three languages:
+
 - 🇺🇸 English (default)
 - 🇪🇸 Spanish (Español)
 - 🇫🇷 French (Français)
 
 User language preference is stored in:
+
 - Browser localStorage
 - URL parameter (`?lang=es`)
 - Database (for logged-in users)
@@ -421,11 +440,11 @@ npx netlify deploy --prod
 
 ## Documentation
 
-| Document | Description |
-|----------|-------------|
-| [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md) | Pre-deployment checklist |
-| [docs/monitoring-setup.md](./docs/monitoring-setup.md) | Monitoring configuration |
-| [docs/disaster-recovery.md](./docs/disaster-recovery.md) | DR procedures |
+| Document                                                 | Description              |
+| -------------------------------------------------------- | ------------------------ |
+| [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md)     | Pre-deployment checklist |
+| [docs/monitoring-setup.md](./docs/monitoring-setup.md)   | Monitoring configuration |
+| [docs/disaster-recovery.md](./docs/disaster-recovery.md) | DR procedures            |
 
 ## Contributing
 

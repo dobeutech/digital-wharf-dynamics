@@ -3,22 +3,28 @@
  * Saves form data to localStorage to prevent data loss
  */
 
-const STORAGE_PREFIX = 'form_';
+const STORAGE_PREFIX = "form_";
 
 /**
  * Save form data to localStorage
  */
-export function saveFormData(formId: string, data: Record<string, unknown>): void {
-  if (typeof window === 'undefined') return;
-  
+export function saveFormData(
+  formId: string,
+  data: Record<string, unknown>,
+): void {
+  if (typeof window === "undefined") return;
+
   try {
     const key = `${STORAGE_PREFIX}${formId}`;
-    localStorage.setItem(key, JSON.stringify({
-      data,
-      timestamp: Date.now(),
-    }));
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        data,
+        timestamp: Date.now(),
+      }),
+    );
   } catch (error) {
-    console.warn('Failed to save form data:', error);
+    console.warn("Failed to save form data:", error);
   }
 }
 
@@ -26,8 +32,8 @@ export function saveFormData(formId: string, data: Record<string, unknown>): voi
  * Load form data from localStorage
  */
 export function loadFormData(formId: string): Record<string, unknown> | null {
-  if (typeof window === 'undefined') return null;
-  
+  if (typeof window === "undefined") return null;
+
   try {
     const key = `${STORAGE_PREFIX}${formId}`;
     const stored = localStorage.getItem(key);
@@ -43,7 +49,7 @@ export function loadFormData(formId: string): Record<string, unknown> | null {
 
     return parsed.data;
   } catch (error) {
-    console.warn('Failed to load form data:', error);
+    console.warn("Failed to load form data:", error);
     return null;
   }
 }
@@ -52,13 +58,13 @@ export function loadFormData(formId: string): Record<string, unknown> | null {
  * Clear form data from localStorage
  */
 export function clearFormData(formId: string): void {
-  if (typeof window === 'undefined') return;
-  
+  if (typeof window === "undefined") return;
+
   try {
     const key = `${STORAGE_PREFIX}${formId}`;
     localStorage.removeItem(key);
   } catch (error) {
-    console.warn('Failed to clear form data:', error);
+    console.warn("Failed to clear form data:", error);
   }
 }
 
@@ -66,8 +72,8 @@ export function clearFormData(formId: string): void {
  * Clear all form data
  */
 export function clearAllFormData(): void {
-  if (typeof window === 'undefined') return;
-  
+  if (typeof window === "undefined") return;
+
   try {
     const keys = Object.keys(localStorage);
     keys.forEach((key) => {
@@ -76,7 +82,6 @@ export function clearAllFormData(): void {
       }
     });
   } catch (error) {
-    console.warn('Failed to clear all form data:', error);
+    console.warn("Failed to clear all form data:", error);
   }
 }
-

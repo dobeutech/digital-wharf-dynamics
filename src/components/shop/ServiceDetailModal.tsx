@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
@@ -26,10 +33,19 @@ interface ServiceDetailModalProps {
   service: Service | null;
   isOpen: boolean;
   onClose: () => void;
-  onPurchase: (serviceId: string, totalAmount: number, selectedAddOns: AddOn[]) => void;
+  onPurchase: (
+    serviceId: string,
+    totalAmount: number,
+    selectedAddOns: AddOn[],
+  ) => void;
 }
 
-export function ServiceDetailModal({ service, isOpen, onClose, onPurchase }: ServiceDetailModalProps) {
+export function ServiceDetailModal({
+  service,
+  isOpen,
+  onClose,
+  onPurchase,
+}: ServiceDetailModalProps) {
   const [selectedAddOns, setSelectedAddOns] = useState<Set<number>>(new Set());
   const navigate = useNavigate();
 
@@ -63,7 +79,9 @@ export function ServiceDetailModal({ service, isOpen, onClose, onPurchase }: Ser
   };
 
   const handlePurchase = () => {
-    const addOns = Array.from(selectedAddOns).map((index) => service.add_ons[index]);
+    const addOns = Array.from(selectedAddOns).map(
+      (index) => service.add_ons[index],
+    );
     onPurchase(service.id, calculateTotal(), addOns);
     setSelectedAddOns(new Set());
     onClose();
@@ -85,12 +103,17 @@ export function ServiceDetailModal({ service, isOpen, onClose, onPurchase }: Ser
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-2">
-            <Badge variant="outline" className={getCategoryColor(service.category)}>
+            <Badge
+              variant="outline"
+              className={getCategoryColor(service.category)}
+            >
               {service.category}
             </Badge>
           </div>
           <DialogTitle className="text-2xl">{service.name}</DialogTitle>
-          <DialogDescription className="text-base">{service.description}</DialogDescription>
+          <DialogDescription className="text-base">
+            {service.description}
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
@@ -123,9 +146,13 @@ export function ServiceDetailModal({ service, isOpen, onClose, onPurchase }: Ser
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-1">
                         <p className="font-medium">{addon.name}</p>
-                        <p className="text-primary font-semibold">+${addon.price.toLocaleString()}</p>
+                        <p className="text-primary font-semibold">
+                          +${addon.price.toLocaleString()}
+                        </p>
                       </div>
-                      <p className="text-sm text-muted-foreground">{addon.description}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {addon.description}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -138,12 +165,11 @@ export function ServiceDetailModal({ service, isOpen, onClose, onPurchase }: Ser
               <div className="flex items-center justify-between text-lg">
                 <span className="font-semibold">Total Price:</span>
                 <span className="text-2xl font-bold text-primary">
-                  {isConsulting 
+                  {isConsulting
                     ? `$${calculateTotal().toLocaleString()}/hr`
-                    : isRetainer 
+                    : isRetainer
                       ? `$${calculateTotal().toLocaleString()}/mo`
-                      : `$${calculateTotal().toLocaleString()}`
-                  }
+                      : `$${calculateTotal().toLocaleString()}`}
                 </span>
               </div>
             </div>

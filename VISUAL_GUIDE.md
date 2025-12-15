@@ -84,7 +84,7 @@ This guide uses diagrams and flowcharts to explain how the optimizations and aut
        ▼
    Total: 7 round trips
    Time: ~1.0 second
-   
+
    ✅ 60% FASTER!
 ```
 
@@ -102,7 +102,7 @@ User Action 1:
    ▲                                   │
    │         "Yes, you are"            │
    └───────────────────────────────────┘
-   
+
    Time: 150ms
 
 User Action 2 (same user):
@@ -112,7 +112,7 @@ User Action 2 (same user):
    ▲                                   │
    │         "Yes, you are"            │
    └───────────────────────────────────┘
-   
+
    Time: 150ms (again!)
 
 User Action 3 (same user):
@@ -122,9 +122,9 @@ User Action 3 (same user):
    ▲                                   │
    │         "Yes, you are"            │
    └───────────────────────────────────┘
-   
+
    Time: 150ms (again!)
-   
+
 Total: 450ms for 3 checks
 ```
 
@@ -145,7 +145,7 @@ User Action 1:
                  │ Cache  │ ◄── Remember: "User is admin"
                  │(Memory)│     (Valid for 5 minutes)
                  └────────┘
-   
+
    Time: 150ms
 
 User Action 2 (same user):
@@ -155,7 +155,7 @@ User Action 2 (same user):
    ▲                             └────────┘
    │         "Yes, you are"           │
    └──────────────────────────────────┘
-   
+
    Time: 50ms ✅ (No database!)
 
 User Action 3 (same user):
@@ -165,9 +165,9 @@ User Action 3 (same user):
    ▲                             └────────┘
    │         "Yes, you are"           │
    └──────────────────────────────────┘
-   
+
    Time: 50ms ✅ (No database!)
-   
+
 Total: 250ms for 3 checks
 
 ✅ 44% FASTER!

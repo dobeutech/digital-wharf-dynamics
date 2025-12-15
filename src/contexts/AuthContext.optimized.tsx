@@ -1,25 +1,44 @@
-import { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
-import { User, Session, AuthError } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
-import { useNavigate } from 'react-router-dom';
-import { trackEvent, identifyUser, resetUser, MIXPANEL_EVENTS, trackFunnelStep } from '@/lib/mixpanel';
-import { identifyPostHogUser, resetPostHogUser, trackFunnelStep as trackPostHogFunnel, FUNNEL_STEPS, reloadFeatureFlags } from '@/lib/posthog';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+} from "react";
+import { User, Session, AuthError } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import {
+  trackEvent,
+  identifyUser,
+  resetUser,
+  MIXPANEL_EVENTS,
+  trackFunnelStep,
+} from "@/lib/mixpanel";
+import {
+  identifyPostHogUser,
+  resetPostHogUser,
+  trackFunnelStep as trackPostHogFunnel,
+  FUNNEL_STEPS,
+  reloadFeatureFlags,
+} from "@/lib/posthog";
 
 /**
  * PERFORMANCE OPTIMIZATIONS APPLIED:
- * 
+ *
  * 1. useCallback for all functions - Prevents re-creation on every render
  *    Trade-off: Slightly more complex code, but prevents child re-renders
- * 
+ *
  * 2. useMemo for context value - Prevents object re-creation
  *    Trade-off: More memory for memoization, but better render performance
- * 
+ *
  * 3. Batched analytics calls - Reduces overhead from multiple tracking calls
  *    Trade-off: Slight delay in analytics, but better UX performance
- * 
+ *
  * 4. Error boundaries for analytics - Prevents analytics failures from breaking auth
  *    Trade-off: Silent failures in analytics, but auth remains functional
- * 
+ *
  * 5. Debounced session checks - Prevents rapid successive auth state changes
  *    Trade-off: Slight delay in auth state updates, but prevents race conditions
  */
@@ -27,8 +46,15 @@ import { identifyPostHogUser, resetPostHogUser, trackFunnelStep as trackPostHogF
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
-  signUp: (email: string, password: string, username: string) => Promise<{ error: AuthError | null }>;
+  signIn: (
+    email: string,
+    password: string,
+  ) => Promise<{ error: AuthError | null }>;
+  signUp: (
+    email: string,
+    password: string,
+    username: string,
+  ) => Promise<{ error: AuthError | null }>;
   signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   resendVerificationEmail: () => Promise<{ error: AuthError | Error | null }>;
@@ -42,7 +68,7 @@ const safeAnalytics = (fn: () => void) => {
   try {
     fn();
   } catch (error) {
-    console.error('Analytics error:', error);
+    console.error("Analytics error:", error);
     // Don't throw - analytics failures shouldn't break auth
   }
 };
@@ -55,32 +81,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     // Set up auth state listener first
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (event === 'SIGNED_IN' && session) {
-          // Check if email is verified before redirecting
-          if (session.user.email_confirmed_at) {
-            navigate('/');
-          } else {
-            navigate('/verify-email');
-          }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+
+      if (event === "SIGNED_IN" && session) {
+        // Check if email is verified before redirecting
+        if (session.user.email_confirmed_at) {
+          navigate("/");
+        } else {
+          navigate("/verify-email");
         }
       }
-    );
+    });
 
     // Then check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
-      
+
       // Identify user in analytics if session exists
       if (session?.user) {
         safeAnalytics(() => {
-          identifyUser(session.user.id, { 
+          identifyUser(session.user.id, {
             email: session.user.email,
             created_at: session.user.created_at,
           });
@@ -97,64 +123,67 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, [navigate]);
 
   // Memoize all auth functions to prevent unnecessary re-renders
-  const signUp = useCallback(async (email: string, password: string, username: string) => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          username: username
-        }
-      }
-    });
+  const signUp = useCallback(
+    async (email: string, password: string, username: string) => {
+      const redirectUrl = `${window.location.origin}/`;
 
-    if (!error && data.user) {
-      // Batch analytics calls
-      safeAnalytics(() => {
-        trackEvent(MIXPANEL_EVENTS.SIGN_UP, {
-          user_id: data.user.id,
-          email: email,
-          username: username,
-        });
-        identifyUser(data.user.id, { email, username });
-        trackFunnelStep('FUNNEL_SIGNUP_COMPLETE', { user_id: data.user.id });
-        trackPostHogFunnel(FUNNEL_STEPS.SIGNUP_COMPLETE, { user_id: data.user.id });
-        identifyPostHogUser(data.user.id, { email, username });
-        reloadFeatureFlags();
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: redirectUrl,
+          data: {
+            username: username,
+          },
+        },
       });
 
-      // Create profile entry
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          auth_user_id: data.user.id,
-          username: username
+      if (!error && data.user) {
+        // Batch analytics calls
+        safeAnalytics(() => {
+          trackEvent(MIXPANEL_EVENTS.SIGN_UP, {
+            user_id: data.user.id,
+            email: email,
+            username: username,
+          });
+          identifyUser(data.user.id, { email, username });
+          trackFunnelStep("FUNNEL_SIGNUP_COMPLETE", { user_id: data.user.id });
+          trackPostHogFunnel(FUNNEL_STEPS.SIGNUP_COMPLETE, {
+            user_id: data.user.id,
+          });
+          identifyPostHogUser(data.user.id, { email, username });
+          reloadFeatureFlags();
         });
-      
-      if (profileError) {
-        return { error: profileError };
-      }
-    }
 
-    return { error };
-  }, []); // No dependencies - function is stable
+        // Create profile entry
+        const { error: profileError } = await supabase.from("profiles").insert({
+          auth_user_id: data.user.id,
+          username: username,
+        });
+
+        if (profileError) {
+          return { error: profileError };
+        }
+      }
+
+      return { error };
+    },
+    [],
+  ); // No dependencies - function is stable
 
   const signIn = useCallback(async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    
+
     if (!error && data.user) {
       safeAnalytics(() => {
         trackEvent(MIXPANEL_EVENTS.SIGN_IN, { email });
         identifyUser(data.user.id, { email });
       });
     }
-    
+
     return { error };
   }, []);
 
@@ -162,12 +191,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     safeAnalytics(() => {
       trackEvent(MIXPANEL_EVENTS.SIGN_IN_GOOGLE);
     });
-    
+
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/`
-      }
+        redirectTo: `${window.location.origin}/`,
+      },
     });
     return { error };
   }, []);
@@ -178,50 +207,58 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       resetUser();
       resetPostHogUser();
     });
-    
+
     await supabase.auth.signOut();
-    navigate('/auth');
+    navigate("/auth");
   }, [navigate]);
 
   const resendVerificationEmail = useCallback(async () => {
     if (!user?.email) {
-      return { error: new Error('No email address found') };
+      return { error: new Error("No email address found") };
     }
 
     const { error } = await supabase.auth.resend({
-      type: 'signup',
+      type: "signup",
       email: user.email,
       options: {
-        emailRedirectTo: `${window.location.origin}/`
-      }
+        emailRedirectTo: `${window.location.origin}/`,
+      },
     });
 
     return { error };
   }, [user]);
 
   // Memoize context value to prevent re-creating object on every render
-  const value = useMemo(() => ({
-    user,
-    session,
-    signIn,
-    signUp,
-    signInWithGoogle,
-    signOut,
-    resendVerificationEmail,
-    loading
-  }), [user, session, signIn, signUp, signInWithGoogle, signOut, resendVerificationEmail, loading]);
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      session,
+      signIn,
+      signUp,
+      signInWithGoogle,
+      signOut,
+      resendVerificationEmail,
+      loading,
+    }),
+    [
+      user,
+      session,
+      signIn,
+      signUp,
+      signInWithGoogle,
+      signOut,
+      resendVerificationEmail,
+      loading,
+    ],
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

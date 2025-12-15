@@ -1,7 +1,14 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertTriangle, RefreshCw, Home } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { Component, ErrorInfo, ReactNode } from "react";
+import { AlertTriangle, RefreshCw, Home } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface Props {
   children: ReactNode;
@@ -36,7 +43,7 @@ export class ErrorBoundary extends Component<Props, State> {
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error to console in development
     if (import.meta.env.DEV) {
-      console.error('ErrorBoundary caught an error:', error, errorInfo);
+      console.error("ErrorBoundary caught an error:", error, errorInfo);
     }
 
     // Call optional error handler
@@ -64,7 +71,7 @@ export class ErrorBoundary extends Component<Props, State> {
   };
 
   handleGoHome = () => {
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   render() {
@@ -82,7 +89,8 @@ export class ErrorBoundary extends Component<Props, State> {
                 <CardTitle>Something went wrong</CardTitle>
               </div>
               <CardDescription>
-                An unexpected error occurred. Please try again or contact support if the problem persists.
+                An unexpected error occurred. Please try again or contact
+                support if the problem persists.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -105,14 +113,26 @@ export class ErrorBoundary extends Component<Props, State> {
               )}
             </CardContent>
             <CardFooter className="flex gap-2">
-              <Button onClick={this.handleReset} variant="outline" className="flex-1">
+              <Button
+                onClick={this.handleReset}
+                variant="outline"
+                className="flex-1"
+              >
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Try Again
               </Button>
-              <Button onClick={this.handleReload} variant="outline" className="flex-1">
+              <Button
+                onClick={this.handleReload}
+                variant="outline"
+                className="flex-1"
+              >
                 Reload Page
               </Button>
-              <Button onClick={this.handleGoHome} variant="default" className="flex-1">
+              <Button
+                onClick={this.handleGoHome}
+                variant="default"
+                className="flex-1"
+              >
                 <Home className="h-4 w-4 mr-2" />
                 Go Home
               </Button>
@@ -125,4 +145,3 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
-

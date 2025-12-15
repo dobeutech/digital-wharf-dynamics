@@ -4,7 +4,8 @@ import { create, getNumericDate } from "https://deno.land/x/djwt@v3.0.2/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
 type IntercomJwtResponse =
@@ -18,12 +19,19 @@ serve(async (req) => {
   }
 
   try {
-    const intercomSecret = Deno.env.get("INTERCOM_IDENTITY_VERIFICATION_SECRET");
+    const intercomSecret = Deno.env.get(
+      "INTERCOM_IDENTITY_VERIFICATION_SECRET",
+    );
     if (!intercomSecret) {
       console.error("INTERCOM_IDENTITY_VERIFICATION_SECRET not configured");
       return new Response(
-        JSON.stringify({ error: "Intercom identity verification is not configured" } satisfies IntercomJwtResponse),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        JSON.stringify({
+          error: "Intercom identity verification is not configured",
+        } satisfies IntercomJwtResponse),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -34,8 +42,13 @@ serve(async (req) => {
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) {
       return new Response(
-        JSON.stringify({ error: "Authentication required" } satisfies IntercomJwtResponse),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        JSON.stringify({
+          error: "Authentication required",
+        } satisfies IntercomJwtResponse),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -43,12 +56,20 @@ serve(async (req) => {
       global: { headers: { Authorization: authHeader } },
     });
 
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
     if (userError || !user) {
       console.error("User auth error:", userError);
       return new Response(
-        JSON.stringify({ error: "Authentication required" } satisfies IntercomJwtResponse),
-        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        JSON.stringify({
+          error: "Authentication required",
+        } satisfies IntercomJwtResponse),
+        {
+          status: 401,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        },
       );
     }
 
@@ -75,16 +96,24 @@ serve(async (req) => {
     const token = await create({ alg: "HS256", typ: "JWT" }, payload, key);
 
     return new Response(
-      JSON.stringify({ token, expires_in: expiresInSeconds } satisfies IntercomJwtResponse),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      JSON.stringify({
+        token,
+        expires_in: expiresInSeconds,
+      } satisfies IntercomJwtResponse),
+      {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("intercom-jwt error:", error);
     return new Response(
       JSON.stringify({ error: message } satisfies IntercomJwtResponse),
-      { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+      {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 });
-

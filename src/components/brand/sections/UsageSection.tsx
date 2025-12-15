@@ -6,7 +6,8 @@ export function UsageSection() {
       <div>
         <h2 className="text-3xl font-bold mb-2">Usage Guidelines</h2>
         <p className="text-muted-foreground">
-          Follow these guidelines to maintain brand consistency across all applications.
+          Follow these guidelines to maintain brand consistency across all
+          applications.
         </p>
       </div>
 

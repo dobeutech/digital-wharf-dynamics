@@ -71,7 +71,9 @@ export default function AdminNewsletter() {
                   <div className="flex-1">
                     <CardTitle className="text-xl mb-2">{post.title}</CardTitle>
                     {post.excerpt && (
-                      <p className="text-muted-foreground text-sm">{post.excerpt}</p>
+                      <p className="text-muted-foreground text-sm">
+                        {post.excerpt}
+                      </p>
                     )}
                   </div>
                   <div className="flex gap-2">
@@ -80,7 +82,9 @@ export default function AdminNewsletter() {
                     ) : (
                       <Badge variant="outline">Draft</Badge>
                     )}
-                    {post.is_public && <Badge variant="secondary">Public</Badge>}
+                    {post.is_public && (
+                      <Badge variant="secondary">Public</Badge>
+                    )}
                   </div>
                 </div>
               </CardHeader>
@@ -88,9 +92,15 @@ export default function AdminNewsletter() {
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-muted-foreground">
                     {post.published_at ? (
-                      <span>Published: {new Date(post.published_at).toLocaleDateString()}</span>
+                      <span>
+                        Published:{" "}
+                        {new Date(post.published_at).toLocaleDateString()}
+                      </span>
                     ) : (
-                      <span>Created: {new Date(post.created_at).toLocaleDateString()}</span>
+                      <span>
+                        Created:{" "}
+                        {new Date(post.created_at).toLocaleDateString()}
+                      </span>
                     )}
                   </div>
                   <Button variant="outline" size="sm" asChild>
@@ -108,7 +118,9 @@ export default function AdminNewsletter() {
         {posts.length === 0 && (
           <Card className="shadow-material">
             <CardContent className="py-12 text-center">
-              <p className="text-muted-foreground mb-4">No newsletter posts yet</p>
+              <p className="text-muted-foreground mb-4">
+                No newsletter posts yet
+              </p>
               <Button asChild>
                 <Link to="/admin/newsletter/new">
                   <Plus className="mr-2 h-4 w-4" />

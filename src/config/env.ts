@@ -10,8 +10,8 @@ interface EnvConfig {
 }
 
 const optionalEnvVars = [
-  'VITE_SUPABASE_URL',
-  'VITE_SUPABASE_PUBLISHABLE_KEY',
+  "VITE_SUPABASE_URL",
+  "VITE_SUPABASE_PUBLISHABLE_KEY",
 ] as const;
 
 /**
@@ -23,7 +23,7 @@ export function validateEnv(): EnvConfig {
 
   for (const key of optionalEnvVars) {
     const value = import.meta.env[key];
-    if (value && value.trim() !== '') {
+    if (value && value.trim() !== "") {
       config[key] = value;
     }
   }
@@ -31,23 +31,30 @@ export function validateEnv(): EnvConfig {
   // Warn if Supabase variables are missing (but don't throw)
   const hasUrl = !!config.VITE_SUPABASE_URL;
   const hasKey = !!config.VITE_SUPABASE_PUBLISHABLE_KEY;
-  
+
   if (!hasUrl || !hasKey) {
     console.warn(
-      'Supabase environment variables are not set. ' +
-      'Supabase Realtime features will be disabled. ' +
-      'Note: This application uses MongoDB + Auth0 for data/auth. Supabase is optional for Realtime only.'
+      "Supabase environment variables are not set. " +
+        "Supabase Realtime features will be disabled. " +
+        "Note: This application uses MongoDB + Auth0 for data/auth. Supabase is optional for Realtime only.",
     );
   }
 
   // Validate Supabase URL format if provided
-  if (config.VITE_SUPABASE_URL && !config.VITE_SUPABASE_URL.startsWith('https://')) {
-    console.warn('VITE_SUPABASE_URL should start with https://');
+  if (
+    config.VITE_SUPABASE_URL &&
+    !config.VITE_SUPABASE_URL.startsWith("https://")
+  ) {
+    console.warn("VITE_SUPABASE_URL should start with https://");
   }
 
   // Validate Supabase key format if provided
-  if (config.VITE_SUPABASE_PUBLISHABLE_KEY && !config.VITE_SUPABASE_PUBLISHABLE_KEY.startsWith('eyJ') && !config.VITE_SUPABASE_PUBLISHABLE_KEY.startsWith('sb_')) {
-    console.warn('VITE_SUPABASE_PUBLISHABLE_KEY format may be incorrect');
+  if (
+    config.VITE_SUPABASE_PUBLISHABLE_KEY &&
+    !config.VITE_SUPABASE_PUBLISHABLE_KEY.startsWith("eyJ") &&
+    !config.VITE_SUPABASE_PUBLISHABLE_KEY.startsWith("sb_")
+  ) {
+    console.warn("VITE_SUPABASE_PUBLISHABLE_KEY format may be incorrect");
   }
 
   return config as EnvConfig;
@@ -73,4 +80,3 @@ export const isProd = import.meta.env.PROD;
  * Get the current mode (development, production, etc.)
  */
 export const mode = import.meta.env.MODE;
-

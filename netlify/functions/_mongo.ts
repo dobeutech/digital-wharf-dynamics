@@ -1,10 +1,10 @@
-import { MongoClient, ServerApiVersion } from 'mongodb';
+import { MongoClient, ServerApiVersion } from "mongodb";
 
 let clientPromise: Promise<MongoClient> | null = null;
 
 function requireEnv(name: string): string {
   const val = process.env[name];
-  if (!val || val.trim() === '') {
+  if (!val || val.trim() === "") {
     throw new Error(`Missing required environment variable: ${name}`);
   }
   return val;
@@ -13,7 +13,7 @@ function requireEnv(name: string): string {
 export async function getMongoClient(): Promise<MongoClient> {
   if (clientPromise) return clientPromise;
 
-  const uri = requireEnv('MONGODB_URI');
+  const uri = requireEnv("MONGODB_URI");
 
   // Do NOT log uri; it contains secrets.
   const client = new MongoClient(uri, {
@@ -33,8 +33,6 @@ export async function getMongoClient(): Promise<MongoClient> {
 
 export async function getMongoDb() {
   const client = await getMongoClient();
-  const dbName = process.env.MONGODB_DB_NAME?.trim() || 'app';
+  const dbName = process.env.MONGODB_DB_NAME?.trim() || "app";
   return client.db(dbName);
 }
-
-

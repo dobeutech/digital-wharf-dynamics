@@ -2,36 +2,37 @@
 # https://dobeu.net
 
 [build]
-  command = "npm run build"
+  command = "npm ci --include=dev && npm run build"
   publish = "dist"
   functions = "netlify/functions"
 
 [build.environment]
   NODE_VERSION = "20"
-  NPM_FLAGS = "--legacy-peer-deps"
+  NPM_FLAGS = "--include=dev"
+  NODE_ENV = ""
 
 # Production context
 [context.production]
-  command = "npm run build"
+  command = "npm ci --include=dev && npm run build"
 
 [context.production.environment]
-  NODE_ENV = "production"
+  NODE_ENV = ""
   VITE_APP_ENV = "production"
 
 # Deploy preview context
 [context.deploy-preview]
-  command = "npm run build"
+  command = "npm ci --include=dev && npm run build"
 
 [context.deploy-preview.environment]
-  NODE_ENV = "production"
+  NODE_ENV = ""
   VITE_APP_ENV = "preview"
 
 # Branch deploy context  
 [context.branch-deploy]
-  command = "npm run build"
+  command = "npm ci --include=dev && npm run build"
 
 [context.branch-deploy.environment]
-  NODE_ENV = "production"
+  NODE_ENV = ""
   VITE_APP_ENV = "staging"
 
 # SPA routing - fallback to index.html

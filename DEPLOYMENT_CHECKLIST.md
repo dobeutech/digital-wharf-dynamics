@@ -5,12 +5,14 @@ Use this checklist before deploying to production.
 ## Pre-Deployment
 
 ### Environment Setup
+
 - [ ] `.env` file created with all required variables
 - [ ] Environment variables validated (`npm run test:env`)
 - [ ] All secrets configured in deployment platform
 - [ ] Backup secret token generated and stored securely
 
 ### Database
+
 - [ ] Database migrations applied (`scripts/apply-migrations.sql`)
 - [ ] Rate limits table created and verified
 - [ ] Database backups table created and verified
@@ -18,6 +20,7 @@ Use this checklist before deploying to production.
 - [ ] Test database connection
 
 ### Edge Functions
+
 - [ ] `backup-database` function deployed
 - [ ] `rate-limiter` function deployed
 - [ ] Edge function secrets configured:
@@ -26,6 +29,7 @@ Use this checklist before deploying to production.
 - [ ] Edge functions tested
 
 ### Code Quality
+
 - [ ] All tests pass (`npm run test`)
 - [ ] Linting passes (`npm run lint`)
 - [ ] Build succeeds (`npm run build`)
@@ -35,6 +39,7 @@ Use this checklist before deploying to production.
 ## Deployment
 
 ### Build & Deploy
+
 - [ ] Application builds successfully
 - [ ] All assets generated correctly
 - [ ] Code splitting working (check chunk files)
@@ -44,6 +49,7 @@ Use this checklist before deploying to production.
 ### Post-Deployment Verification
 
 #### Security
+
 - [ ] Security headers present (check Network tab):
   - [ ] `X-Content-Type-Options: nosniff`
   - [ ] `X-Frame-Options: DENY`
@@ -53,6 +59,7 @@ Use this checklist before deploying to production.
 - [ ] No console errors related to security
 
 #### Functionality
+
 - [ ] Application loads without errors
 - [ ] Authentication works (sign in/up)
 - [ ] Protected routes redirect correctly
@@ -62,6 +69,7 @@ Use this checklist before deploying to production.
 - [ ] PWA manifest loads (`/manifest.json`)
 
 #### Performance
+
 - [ ] Initial load time acceptable
 - [ ] Code splitting working (check Network tab)
 - [ ] Images lazy load correctly
@@ -69,6 +77,7 @@ Use this checklist before deploying to production.
 - [ ] Lighthouse score acceptable
 
 #### Responsive Design
+
 - [ ] Mobile layout works (test on device or DevTools)
 - [ ] Tablet layout works
 - [ ] Desktop layout works
@@ -76,6 +85,7 @@ Use this checklist before deploying to production.
 - [ ] Navigation works on all screen sizes
 
 #### Accessibility
+
 - [ ] Keyboard navigation works
 - [ ] Focus indicators visible
 - [ ] Screen reader tested (optional but recommended)
@@ -83,6 +93,7 @@ Use this checklist before deploying to production.
 - [ ] Color contrast sufficient
 
 #### Testing
+
 - [ ] Critical user flows tested:
   - [ ] Sign up / Sign in
   - [ ] View services
@@ -96,17 +107,20 @@ Use this checklist before deploying to production.
 ## Monitoring Setup
 
 ### Error Tracking
+
 - [ ] Sentry configured (if using)
 - [ ] Error tracking working
 - [ ] Alerts configured for critical errors
 
 ### Analytics
+
 - [ ] Mixpanel tracking working
 - [ ] PostHog tracking working
 - [ ] Google Analytics working (if configured)
 - [ ] Events firing correctly
 
 ### Uptime Monitoring
+
 - [ ] Uptime monitor configured
 - [ ] Alert channels set up (email/Slack)
 - [ ] Health check endpoint working
@@ -114,6 +128,7 @@ Use this checklist before deploying to production.
 ## Backup & Recovery
 
 ### Automated Backups
+
 - [ ] Backup function deployed
 - [ ] Backup schedule configured (GitHub Actions or cron)
 - [ ] Backup secret token configured
@@ -121,6 +136,7 @@ Use this checklist before deploying to production.
 - [ ] Verify backup data integrity
 
 ### Recovery Testing
+
 - [ ] Know how to restore from backup
 - [ ] Recovery procedures documented
 - [ ] Recovery time tested (optional)
@@ -143,6 +159,7 @@ Use this checklist before deploying to production.
 ## Post-Deployment
 
 ### Monitoring (First 24 Hours)
+
 - [ ] Monitor error rates
 - [ ] Check performance metrics
 - [ ] Review user feedback
@@ -150,6 +167,7 @@ Use this checklist before deploying to production.
 - [ ] Check backup execution
 
 ### Communication
+
 - [ ] Deployment announcement (if needed)
 - [ ] Team notified of new features
 - [ ] Known issues documented
@@ -162,13 +180,12 @@ Use this checklist before deploying to production.
 
 ## Notes
 
-- Deployment Date: ___________
-- Deployed By: ___________
-- Version: ___________
-- Issues Encountered: ___________
-- Resolution: ___________
+- Deployment Date: ****\_\_\_****
+- Deployed By: ****\_\_\_****
+- Version: ****\_\_\_****
+- Issues Encountered: ****\_\_\_****
+- Resolution: ****\_\_\_****
 
 ---
 
 **Remember**: Always test in staging first if available!
-

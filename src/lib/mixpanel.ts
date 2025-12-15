@@ -14,14 +14,20 @@ declare global {
   }
 }
 
-export const trackEvent = (event: string, properties?: Record<string, unknown>) => {
-  if (typeof window !== 'undefined' && window.mixpanel) {
+export const trackEvent = (
+  event: string,
+  properties?: Record<string, unknown>,
+) => {
+  if (typeof window !== "undefined" && window.mixpanel) {
     window.mixpanel.track(event, properties);
   }
 };
 
-export const identifyUser = (userId: string, properties?: Record<string, unknown>) => {
-  if (typeof window !== 'undefined' && window.mixpanel) {
+export const identifyUser = (
+  userId: string,
+  properties?: Record<string, unknown>,
+) => {
+  if (typeof window !== "undefined" && window.mixpanel) {
     window.mixpanel.identify(userId);
     if (properties) {
       window.mixpanel.people.set(properties);
@@ -30,7 +36,7 @@ export const identifyUser = (userId: string, properties?: Record<string, unknown
 };
 
 export const resetUser = () => {
-  if (typeof window !== 'undefined' && window.mixpanel) {
+  if (typeof window !== "undefined" && window.mixpanel) {
     window.mixpanel.reset();
   }
 };
@@ -38,31 +44,31 @@ export const resetUser = () => {
 // Event constants
 export const MIXPANEL_EVENTS = {
   // Auth events
-  SIGN_UP: 'User Signed Up',
-  SIGN_IN: 'User Signed In',
-  SIGN_IN_GOOGLE: 'User Signed In with Google',
-  SIGN_OUT: 'User Signed Out',
-  
+  SIGN_UP: "User Signed Up",
+  SIGN_IN: "User Signed In",
+  SIGN_IN_GOOGLE: "User Signed In with Google",
+  SIGN_OUT: "User Signed Out",
+
   // Purchase events
-  CHECKOUT_STARTED: 'Checkout Started',
-  SERVICE_VIEWED: 'Service Viewed',
-  PURCHASE_COMPLETE: 'Purchase Complete',
-  
+  CHECKOUT_STARTED: "Checkout Started",
+  SERVICE_VIEWED: "Service Viewed",
+  PURCHASE_COMPLETE: "Purchase Complete",
+
   // Contact events
-  CONTACT_FORM_SUBMITTED: 'Contact Form Submitted',
-  
+  CONTACT_FORM_SUBMITTED: "Contact Form Submitted",
+
   // Newsletter events
-  NEWSLETTER_SUBSCRIBED: 'Newsletter Subscribed',
-  
+  NEWSLETTER_SUBSCRIBED: "Newsletter Subscribed",
+
   // Page view events
-  PAGE_VIEW: 'Page Viewed',
-  
+  PAGE_VIEW: "Page Viewed",
+
   // Funnel events (for conversion tracking)
-  FUNNEL_SIGNUP_COMPLETE: 'Funnel: Signup Complete',
-  FUNNEL_SHOP_VIEWED: 'Funnel: Shop Viewed',
-  FUNNEL_SERVICE_DETAIL_VIEWED: 'Funnel: Service Detail Viewed',
-  FUNNEL_CHECKOUT_INITIATED: 'Funnel: Checkout Initiated',
-  FUNNEL_PURCHASE_COMPLETE: 'Funnel: Purchase Complete',
+  FUNNEL_SIGNUP_COMPLETE: "Funnel: Signup Complete",
+  FUNNEL_SHOP_VIEWED: "Funnel: Shop Viewed",
+  FUNNEL_SERVICE_DETAIL_VIEWED: "Funnel: Service Detail Viewed",
+  FUNNEL_CHECKOUT_INITIATED: "Funnel: Checkout Initiated",
+  FUNNEL_PURCHASE_COMPLETE: "Funnel: Purchase Complete",
 } as const;
 
 // Track page view
@@ -77,10 +83,10 @@ export const trackPageView = (path: string, title?: string) => {
 // Track funnel step with both Mixpanel
 export const trackFunnelStep = (
   step: keyof typeof MIXPANEL_EVENTS,
-  properties?: Record<string, unknown>
+  properties?: Record<string, unknown>,
 ) => {
   trackEvent(MIXPANEL_EVENTS[step], {
-    funnel: 'signup_to_purchase',
+    funnel: "signup_to_purchase",
     ...properties,
   });
 };

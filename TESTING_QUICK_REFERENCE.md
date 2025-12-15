@@ -68,23 +68,23 @@ const user = userEvent.setup();
 await user.click(button);
 
 // Type
-await user.type(input, 'Hello World');
+await user.type(input, "Hello World");
 
 // Clear and type
 await user.clear(input);
-await user.type(input, 'New text');
+await user.type(input, "New text");
 
 // Keyboard
-await user.keyboard('{Enter}');
-await user.keyboard('{Escape}');
-await user.keyboard('{ArrowDown}');
+await user.keyboard("{Enter}");
+await user.keyboard("{Escape}");
+await user.keyboard("{ArrowDown}");
 
 // Tab navigation
 await user.tab();
 await user.tab({ shift: true }); // Shift+Tab
 
 // Select
-await user.selectOptions(select, 'option1');
+await user.selectOptions(select, "option1");
 
 // Checkbox/Radio
 await user.click(checkbox);
@@ -97,21 +97,24 @@ await user.click(checkbox);
 ```typescript
 // Wait for element to appear
 await waitFor(() => {
-  expect(screen.getByText('Loaded')).toBeInTheDocument();
+  expect(screen.getByText("Loaded")).toBeInTheDocument();
 });
 
 // Wait for element to disappear
 await waitFor(() => {
-  expect(screen.queryByText('Loading')).not.toBeInTheDocument();
+  expect(screen.queryByText("Loading")).not.toBeInTheDocument();
 });
 
 // Find (async query)
-const element = await screen.findByText('Loaded');
+const element = await screen.findByText("Loaded");
 
 // Custom timeout
-await waitFor(() => {
-  expect(screen.getByText('Done')).toBeInTheDocument();
-}, { timeout: 5000 });
+await waitFor(
+  () => {
+    expect(screen.getByText("Done")).toBeInTheDocument();
+  },
+  { timeout: 5000 },
+);
 ```
 
 ---
@@ -128,21 +131,21 @@ expect(element).toBeVisible();
 expect(element).not.toBeVisible();
 
 // Text content
-expect(element).toHaveTextContent('Hello');
+expect(element).toHaveTextContent("Hello");
 expect(element).toHaveTextContent(/hello/i);
 
 // Attributes
-expect(element).toHaveAttribute('href', '/home');
-expect(element).toHaveClass('active');
+expect(element).toHaveAttribute("href", "/home");
+expect(element).toHaveClass("active");
 
 // Form elements
-expect(input).toHaveValue('test');
+expect(input).toHaveValue("test");
 expect(checkbox).toBeChecked();
 expect(button).toBeDisabled();
 
 // Accessibility
-expect(button).toHaveAccessibleName('Submit');
-expect(button).toHaveAccessibleDescription('Submit form');
+expect(button).toHaveAccessibleName("Submit");
+expect(button).toHaveAccessibleDescription("Submit form");
 
 // Focus
 expect(element).toHaveFocus();
@@ -155,12 +158,12 @@ expect(element).toHaveFocus();
 ```typescript
 // Mock function
 const mockFn = vi.fn();
-mockFn.mockReturnValue('value');
-mockFn.mockResolvedValue('async value');
-mockFn.mockRejectedValue(new Error('error'));
+mockFn.mockReturnValue("value");
+mockFn.mockResolvedValue("async value");
+mockFn.mockRejectedValue(new Error("error"));
 
 // Mock module
-vi.mock('@/lib/api', () => ({
+vi.mock("@/lib/api", () => ({
   api: {
     get: vi.fn(),
     post: vi.fn(),
@@ -175,7 +178,7 @@ const supabase = createMockSupabaseClient();
 
 // Mock localStorage
 mockLocalStorage();
-localStorage.setItem('key', 'value');
+localStorage.setItem("key", "value");
 
 // Mock matchMedia
 mockMatchMedia(true);
@@ -186,7 +189,7 @@ mockMatchMedia(true);
 ## 🧪 Test Structure
 
 ```typescript
-describe('ComponentName', () => {
+describe("ComponentName", () => {
   beforeEach(() => {
     // Setup before each test
   });
@@ -196,26 +199,26 @@ describe('ComponentName', () => {
     vi.clearAllMocks();
   });
 
-  describe('Rendering', () => {
-    it('renders with default props', () => {
+  describe("Rendering", () => {
+    it("renders with default props", () => {
       // Test
     });
   });
 
-  describe('User Interactions', () => {
-    it('handles clicks', async () => {
+  describe("User Interactions", () => {
+    it("handles clicks", async () => {
       // Test
     });
   });
 
-  describe('Accessibility', () => {
-    it('has ARIA labels', () => {
+  describe("Accessibility", () => {
+    it("has ARIA labels", () => {
       // Test
     });
   });
 
-  describe('Edge Cases', () => {
-    it('handles null props', () => {
+  describe("Edge Cases", () => {
+    it("handles null props", () => {
       // Test
     });
   });
@@ -228,20 +231,20 @@ describe('ComponentName', () => {
 
 ```typescript
 // Check role
-expect(screen.getByRole('button')).toBeInTheDocument();
+expect(screen.getByRole("button")).toBeInTheDocument();
 
 // Check accessible name
-expect(button).toHaveAccessibleName('Submit');
+expect(button).toHaveAccessibleName("Submit");
 
 // Check ARIA attributes
-expect(dialog).toHaveAttribute('aria-modal', 'true');
-expect(button).toHaveAttribute('aria-label', 'Close');
+expect(dialog).toHaveAttribute("aria-modal", "true");
+expect(button).toHaveAttribute("aria-label", "Close");
 
 // Check keyboard navigation
 await user.tab();
 expect(button).toHaveFocus();
 
-await user.keyboard('{Enter}');
+await user.keyboard("{Enter}");
 // Assert action occurred
 ```
 
@@ -255,11 +258,11 @@ await user.keyboard('{Enter}');
 it('handles button click', async () => {
   const user = userEvent.setup();
   const onClick = vi.fn();
-  
+
   renderWithProviders(<Button onClick={onClick}>Click</Button>);
-  
+
   await user.click(screen.getByRole('button'));
-  
+
   expect(onClick).toHaveBeenCalledTimes(1);
 });
 ```
@@ -270,10 +273,10 @@ it('handles button click', async () => {
 it('handles form input', async () => {
   const user = userEvent.setup();
   renderWithProviders(<Input />);
-  
+
   const input = screen.getByRole('textbox');
   await user.type(input, 'test@example.com');
-  
+
   expect(input).toHaveValue('test@example.com');
 });
 ```
@@ -283,9 +286,9 @@ it('handles form input', async () => {
 ```typescript
 it('shows loading state', async () => {
   renderWithProviders(<Component />);
-  
+
   expect(screen.getByText(/loading/i)).toBeInTheDocument();
-  
+
   await waitFor(() => {
     expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
   });
@@ -297,9 +300,9 @@ it('shows loading state', async () => {
 ```typescript
 it('shows error message', async () => {
   vi.mocked(api.get).mockRejectedValue(new Error('API Error'));
-  
+
   renderWithProviders(<Component />);
-  
+
   await waitFor(() => {
     expect(screen.getByText(/error/i)).toBeInTheDocument();
   });
@@ -350,7 +353,7 @@ npm run test:ui
 screen.debug();
 
 // Print specific element
-screen.debug(screen.getByRole('button'));
+screen.debug(screen.getByRole("button"));
 
 // Log queries
 screen.logTestingPlaygroundURL();

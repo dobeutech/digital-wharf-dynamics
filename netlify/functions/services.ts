@@ -1,8 +1,8 @@
-import type { Handler } from '@netlify/functions';
-import { ObjectId } from 'mongodb';
-import { errorResponse, jsonResponse, readJson } from './_http';
-import { requireAuth, requirePermission } from './_auth0';
-import { getMongoDb } from './_mongo';
+import type { Handler } from "@netlify/functions";
+import { ObjectId } from "mongodb";
+import { errorResponse, jsonResponse, readJson } from "./_http";
+import { requireAuth, requirePermission } from "./_auth0";
+import { getMongoDb } from "./_mongo";
 
 type ServiceDoc = {
   _id: ObjectId;
@@ -22,7 +22,7 @@ function toService(d: ServiceDoc) {
     id: d._id.toHexString(),
     name: d.name,
     category: d.category,
-    description: d.description ?? '',
+    description: d.description ?? "",
     base_price: d.base_price,
     features: d.features ?? null,
     add_ons: d.add_ons ?? null,
@@ -35,21 +35,21 @@ function toService(d: ServiceDoc) {
 export const handler: Handler = async (event) => {
   try {
     const db = await getMongoDb();
-    const col = db.collection<ServiceDoc>('services');
+    const col = db.collection<ServiceDoc>("services");
 
     const id = event.queryStringParameters?.id?.trim();
-    const onlyActive = event.queryStringParameters?.active === 'true';
+    const onlyActive = event.queryStringParameters?.active === "true";
 
-    if (event.httpMethod === 'GET') {
+    if (event.httpMethod === "GET") {
       if (id) {
         let objectId: ObjectId;
         try {
           objectId = new ObjectId(id);
         } catch {
-          return errorResponse(400, 'Invalid id');
+          return errorResponse(400, "Invalid id");
         }
         const doc = await col.findOne({ _id: objectId });
-        if (!doc) return errorResponse(404, 'Not found');
+        if (!doc) return errorResponse(404, "Not found");
         return jsonResponse(200, toService(doc));
       }
 
@@ -62,14 +62,21 @@ export const handler: Handler = async (event) => {
 
     // Mutations require admin permission
     const claims = await requireAuth(event);
-    requirePermission(claims, 'admin:access');
+    requirePermission(claims, "admin:access");
 
-    if (event.httpMethod === 'POST') {
-      const body = await readJson<Partial<ServiceDoc> & { name?: string; category?: string; base_price?: number }>(
-        event
-      );
-      if (!body.name || !body.category || typeof body.base_price !== 'number') {
-        return errorResponse(400, 'Missing required fields: name, category, base_price');
+    if (event.httpMethod === "POST") {
+      const body = await readJson<
+        Partial<ServiceDoc> & {
+          name?: string;
+          category?: string;
+          base_price?: number;
+        }
+      >(event);
+      if (!body.name || !body.category || typeof body.base_price !== "number") {
+        return errorResponse(
+          400,
+          "Missing required fields: name, category, base_price",
+        );
       }
 
       const now = new Date().toISOString();
@@ -77,7 +84,7 @@ export const handler: Handler = async (event) => {
         _id: new ObjectId(),
         name: body.name,
         category: body.category,
-        description: body.description ?? '',
+        description: body.description ?? "",
         base_price: body.base_price,
         features: body.features ?? null,
         add_ons: body.add_ons ?? null,
@@ -90,8 +97,8 @@ export const handler: Handler = async (event) => {
       return jsonResponse(201, toService(doc));
     }
 
-    if (event.httpMethod === 'PUT' || event.httpMethod === 'PATCH') {
-      if (!id) return errorResponse(400, 'Missing id');
+    if (event.httpMethod === "PUT" || event.httpMethod === "PATCH") {
+      if (!id) return errorResponse(400, "Missing id");
       const body = await readJson<Partial<ServiceDoc>>(event);
       const now = new Date().toISOString();
       const update: Record<string, unknown> = { ...body, updated_at: now };
@@ -100,31 +107,33 @@ export const handler: Handler = async (event) => {
       const res = await col.findOneAndUpdate(
         { _id: new ObjectId(id) },
         { $set: update },
-        { returnDocument: 'after' }
+        { returnDocument: "after" },
       );
-      if (!res) return errorResponse(404, 'Not found');
+      if (!res) return errorResponse(404, "Not found");
       // mongodb driver returns { value } in older versions; in v6 it's { value }? keep compatible:
       // @ts-expect-error driver typing differs across versions
       const doc = (res.value ?? res) as ServiceDoc;
       return jsonResponse(200, toService(doc));
     }
 
-    if (event.httpMethod === 'DELETE') {
-      if (!id) return errorResponse(400, 'Missing id');
+    if (event.httpMethod === "DELETE") {
+      if (!id) return errorResponse(400, "Missing id");
       let objectId: ObjectId;
       try {
         objectId = new ObjectId(id);
       } catch {
-        return errorResponse(400, 'Invalid id');
+        return errorResponse(400, "Invalid id");
       }
       const res = await col.deleteOne({ _id: objectId });
       return jsonResponse(200, { deleted: res.deletedCount === 1 });
     }
 
-    return errorResponse(405, 'Method not allowed');
+    return errorResponse(405, "Method not allowed");
   } catch (err) {
-    return errorResponse(500, 'Internal error', err instanceof Error ? err.message : String(err));
+    return errorResponse(
+      500,
+      "Internal error",
+      err instanceof Error ? err.message : String(err),
+    );
   }
 };
-
-

@@ -8,7 +8,7 @@ import { useState } from "react";
 export function EnhancedHero() {
   const [isHovering, setIsHovering] = useState(false);
   const { scrollY } = useScroll();
-  
+
   // Parallax transforms
   const titleY = useTransform(scrollY, [0, 500], [0, 100]);
   const subtitleY = useTransform(scrollY, [0, 500], [0, 50]);
@@ -56,27 +56,28 @@ export function EnhancedHero() {
   const highlightText = "Digital Vision";
 
   return (
-    <section 
+    <section
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       aria-labelledby="hero-heading"
     >
       {/* Animated digital background with parallax */}
-      <DigitalBackground 
+      <DigitalBackground
         particleCount={60}
         showGrid={true}
         showConnections={true}
       />
-      
+
       {/* Gradient overlays for depth */}
-      <div 
+      <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse 80% 50% at 50% 50%, transparent 0%, hsl(var(--background)) 100%)",
+          background:
+            "radial-gradient(ellipse 80% 50% at 50% 50%, transparent 0%, hsl(var(--background)) 100%)",
         }}
         aria-hidden="true"
       />
-      
-      <motion.div 
+
+      <motion.div
         className="container relative z-10 px-4 sm:px-6 py-20 sm:py-28 md:py-32 mx-auto"
         style={{ opacity }}
       >
@@ -91,28 +92,33 @@ export function EnhancedHero() {
             variants={itemVariants}
             className="relative inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium overflow-hidden"
             style={{
-              background: "linear-gradient(135deg, hsla(48, 96%, 53%, 0.1), hsla(330, 81%, 60%, 0.1), hsla(271, 81%, 56%, 0.1))",
+              background:
+                "linear-gradient(135deg, hsla(48, 96%, 53%, 0.1), hsla(330, 81%, 60%, 0.1), hsla(271, 81%, 56%, 0.1))",
             }}
           >
             {/* Animated gradient border */}
-            <span 
+            <span
               className="absolute inset-0 rounded-full p-[1px]"
               style={{
-                background: "linear-gradient(135deg, #FACC15, #EC4899, #A855F7, #3B82F6)",
+                background:
+                  "linear-gradient(135deg, #FACC15, #EC4899, #A855F7, #3B82F6)",
                 backgroundSize: "300% 300%",
                 animation: "gradient-x 5s ease infinite",
-                WebkitMask: "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                WebkitMask:
+                  "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
                 WebkitMaskComposite: "xor",
                 maskComposite: "exclude",
               }}
             />
             <Sparkles className="w-4 h-4 text-yellow-400" />
-            <span className="gradient-text-full">Premium Digital Solutions</span>
+            <span className="gradient-text-full">
+              Premium Digital Solutions
+            </span>
           </motion.div>
 
           {/* Main headline with letter animation */}
-          <motion.h1 
-            id="hero-heading" 
+          <motion.h1
+            id="hero-heading"
             className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight leading-[1.05]"
             style={{ y: titleY }}
           >
@@ -131,15 +137,13 @@ export function EnhancedHero() {
                 </motion.span>
               ))}
             </motion.span>
-            <motion.span 
-              className="block mt-2"
-              variants={itemVariants}
-            >
+            <motion.span className="block mt-2" variants={itemVariants}>
               <span className="relative inline-block">
-                <span 
+                <span
                   className="text-transparent bg-clip-text"
                   style={{
-                    backgroundImage: "linear-gradient(135deg, #FACC15 0%, #EC4899 50%, #A855F7 100%)",
+                    backgroundImage:
+                      "linear-gradient(135deg, #FACC15 0%, #EC4899 50%, #A855F7 100%)",
                     backgroundSize: "200% 200%",
                     animation: "gradient-shift 5s ease infinite",
                   }}
@@ -150,29 +154,39 @@ export function EnhancedHero() {
                 <motion.span
                   className="absolute -bottom-2 left-0 h-1.5 rounded-full"
                   style={{
-                    background: "linear-gradient(90deg, #FACC15, #EC4899, #A855F7, #3B82F6)",
+                    background:
+                      "linear-gradient(90deg, #FACC15, #EC4899, #A855F7, #3B82F6)",
                   }}
                   initial={{ width: 0 }}
                   animate={{ width: "100%" }}
-                  transition={{ duration: 1, delay: 1.2, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{
+                    duration: 1,
+                    delay: 1.2,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
                 />
               </span>
             </motion.span>
           </motion.h1>
 
           {/* Subtitle */}
-          <motion.p 
+          <motion.p
             className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-light leading-relaxed px-4"
             variants={itemVariants}
             style={{ y: subtitleY }}
           >
-            We craft stunning websites and powerful software that help ambitious businesses 
-            <span className="text-foreground font-medium"> grow faster</span> and 
+            We craft stunning websites and powerful software that help ambitious
+            businesses
+            <span className="text-foreground font-medium">
+              {" "}
+              grow faster
+            </span>{" "}
+            and
             <span className="text-foreground font-medium"> stand out</span>.
           </motion.p>
 
           {/* CTA Buttons */}
-          <motion.div 
+          <motion.div
             className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4 px-4"
             variants={itemVariants}
             style={{ y: buttonsY }}
@@ -190,10 +204,11 @@ export function EnhancedHero() {
               >
                 <Link to="/contact" className="flex items-center gap-2">
                   {/* Shimmer effect */}
-                  <span 
+                  <span
                     className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"
                     style={{
-                      background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
+                      background:
+                        "linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)",
                     }}
                   />
                   <span className="relative z-10">Start Your Project</span>
@@ -208,10 +223,7 @@ export function EnhancedHero() {
               </Button>
             </motion.div>
 
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.98 }}
-            >
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
               <Button
                 asChild
                 size="lg"
@@ -236,11 +248,25 @@ export function EnhancedHero() {
               <span>Available for new projects</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(135deg, #FACC15, #EC4899)" }}>50+</span>
+              <span
+                className="font-semibold text-transparent bg-clip-text"
+                style={{
+                  backgroundImage: "linear-gradient(135deg, #FACC15, #EC4899)",
+                }}
+              >
+                50+
+              </span>
               <span>Projects delivered</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(135deg, #A855F7, #3B82F6)" }}>100%</span>
+              <span
+                className="font-semibold text-transparent bg-clip-text"
+                style={{
+                  backgroundImage: "linear-gradient(135deg, #A855F7, #3B82F6)",
+                }}
+              >
+                100%
+              </span>
               <span>Client satisfaction</span>
             </div>
           </motion.div>
@@ -260,7 +286,9 @@ export function EnhancedHero() {
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
           className="flex flex-col items-center gap-2"
         >
-          <span className="text-xs text-muted-foreground uppercase tracking-widest">Scroll</span>
+          <span className="text-xs text-muted-foreground uppercase tracking-widest">
+            Scroll
+          </span>
           <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex justify-center p-2">
             <motion.div
               className="w-1.5 h-1.5 rounded-full bg-primary"

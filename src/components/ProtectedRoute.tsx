@@ -18,7 +18,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   // Check if email is verified (except for verify-email page)
-  if (user.email_verified === false && location.pathname !== '/verify-email') {
+  if (user.email_verified === false && location.pathname !== "/verify-email") {
     return <Navigate to="/verify-email" replace />;
   }
 

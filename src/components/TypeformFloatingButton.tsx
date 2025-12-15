@@ -30,10 +30,7 @@ export function TypeformFloatingButton({
   return (
     <>
       <motion.div
-        className={cn(
-          "fixed z-40",
-          positionClasses[position]
-        )}
+        className={cn("fixed z-40", positionClasses[position])}
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 1, duration: 0.3, ease: "backOut" }}
@@ -49,7 +46,7 @@ export function TypeformFloatingButton({
             "text-white font-semibold",
             "rounded-full shadow-lg hover:shadow-2xl",
             "transition-all duration-300",
-            "overflow-hidden"
+            "overflow-hidden",
           )}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}

@@ -24,9 +24,21 @@ export function useAdmin() {
 
       try {
         const payloadPart = token.split(".")[1];
-        const json = atob(payloadPart.replace(/-/g, "+").replace(/_/g, "/").padEnd(payloadPart.length + ((4 - (payloadPart.length % 4)) % 4), "="));
+        const json = atob(
+          payloadPart
+            .replace(/-/g, "+")
+            .replace(/_/g, "/")
+            .padEnd(
+              payloadPart.length + ((4 - (payloadPart.length % 4)) % 4),
+              "=",
+            ),
+        );
         const claims = JSON.parse(json) as Record<string, unknown>;
-        const permissions = Array.isArray(claims.permissions) ? (claims.permissions.filter((p) => typeof p === "string") as string[]) : [];
+        const permissions = Array.isArray(claims.permissions)
+          ? (claims.permissions.filter(
+              (p) => typeof p === "string",
+            ) as string[])
+          : [];
         setIsAdmin(permissions.includes("admin:access"));
       } catch (e) {
         console.error("Error checking admin status:", e);

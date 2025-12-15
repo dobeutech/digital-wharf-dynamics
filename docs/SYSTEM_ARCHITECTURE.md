@@ -123,11 +123,11 @@ sequenceDiagram
     Edge->>Edge: Check User Agent
     Edge->>CDN: Return Response
     CDN->>User: Serve Static Assets
-    
+
     User->>App: Interact with UI
     App->>Auth: Check Authentication
     Auth-->>App: Return JWT Token
-    
+
     App->>Fn: API Request + JWT
     Fn->>Auth: Validate Token
     Auth-->>Fn: Token Valid
@@ -135,7 +135,7 @@ sequenceDiagram
     DB-->>Fn: Return Data
     Fn-->>App: Return Response
     App-->>User: Update UI
-    
+
     App->>Ext: Track Analytics
     Ext-->>App: Acknowledge
 ```
@@ -210,7 +210,7 @@ sequenceDiagram
     Auth0SDK->>Auth0: Exchange Code for Token
     Auth0-->>Auth0SDK: Return JWT + Refresh Token
     Auth0SDK-->>App: User Authenticated
-    
+
     App->>Fn: API Request + JWT
     Fn->>Auth0: Verify JWT
     Auth0-->>Fn: Token Valid + User Info
@@ -281,14 +281,14 @@ graph TB
     Contact --> Footer
     Admin --> Sidebar
     Admin --> Nav
-    
+
     Hero --> Button
     ServiceCard --> Card
     ProjectCard --> Card
     ContactForm --> Form
     Form --> Input
     Form --> Button
-    
+
     Home --> ErrorBoundary
     Home --> SEO
     Home --> Analytics
@@ -305,7 +305,7 @@ erDiagram
     USERS ||--o{ CCPA_REQUESTS : submits
     PROJECTS ||--o{ PROJECT_TASKS : contains
     PROJECTS ||--o{ FILES : has
-    
+
     USERS {
         string id PK
         string email
@@ -314,7 +314,7 @@ erDiagram
         datetime created_at
         datetime updated_at
     }
-    
+
     PROJECTS {
         string id PK
         string title
@@ -324,7 +324,7 @@ erDiagram
         datetime created_at
         datetime updated_at
     }
-    
+
     PROJECT_TASKS {
         string id PK
         string project_id FK
@@ -333,7 +333,7 @@ erDiagram
         datetime due_date
         datetime created_at
     }
-    
+
     SERVICES {
         string id PK
         string name
@@ -342,7 +342,7 @@ erDiagram
         boolean active
         datetime created_at
     }
-    
+
     CONTACT_SUBMISSIONS {
         string id PK
         string name
@@ -352,14 +352,14 @@ erDiagram
         boolean sms_consent
         datetime created_at
     }
-    
+
     NEWSLETTER_SUBSCRIBERS {
         string id PK
         string email
         boolean active
         datetime subscribed_at
     }
-    
+
     NEWS {
         string id PK
         string title
@@ -367,7 +367,7 @@ erDiagram
         string author
         datetime published_at
     }
-    
+
     AUDIT_LOGS {
         string id PK
         string user_id FK
@@ -376,7 +376,7 @@ erDiagram
         json metadata
         datetime created_at
     }
-    
+
     CCPA_REQUESTS {
         string id PK
         string user_id FK
@@ -385,7 +385,7 @@ erDiagram
         datetime created_at
         datetime processed_at
     }
-    
+
     FILES {
         string id PK
         string project_id FK
@@ -774,19 +774,19 @@ stateDiagram-v2
     Success --> Updating: Update Action
     Updating --> Success: Update Complete
     Updating --> Error: Update Failed
-    
+
     state Loading {
         [*] --> FetchingData
         FetchingData --> ValidatingAuth
         ValidatingAuth --> ProcessingRequest
     }
-    
+
     state Success {
         [*] --> CachingData
         CachingData --> RenderingUI
         RenderingUI --> [*]
     }
-    
+
     state Error {
         [*] --> LoggingError
         LoggingError --> ShowingToast
@@ -812,7 +812,7 @@ sequenceDiagram
     User->>Form: Submit
     Form->>RHF: handleSubmit()
     RHF->>Zod: Validate Schema
-    
+
     alt Validation Fails
         Zod-->>RHF: Validation Errors
         RHF-->>Form: Show Errors

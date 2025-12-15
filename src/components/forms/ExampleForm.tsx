@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -14,50 +14,52 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { toast } from 'sonner';
-import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
 
 /**
  * Zod validation schema
  * Define all validation rules here
  */
 const exampleFormSchema = z.object({
-  name: z.string()
+  name: z
+    .string()
     .trim()
-    .min(2, 'Name must be at least 2 characters')
-    .max(100, 'Name must be less than 100 characters'),
-  
-  email: z.string()
+    .min(2, "Name must be at least 2 characters")
+    .max(100, "Name must be less than 100 characters"),
+
+  email: z
+    .string()
     .trim()
-    .email('Please enter a valid email address')
-    .max(255, 'Email must be less than 255 characters'),
-  
-  age: z.coerce.number()
-    .int('Age must be a whole number')
-    .min(18, 'You must be at least 18 years old')
-    .max(120, 'Please enter a valid age'),
-  
-  category: z.string()
-    .min(1, 'Please select a category'),
-  
-  message: z.string()
+    .email("Please enter a valid email address")
+    .max(255, "Email must be less than 255 characters"),
+
+  age: z.coerce
+    .number()
+    .int("Age must be a whole number")
+    .min(18, "You must be at least 18 years old")
+    .max(120, "Please enter a valid age"),
+
+  category: z.string().min(1, "Please select a category"),
+
+  message: z
+    .string()
     .trim()
-    .min(10, 'Message must be at least 10 characters')
-    .max(1000, 'Message must be less than 1000 characters'),
-  
-  agreeToTerms: z.boolean()
-    .refine((val) => val === true, {
-      message: 'You must agree to the terms and conditions',
-    }),
-  
+    .min(10, "Message must be at least 10 characters")
+    .max(1000, "Message must be less than 1000 characters"),
+
+  agreeToTerms: z.boolean().refine((val) => val === true, {
+    message: "You must agree to the terms and conditions",
+  }),
+
   newsletter: z.boolean().default(false),
 });
 
@@ -77,7 +79,7 @@ interface ExampleFormProps {
 
 /**
  * ExampleForm Component
- * 
+ *
  * A comprehensive form example demonstrating:
  * - react-hook-form with useForm hook
  * - Zod validation with zodResolver
@@ -87,7 +89,7 @@ interface ExampleFormProps {
  * - Tailwind CSS styling
  * - Loading states
  * - Success/error feedback
- * 
+ *
  * @example
  * ```tsx
  * <ExampleForm
@@ -96,23 +98,29 @@ interface ExampleFormProps {
  * />
  * ```
  */
-export function ExampleForm({ onSuccess, onError, className }: ExampleFormProps) {
+export function ExampleForm({
+  onSuccess,
+  onError,
+  className,
+}: ExampleFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [formStatus, setFormStatus] = useState<"idle" | "success" | "error">(
+    "idle",
+  );
 
   // Initialize form with react-hook-form
   const form = useForm<ExampleFormValues>({
     resolver: zodResolver(exampleFormSchema),
     defaultValues: {
-      name: '',
-      email: '',
+      name: "",
+      email: "",
       age: 18,
-      category: '',
-      message: '',
+      category: "",
+      message: "",
       agreeToTerms: false,
       newsletter: false,
     },
-    mode: 'onBlur', // Validate on blur for better UX
+    mode: "onBlur", // Validate on blur for better UX
   });
 
   /**
@@ -121,7 +129,7 @@ export function ExampleForm({ onSuccess, onError, className }: ExampleFormProps)
    */
   const onSubmit = async (data: ExampleFormValues) => {
     setIsSubmitting(true);
-    setFormStatus('idle');
+    setFormStatus("idle");
 
     try {
       // Simulate API call
@@ -129,12 +137,12 @@ export function ExampleForm({ onSuccess, onError, className }: ExampleFormProps)
 
       // Simulate random error for demonstration
       if (Math.random() < 0.1) {
-        throw new Error('Simulated API error');
+        throw new Error("Simulated API error");
       }
 
       // Success handling
-      setFormStatus('success');
-      toast.success('Form submitted successfully!', {
+      setFormStatus("success");
+      toast.success("Form submitted successfully!", {
         description: `Thank you, ${data.name}! We'll be in touch soon.`,
       });
 
@@ -145,9 +153,10 @@ export function ExampleForm({ onSuccess, onError, className }: ExampleFormProps)
       form.reset();
     } catch (error) {
       // Error handling
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
-      setFormStatus('error');
-      toast.error('Submission failed', {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
+      setFormStatus("error");
+      toast.error("Submission failed", {
         description: errorMessage,
       });
 
@@ -161,29 +170,39 @@ export function ExampleForm({ onSuccess, onError, className }: ExampleFormProps)
   return (
     <div className={className}>
       {/* Success Message */}
-      {formStatus === 'success' && (
+      {formStatus === "success" && (
         <div
           className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg flex items-start gap-3"
           role="alert"
         >
-          <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" aria-hidden="true" />
+          <CheckCircle
+            className="w-5 h-5 text-green-500 mt-0.5 shrink-0"
+            aria-hidden="true"
+          />
           <div>
             <p className="font-medium text-green-500">Success!</p>
-            <p className="text-sm text-muted-foreground">Your form has been submitted successfully.</p>
+            <p className="text-sm text-muted-foreground">
+              Your form has been submitted successfully.
+            </p>
           </div>
         </div>
       )}
 
       {/* Error Message */}
-      {formStatus === 'error' && (
+      {formStatus === "error" && (
         <div
           className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg flex items-start gap-3"
           role="alert"
         >
-          <AlertCircle className="w-5 h-5 text-destructive mt-0.5 shrink-0" aria-hidden="true" />
+          <AlertCircle
+            className="w-5 h-5 text-destructive mt-0.5 shrink-0"
+            aria-hidden="true"
+          />
           <div>
             <p className="font-medium text-destructive">Error</p>
-            <p className="text-sm text-muted-foreground">Please check the form and try again.</p>
+            <p className="text-sm text-muted-foreground">
+              Please check the form and try again.
+            </p>
           </div>
         </div>
       )}
@@ -332,14 +351,12 @@ export function ExampleForm({ onSuccess, onError, className }: ExampleFormProps)
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
-                  <FormLabel>
-                    I agree to the terms and conditions *
-                  </FormLabel>
+                  <FormLabel>I agree to the terms and conditions *</FormLabel>
                   <FormDescription>
-                    You must agree to our{' '}
+                    You must agree to our{" "}
                     <a href="/terms" className="text-primary hover:underline">
                       terms and conditions
-                    </a>{' '}
+                    </a>{" "}
                     to submit this form.
                   </FormDescription>
                   <FormMessage />
@@ -384,7 +401,7 @@ export function ExampleForm({ onSuccess, onError, className }: ExampleFormProps)
                   Submitting...
                 </>
               ) : (
-                'Submit'
+                "Submit"
               )}
             </Button>
 
@@ -401,9 +418,11 @@ export function ExampleForm({ onSuccess, onError, className }: ExampleFormProps)
           </div>
 
           {/* Form State Debug (remove in production) */}
-          {process.env.NODE_ENV === 'development' && (
+          {process.env.NODE_ENV === "development" && (
             <details className="mt-4 p-4 bg-muted rounded-lg text-xs">
-              <summary className="cursor-pointer font-medium">Debug Info</summary>
+              <summary className="cursor-pointer font-medium">
+                Debug Info
+              </summary>
               <pre className="mt-2 overflow-auto">
                 {JSON.stringify(
                   {
@@ -413,7 +432,7 @@ export function ExampleForm({ onSuccess, onError, className }: ExampleFormProps)
                     isValid: form.formState.isValid,
                   },
                   null,
-                  2
+                  2,
                 )}
               </pre>
             </details>

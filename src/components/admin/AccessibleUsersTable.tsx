@@ -1,8 +1,22 @@
 import { useState, useMemo } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowUpDown, ArrowUp, ArrowDown, Shield, ShieldCheck, User } from "lucide-react";
+import {
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Shield,
+  ShieldCheck,
+  User,
+} from "lucide-react";
 import { format } from "date-fns";
 
 interface Profile {
@@ -26,14 +40,14 @@ export function AccessibleUsersTable({
   profiles,
   userRoles,
   onToggleRole,
-  loading = false
+  loading = false,
 }: AccessibleUsersTableProps) {
   const [sortField, setSortField] = useState<SortField>("created_at");
   const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortDirection(prev => {
+      setSortDirection((prev) => {
         if (prev === "asc") return "desc";
         if (prev === "desc") return "none";
         return "asc";
@@ -52,10 +66,13 @@ export function AccessibleUsersTable({
 
       switch (sortField) {
         case "username":
-          comparison = a.username.toLowerCase().localeCompare(b.username.toLowerCase());
+          comparison = a.username
+            .toLowerCase()
+            .localeCompare(b.username.toLowerCase());
           break;
         case "created_at":
-          comparison = new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+          comparison =
+            new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
           break;
         case "roles": {
           const aRoles = userRoles.get(a.auth_user_id) || [];
@@ -79,7 +96,9 @@ export function AccessibleUsersTable({
     return <ArrowDown className="h-4 w-4 ml-1" aria-hidden="true" />;
   };
 
-  const getAriaSort = (field: SortField): "ascending" | "descending" | "none" => {
+  const getAriaSort = (
+    field: SortField,
+  ): "ascending" | "descending" | "none" => {
     if (sortField !== field) return "none";
     if (sortDirection === "asc") return "ascending";
     if (sortDirection === "desc") return "descending";
@@ -99,16 +118,24 @@ export function AccessibleUsersTable({
 
   const getRolePriority = (role: string): number => {
     switch (role) {
-      case "admin": return 3;
-      case "moderator": return 2;
-      case "user": return 1;
-      default: return 0;
+      case "admin":
+        return 3;
+      case "moderator":
+        return 2;
+      case "user":
+        return 1;
+      default:
+        return 0;
     }
   };
 
   if (loading) {
     return (
-      <div className="text-center py-8 text-muted-foreground" role="status" aria-live="polite">
+      <div
+        className="text-center py-8 text-muted-foreground"
+        role="status"
+        aria-live="polite"
+      >
         Loading user accounts...
       </div>
     );
@@ -126,17 +153,16 @@ export function AccessibleUsersTable({
     <div className="space-y-4">
       <div role="status" aria-live="polite" className="sr-only">
         Showing {sortedProfiles.length} user accounts.
-        {sortField && sortDirection !== "none" ?
-          ` Sorted by ${sortField} ${sortDirection === "asc" ? "ascending" : "descending"}.` :
-          ""
-        }
+        {sortField && sortDirection !== "none"
+          ? ` Sorted by ${sortField} ${sortDirection === "asc" ? "ascending" : "descending"}.`
+          : ""}
       </div>
 
       <div className="overflow-x-auto">
         <Table role="table" aria-label="User accounts and roles">
           <caption className="sr-only">
-            User accounts with role management capabilities.
-            Use the column headers to sort. Use the role buttons to assign or remove roles.
+            User accounts with role management capabilities. Use the column
+            headers to sort. Use the role buttons to assign or remove roles.
           </caption>
           <TableHeader>
             <TableRow>
@@ -145,7 +171,7 @@ export function AccessibleUsersTable({
                   variant="ghost"
                   onClick={() => handleSort("username")}
                   className="font-semibold hover:bg-transparent p-0"
-                  aria-label={`Sort by username ${sortField === "username" && sortDirection !== "none" ? sortDirection === "asc" ? "descending" : "ascending" : "ascending"}`}
+                  aria-label={`Sort by username ${sortField === "username" && sortDirection !== "none" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
                 >
                   Username
                   {getSortIcon("username")}
@@ -156,7 +182,7 @@ export function AccessibleUsersTable({
                   variant="ghost"
                   onClick={() => handleSort("roles")}
                   className="font-semibold hover:bg-transparent p-0"
-                  aria-label={`Sort by number of roles ${sortField === "roles" && sortDirection !== "none" ? sortDirection === "asc" ? "descending" : "ascending" : "ascending"}`}
+                  aria-label={`Sort by number of roles ${sortField === "roles" && sortDirection !== "none" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
                 >
                   Current Roles
                   {getSortIcon("roles")}
@@ -167,7 +193,7 @@ export function AccessibleUsersTable({
                   variant="ghost"
                   onClick={() => handleSort("created_at")}
                   className="font-semibold hover:bg-transparent p-0"
-                  aria-label={`Sort by join date ${sortField === "created_at" && sortDirection !== "none" ? sortDirection === "asc" ? "descending" : "ascending" : "ascending"}`}
+                  aria-label={`Sort by join date ${sortField === "created_at" && sortDirection !== "none" ? (sortDirection === "asc" ? "descending" : "ascending") : "ascending"}`}
                 >
                   Joined
                   {getSortIcon("created_at")}
@@ -179,7 +205,9 @@ export function AccessibleUsersTable({
           <TableBody>
             {sortedProfiles.map((profile) => {
               const roles = userRoles.get(profile.auth_user_id) || [];
-              const sortedRoles = [...roles].sort((a, b) => getRolePriority(b) - getRolePriority(a));
+              const sortedRoles = [...roles].sort(
+                (a, b) => getRolePriority(b) - getRolePriority(a),
+              );
 
               return (
                 <TableRow key={profile.id}>
@@ -189,16 +217,29 @@ export function AccessibleUsersTable({
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-2" role="list" aria-label={`Roles for ${profile.username}`}>
+                    <div
+                      className="flex flex-wrap gap-2"
+                      role="list"
+                      aria-label={`Roles for ${profile.username}`}
+                    >
                       {sortedRoles.length > 0 ? (
                         sortedRoles.map((role) => (
-                          <Badge key={role} variant="outline" className="gap-1" role="listitem">
+                          <Badge
+                            key={role}
+                            variant="outline"
+                            className="gap-1"
+                            role="listitem"
+                          >
                             {getRoleIcon(role)}
                             <span className="capitalize">{role}</span>
                           </Badge>
                         ))
                       ) : (
-                        <Badge variant="outline" className="gap-1" role="listitem">
+                        <Badge
+                          variant="outline"
+                          className="gap-1"
+                          role="listitem"
+                        >
                           {getRoleIcon("user")}
                           <span>User</span>
                         </Badge>
@@ -211,26 +252,50 @@ export function AccessibleUsersTable({
                     </time>
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-wrap gap-2" role="group" aria-label={`Role management for ${profile.username}`}>
+                    <div
+                      className="flex flex-wrap gap-2"
+                      role="group"
+                      aria-label={`Role management for ${profile.username}`}
+                    >
                       <Button
-                        variant={roles.includes("admin") ? "default" : "outline"}
+                        variant={
+                          roles.includes("admin") ? "default" : "outline"
+                        }
                         size="sm"
-                        onClick={() => onToggleRole(profile.auth_user_id, "admin")}
-                        aria-label={roles.includes("admin") ? `Remove admin role from ${profile.username}` : `Give admin role to ${profile.username}`}
+                        onClick={() =>
+                          onToggleRole(profile.auth_user_id, "admin")
+                        }
+                        aria-label={
+                          roles.includes("admin")
+                            ? `Remove admin role from ${profile.username}`
+                            : `Give admin role to ${profile.username}`
+                        }
                         aria-pressed={roles.includes("admin")}
                       >
-                        <ShieldCheck className="h-4 w-4 mr-1" aria-hidden="true" />
+                        <ShieldCheck
+                          className="h-4 w-4 mr-1"
+                          aria-hidden="true"
+                        />
                         {roles.includes("admin") ? "Remove" : "Make"} Admin
                       </Button>
                       <Button
-                        variant={roles.includes("moderator") ? "default" : "outline"}
+                        variant={
+                          roles.includes("moderator") ? "default" : "outline"
+                        }
                         size="sm"
-                        onClick={() => onToggleRole(profile.auth_user_id, "moderator")}
-                        aria-label={roles.includes("moderator") ? `Remove moderator role from ${profile.username}` : `Give moderator role to ${profile.username}`}
+                        onClick={() =>
+                          onToggleRole(profile.auth_user_id, "moderator")
+                        }
+                        aria-label={
+                          roles.includes("moderator")
+                            ? `Remove moderator role from ${profile.username}`
+                            : `Give moderator role to ${profile.username}`
+                        }
                         aria-pressed={roles.includes("moderator")}
                       >
                         <Shield className="h-4 w-4 mr-1" aria-hidden="true" />
-                        {roles.includes("moderator") ? "Remove" : "Make"} Moderator
+                        {roles.includes("moderator") ? "Remove" : "Make"}{" "}
+                        Moderator
                       </Button>
                     </div>
                   </TableCell>

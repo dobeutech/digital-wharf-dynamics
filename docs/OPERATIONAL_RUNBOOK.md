@@ -24,15 +24,15 @@
 
 ### Components
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| Frontend | React 18 + Vite 7 | SPA serving static assets |
-| CDN/Hosting | Netlify | Edge distribution, serverless functions |
-| Database | MongoDB Atlas | Primary data store |
-| Authentication | Auth0 | User authentication/authorization |
-| Analytics | PostHog, Mixpanel, GTM | User behavior tracking |
-| Support | Intercom | Customer support widget |
-| Forms | Typeform | Lead capture |
+| Component      | Technology             | Purpose                                 |
+| -------------- | ---------------------- | --------------------------------------- |
+| Frontend       | React 18 + Vite 7      | SPA serving static assets               |
+| CDN/Hosting    | Netlify                | Edge distribution, serverless functions |
+| Database       | MongoDB Atlas          | Primary data store                      |
+| Authentication | Auth0                  | User authentication/authorization       |
+| Analytics      | PostHog, Mixpanel, GTM | User behavior tracking                  |
+| Support        | Intercom               | Customer support widget                 |
+| Forms          | Typeform               | Lead capture                            |
 
 ### Critical Dependencies
 
@@ -67,29 +67,32 @@ User → Cloudflare/Netlify CDN → Static Assets (React SPA)
 ### Primary Dashboards
 
 **Netlify Dashboard**
+
 - URL: https://app.netlify.com/projects/dobeutech
 - Metrics: Deploy status, function invocations, bandwidth
 - Access: Team login required
 
 **MongoDB Atlas Dashboard**
+
 - URL: https://cloud.mongodb.com/
 - Metrics: Connection count, query performance, storage
 - Access: X.509 certificate required
 
 **PostHog Dashboard**
+
 - URL: https://us.posthog.com/
 - Metrics: User sessions, errors, page views
 - Access: API key: `phc_Gaksl1OP0ZVYeErlumeRTuj5xJqPMQPe3H8UKxMpwAM`
 
 ### Key Metrics to Monitor
 
-| Metric | Normal | Warning | Critical |
-|--------|--------|---------|----------|
+| Metric              | Normal  | Warning    | Critical |
+| ------------------- | ------- | ---------- | -------- |
 | Response Time (p95) | < 500ms | 500-1000ms | > 1000ms |
-| Error Rate | < 0.1% | 0.1-1% | > 1% |
-| Function Duration | < 2s | 2-5s | > 5s |
-| MongoDB Connections | < 100 | 100-200 | > 200 |
-| CDN Cache Hit Rate | > 90% | 80-90% | < 80% |
+| Error Rate          | < 0.1%  | 0.1-1%     | > 1%     |
+| Function Duration   | < 2s    | 2-5s       | > 5s     |
+| MongoDB Connections | < 100   | 100-200    | > 200    |
+| CDN Cache Hit Rate  | > 90%   | 80-90%     | < 80%    |
 
 ---
 
@@ -98,11 +101,13 @@ User → Cloudflare/Netlify CDN → Static Assets (React SPA)
 ### 1. Site Down / 500 Errors
 
 **Symptoms:**
+
 - Users report "Site unavailable"
 - Netlify shows failed deploy
 - 500 errors in browser console
 
 **Triage Steps:**
+
 ```bash
 # Check Netlify deploy status
 netlify status
@@ -115,12 +120,14 @@ curl -I https://dobeu.net
 ```
 
 **Root Causes:**
+
 - Failed build/deploy
 - Environment variable misconfiguration
 - Function timeout
 - MongoDB connection failure
 
 **Mitigation:**
+
 ```bash
 # Rollback to last known good deploy
 netlify rollback
@@ -135,11 +142,13 @@ netlify deploy --prod
 ### 2. Authentication Failures
 
 **Symptoms:**
+
 - Users cannot log in
 - "Invalid token" errors
 - Redirect loops on /auth
 
 **Triage Steps:**
+
 ```bash
 # Check Auth0 status
 curl https://status.auth0.com/api/v2/status.json
@@ -152,12 +161,14 @@ netlify logs:function --name=_auth0
 ```
 
 **Root Causes:**
+
 - Auth0 service outage
 - Expired/invalid credentials
 - CORS misconfiguration
 - Token expiration issues
 
 **Mitigation:**
+
 ```bash
 # Verify Auth0 configuration
 # Check: https://manage.auth0.com/dashboard
@@ -176,11 +187,13 @@ netlify deploy --prod
 ### 3. Database Connection Failures
 
 **Symptoms:**
+
 - "Cannot connect to database" errors
 - Timeout errors in function logs
 - 503 errors on API endpoints
 
 **Triage Steps:**
+
 ```bash
 # Check MongoDB Atlas status
 # Visit: https://status.mongodb.com/
@@ -196,6 +209,7 @@ mongosh "mongodb+srv://<cluster>.mongodb.net/" \
 ```
 
 **Root Causes:**
+
 - MongoDB Atlas outage
 - Connection pool exhaustion
 - X.509 certificate expired
@@ -203,6 +217,7 @@ mongosh "mongodb+srv://<cluster>.mongodb.net/" \
 - IP whitelist misconfiguration
 
 **Mitigation:**
+
 ```bash
 # Check IP whitelist in Atlas
 # Navigate to: Network Access → IP Access List
@@ -222,11 +237,13 @@ netlify deploy --prod
 ### 4. Build Failures
 
 **Symptoms:**
+
 - Deploy fails in Netlify
 - "Build failed" notification
 - TypeScript/ESLint errors
 
 **Triage Steps:**
+
 ```bash
 # Check build logs in Netlify dashboard
 # Or via CLI:
@@ -240,12 +257,14 @@ npm ls
 ```
 
 **Root Causes:**
+
 - Dependency conflicts
 - TypeScript errors
 - Missing environment variables
 - Out of memory during build
 
 **Mitigation:**
+
 ```bash
 # Fix dependency issues
 npm install --legacy-peer-deps
@@ -270,11 +289,13 @@ git push origin main
 ### 5. Function Timeouts
 
 **Symptoms:**
+
 - 504 Gateway Timeout
 - "Function execution timed out" in logs
 - Slow API responses
 
 **Triage Steps:**
+
 ```bash
 # Check function duration in Netlify
 netlify logs:function --name=<function-name>
@@ -287,12 +308,14 @@ netlify logs:function --name=<function-name>
 ```
 
 **Root Causes:**
+
 - Inefficient database queries
 - Large payload processing
 - External API timeouts
 - Memory leaks
 
 **Mitigation:**
+
 ```bash
 # Increase function timeout (netlify.toml)
 # Add to function config:
@@ -317,11 +340,13 @@ netlify deploy --prod
 ### 6. High Error Rate
 
 **Symptoms:**
+
 - Spike in 4xx/5xx errors
 - PostHog shows increased error events
 - User reports of broken features
 
 **Triage Steps:**
+
 ```bash
 # Check error logs in PostHog
 # Navigate to: Insights → Errors
@@ -335,12 +360,14 @@ netlify logs:function --name=<function-name> | grep ERROR
 ```
 
 **Root Causes:**
+
 - Recent deploy introduced bugs
 - API rate limiting
 - CORS issues
 - CSP blocking resources
 
 **Mitigation:**
+
 ```bash
 # Rollback to previous deploy
 netlify rollback
@@ -361,11 +388,13 @@ git diff HEAD~1
 ### 7. Performance Degradation
 
 **Symptoms:**
+
 - Slow page loads (> 3s)
 - Lighthouse score drop
 - User complaints about speed
 
 **Triage Steps:**
+
 ```bash
 # Run Lighthouse audit
 npx lighthouse https://dobeu.net --view
@@ -382,6 +411,7 @@ ls -lh dist/assets/*.js
 ```
 
 **Root Causes:**
+
 - Large bundle size
 - Unoptimized images
 - Slow database queries
@@ -389,6 +419,7 @@ ls -lh dist/assets/*.js
 - Too many external scripts
 
 **Mitigation:**
+
 ```bash
 # Analyze bundle
 npx vite-bundle-visualizer
@@ -563,21 +594,25 @@ git push origin main --force
 ### Severity Levels
 
 **P0 - Critical (Site Down)**
+
 - Response Time: Immediate
 - Escalate To: Engineering Lead
 - Actions: Page on-call, rollback immediately
 
 **P1 - High (Degraded Service)**
+
 - Response Time: < 15 minutes
 - Escalate To: On-call Engineer
 - Actions: Investigate, mitigate, communicate
 
 **P2 - Medium (Non-critical Issues)**
+
 - Response Time: < 1 hour
 - Escalate To: Team Slack
 - Actions: Create ticket, schedule fix
 
 **P3 - Low (Minor Issues)**
+
 - Response Time: Next business day
 - Escalate To: Backlog
 - Actions: Document, prioritize
@@ -585,15 +620,18 @@ git push origin main --force
 ### Contact Information
 
 **On-Call Engineer**
+
 - Slack: #engineering-oncall
 - Email: oncall@dobeu.wtf
 
 **Engineering Lead**
+
 - Name: Jeremy Williams
 - Email: jeremyw@dobeu.wtf
 - Slack: @jeremy
 
 **External Support**
+
 - Netlify Support: https://www.netlify.com/support/
 - MongoDB Atlas Support: https://support.mongodb.com/
 - Auth0 Support: https://support.auth0.com/
@@ -674,6 +712,7 @@ After resolving an incident:
 **After Hours:** Page on-call via PagerDuty (if configured)
 
 **Emergency Procedures:**
+
 1. Assess severity (P0-P3)
 2. Follow mitigation steps above
 3. Communicate in #incidents Slack channel

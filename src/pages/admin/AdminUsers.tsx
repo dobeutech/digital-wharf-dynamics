@@ -31,8 +31,11 @@ export default function AdminUsers() {
 
   const fetchUsers = async () => {
     try {
-      const usersData = await api.get<{ profiles: Profile[]; roles: UserRole[] }>("/admin-users");
-      
+      const usersData = await api.get<{
+        profiles: Profile[];
+        roles: UserRole[];
+      }>("/admin-users");
+
       if (usersData.profiles) {
         setProfiles(usersData.profiles);
       }
@@ -53,13 +56,20 @@ export default function AdminUsers() {
     }
   };
 
-  const toggleRole = async (userId: string, role: "admin" | "moderator" | "user") => {
+  const toggleRole = async (
+    userId: string,
+    role: "admin" | "moderator" | "user",
+  ) => {
     const currentRoles = userRoles.get(userId) || [];
     const hasRole = currentRoles.includes(role);
 
     try {
       if (hasRole) {
-        await api.post("/admin-users", { user_id: userId, role, enabled: false });
+        await api.post("/admin-users", {
+          user_id: userId,
+          role,
+          enabled: false,
+        });
         // Audit log for role removal
         await logAction({
           action: "ROLE_CHANGE",
@@ -71,7 +81,11 @@ export default function AdminUsers() {
         toast.success("Role removed successfully");
         fetchUsers();
       } else {
-        await api.post("/admin-users", { user_id: userId, role, enabled: true });
+        await api.post("/admin-users", {
+          user_id: userId,
+          role,
+          enabled: true,
+        });
         // Audit log for role addition
         await logAction({
           action: "ROLE_CHANGE",
@@ -88,7 +102,6 @@ export default function AdminUsers() {
       console.error(error);
     }
   };
-
 
   if (loading) {
     return (

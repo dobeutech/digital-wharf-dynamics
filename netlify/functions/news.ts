@@ -1,8 +1,8 @@
-import type { Handler } from '@netlify/functions';
-import { ObjectId } from 'mongodb';
-import { errorResponse, jsonResponse, readJson } from './_http';
-import { requireAuth, requirePermission } from './_auth0';
-import { getMongoDb } from './_mongo';
+import type { Handler } from "@netlify/functions";
+import { ObjectId } from "mongodb";
+import { errorResponse, jsonResponse, readJson } from "./_http";
+import { requireAuth, requirePermission } from "./_auth0";
+import { getMongoDb } from "./_mongo";
 
 type NewsletterPostDoc = {
   _id: ObjectId;
@@ -35,13 +35,16 @@ function toPost(d: NewsletterPostDoc) {
 export const handler: Handler = async (event) => {
   try {
     const db = await getMongoDb();
-    const col = db.collection<NewsletterPostDoc>('newsletter_posts');
+    const col = db.collection<NewsletterPostDoc>("newsletter_posts");
 
     const id = event.queryStringParameters?.id?.trim();
     const slug = event.queryStringParameters?.slug?.trim();
 
-    if (event.httpMethod === 'GET') {
-      const q: Record<string, unknown> = { is_published: true, is_public: true };
+    if (event.httpMethod === "GET") {
+      const q: Record<string, unknown> = {
+        is_published: true,
+        is_public: true,
+      };
       if (id) q._id = new ObjectId(id);
       if (slug) q.slug = slug;
       const docs = await col.find(q).sort({ published_at: -1 }).toArray();
@@ -50,13 +53,21 @@ export const handler: Handler = async (event) => {
 
     // Admin write ops
     const claims = await requireAuth(event);
-    requirePermission(claims, 'admin:access');
+    requirePermission(claims, "admin:access");
 
-    if (event.httpMethod === 'POST') {
-      const body = await readJson<Partial<NewsletterPostDoc> & { title?: string; content?: string; slug?: string }>(
-        event
-      );
-      if (!body.title || !body.content || !body.slug) return errorResponse(400, 'Missing required fields: title, content, slug');
+    if (event.httpMethod === "POST") {
+      const body = await readJson<
+        Partial<NewsletterPostDoc> & {
+          title?: string;
+          content?: string;
+          slug?: string;
+        }
+      >(event);
+      if (!body.title || !body.content || !body.slug)
+        return errorResponse(
+          400,
+          "Missing required fields: title, content, slug",
+        );
       const now = new Date().toISOString();
       const doc: NewsletterPostDoc = {
         _id: new ObjectId(),
@@ -74,10 +85,12 @@ export const handler: Handler = async (event) => {
       return jsonResponse(201, toPost(doc));
     }
 
-    return errorResponse(405, 'Method not allowed');
+    return errorResponse(405, "Method not allowed");
   } catch (err) {
-    return errorResponse(500, 'Internal error', err instanceof Error ? err.message : String(err));
+    return errorResponse(
+      500,
+      "Internal error",
+      err instanceof Error ? err.message : String(err),
+    );
   }
 };
-
-

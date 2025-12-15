@@ -30,6 +30,7 @@ VITE_TYPEFORM_ID=YOUR_FORM_ID
 ```
 
 For production (Netlify):
+
 1. Go to your Netlify dashboard
 2. Navigate to Site settings > Environment variables
 3. Add `VITE_TYPEFORM_ID` with your form ID
@@ -40,20 +41,20 @@ Edit `src/config/typeform.ts` to customize:
 
 ```typescript
 export const typeformConfig = {
-  formId: import.meta.env.VITE_TYPEFORM_ID || 'YOUR_TYPEFORM_ID',
-  
+  formId: import.meta.env.VITE_TYPEFORM_ID || "YOUR_TYPEFORM_ID",
+
   popup: {
-    mode: 'popup' as const,
+    mode: "popup" as const,
     autoClose: 3000, // Auto-close after completion (ms)
     hideHeaders: false,
     hideFooter: false,
     opacity: 85,
-    buttonText: 'Learn More',
+    buttonText: "Learn More",
   },
-  
+
   tracking: {
-    utm_source: 'dobeu_website',
-    utm_medium: 'website',
+    utm_source: "dobeu_website",
+    utm_medium: "website",
   },
 };
 ```
@@ -68,7 +69,7 @@ Already integrated in `src/components/layout/GlassmorphicHeader.tsx`:
 import { HeaderTypeformButton } from "@/components/TypeformButton";
 
 // In your component
-<HeaderTypeformButton source="header" />
+<HeaderTypeformButton source="header" />;
 ```
 
 ### Footer CTA
@@ -79,7 +80,7 @@ Already integrated in `src/components/layout/FloatingFooter.tsx`:
 import { LearnMoreButton } from "@/components/TypeformButton";
 
 // In your component
-<LearnMoreButton source="footer-cta" />
+<LearnMoreButton source="footer-cta" />;
 ```
 
 ### Floating Action Button
@@ -93,8 +94,8 @@ export default function YourPage() {
   return (
     <>
       {/* Your page content */}
-      <TypeformFloatingButton 
-        position="bottom-right" 
+      <TypeformFloatingButton
+        position="bottom-right"
         source="your-page"
         title="Let's Talk"
         description="Your custom description"
@@ -105,6 +106,7 @@ export default function YourPage() {
 ```
 
 **Position options:**
+
 - `bottom-right` (default)
 - `bottom-left`
 - `top-right`
@@ -124,7 +126,7 @@ import { TypeformButton } from "@/components/TypeformButton";
   text="Contact Us"
   icon="message"
   className="your-custom-classes"
-/>
+/>;
 ```
 
 ### Lightbox/Modal
@@ -132,7 +134,10 @@ import { TypeformButton } from "@/components/TypeformButton";
 Use the lightbox directly with custom trigger:
 
 ```tsx
-import { TypeformLightbox, useTypeformLightbox } from "@/components/TypeformLightbox";
+import {
+  TypeformLightbox,
+  useTypeformLightbox,
+} from "@/components/TypeformLightbox";
 
 export function YourComponent() {
   const { isOpen, open, close } = useTypeformLightbox();
@@ -140,7 +145,7 @@ export function YourComponent() {
   return (
     <>
       <button onClick={open}>Open Form</button>
-      
+
       <TypeformLightbox
         isOpen={isOpen}
         onClose={close}
@@ -160,6 +165,7 @@ export function YourComponent() {
 Main button component with multiple variants.
 
 **Props:**
+
 - `variant`: "default" | "outline" | "ghost" | "link" | "secondary"
 - `size`: "default" | "sm" | "lg" | "icon"
 - `source`: String for analytics tracking
@@ -173,6 +179,7 @@ Main button component with multiple variants.
 Floating action button with pulse animation.
 
 **Props:**
+
 - `position`: "bottom-right" | "bottom-left" | "top-right" | "top-left"
 - `source`: String for analytics tracking
 - `title`: Hover text
@@ -183,6 +190,7 @@ Floating action button with pulse animation.
 Modal/dialog with embedded Typeform.
 
 **Props:**
+
 - `isOpen`: Boolean to control visibility
 - `onClose`: Function to close modal
 - `source`: String for analytics tracking
@@ -194,7 +202,7 @@ Modal/dialog with embedded Typeform.
 All Typeform interactions are tracked via Mixpanel:
 
 - **Event**: "Typeform Opened"
-- **Properties**: 
+- **Properties**:
   - `source`: Where the form was triggered from
   - `text`: Button text (for buttons)
 
@@ -237,6 +245,7 @@ To test the integration:
 ### Form opens in new window instead of popup
 
 This is the fallback behavior when the Typeform SDK isn't loaded. Ensure:
+
 - The script tag is in `index.html`: `<script src="https://embed.typeform.com/next/embed.js"></script>`
 - The page has fully loaded before clicking
 
@@ -268,7 +277,7 @@ export function LearnMoreButton({ source = "learn-more" }: { source?: string }) 
 Update the gradient classes in the component files:
 
 ```tsx
-className="bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500"
+className = "bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500";
 ```
 
 ### Add to more pages
@@ -279,12 +288,13 @@ Import and add the floating button to any page component:
 import { TypeformFloatingButton } from "@/components/TypeformFloatingButton";
 
 // Add to your page JSX
-<TypeformFloatingButton source="page-name" />
+<TypeformFloatingButton source="page-name" />;
 ```
 
 ## Support
 
 For issues or questions:
+
 1. Check the Typeform documentation: https://www.typeform.com/help/
 2. Review the component source code in `src/components/`
 3. Check the configuration in `src/config/typeform.ts`
@@ -292,6 +302,7 @@ For issues or questions:
 ## Future Enhancements
 
 Potential improvements:
+
 - [ ] Add form submission webhooks
 - [ ] Integrate with CRM systems
 - [ ] Add custom thank you page

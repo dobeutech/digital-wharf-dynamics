@@ -41,7 +41,8 @@ const defaultPreferences: AccessibilityPreferences = {
 
 export function AccessibilitySettings() {
   const [isOpen, setIsOpen] = useState(false);
-  const [preferences, setPreferences] = useState<AccessibilityPreferences>(defaultPreferences);
+  const [preferences, setPreferences] =
+    useState<AccessibilityPreferences>(defaultPreferences);
   const { t } = useLanguage();
 
   // Load preferences from localStorage on mount
@@ -58,17 +59,17 @@ export function AccessibilitySettings() {
 
     // Check system preferences
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setPreferences(prev => ({ ...prev, reducedMotion: true }));
+      setPreferences((prev) => ({ ...prev, reducedMotion: true }));
     }
     if (window.matchMedia("(prefers-contrast: more)").matches) {
-      setPreferences(prev => ({ ...prev, highContrast: true }));
+      setPreferences((prev) => ({ ...prev, highContrast: true }));
     }
   }, []);
 
   // Apply preferences to document
   useEffect(() => {
     const root = document.documentElement;
-    
+
     // Reduced motion
     if (preferences.reducedMotion) {
       root.classList.add("reduce-motion");
@@ -98,14 +99,17 @@ export function AccessibilitySettings() {
     }
 
     // Save to localStorage
-    localStorage.setItem("accessibility-preferences", JSON.stringify(preferences));
+    localStorage.setItem(
+      "accessibility-preferences",
+      JSON.stringify(preferences),
+    );
   }, [preferences]);
 
   const updatePreference = <K extends keyof AccessibilityPreferences>(
     key: K,
-    value: AccessibilityPreferences[K]
+    value: AccessibilityPreferences[K],
   ) => {
-    setPreferences(prev => ({ ...prev, [key]: value }));
+    setPreferences((prev) => ({ ...prev, [key]: value }));
   };
 
   const resetPreferences = () => {
@@ -133,15 +137,19 @@ export function AccessibilitySettings() {
             {t("a11y.settings")}
           </DialogTitle>
           <DialogDescription>
-            Customize your viewing experience. These settings are saved to your device.
+            Customize your viewing experience. These settings are saved to your
+            device.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-6 py-4">
           {/* Reduced Motion */}
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="reduced-motion" className="flex items-center gap-2">
+              <Label
+                htmlFor="reduced-motion"
+                className="flex items-center gap-2"
+              >
                 <MousePointer className="h-4 w-4" />
                 Reduce Motion
               </Label>
@@ -152,14 +160,19 @@ export function AccessibilitySettings() {
             <Switch
               id="reduced-motion"
               checked={preferences.reducedMotion}
-              onCheckedChange={(checked) => updatePreference("reducedMotion", checked)}
+              onCheckedChange={(checked) =>
+                updatePreference("reducedMotion", checked)
+              }
             />
           </div>
 
           {/* High Contrast */}
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="high-contrast" className="flex items-center gap-2">
+              <Label
+                htmlFor="high-contrast"
+                className="flex items-center gap-2"
+              >
                 <Eye className="h-4 w-4" />
                 High Contrast
               </Label>
@@ -170,7 +183,9 @@ export function AccessibilitySettings() {
             <Switch
               id="high-contrast"
               checked={preferences.highContrast}
-              onCheckedChange={(checked) => updatePreference("highContrast", checked)}
+              onCheckedChange={(checked) =>
+                updatePreference("highContrast", checked)
+              }
             />
           </div>
 
@@ -188,7 +203,9 @@ export function AccessibilitySettings() {
             <Switch
               id="large-text"
               checked={preferences.largeText}
-              onCheckedChange={(checked) => updatePreference("largeText", checked)}
+              onCheckedChange={(checked) =>
+                updatePreference("largeText", checked)
+              }
             />
           </div>
 
@@ -201,7 +218,9 @@ export function AccessibilitySettings() {
               </Label>
               <Slider
                 value={[preferences.textSize]}
-                onValueChange={(value) => updatePreference("textSize", value[0])}
+                onValueChange={(value) =>
+                  updatePreference("textSize", value[0])
+                }
                 min={80}
                 max={150}
                 step={5}
@@ -219,7 +238,10 @@ export function AccessibilitySettings() {
           {/* Enhanced Focus Indicator */}
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
-              <Label htmlFor="focus-indicator" className="flex items-center gap-2">
+              <Label
+                htmlFor="focus-indicator"
+                className="flex items-center gap-2"
+              >
                 <MousePointer className="h-4 w-4" />
                 Enhanced Focus Ring
               </Label>
@@ -230,7 +252,9 @@ export function AccessibilitySettings() {
             <Switch
               id="focus-indicator"
               checked={preferences.focusIndicator}
-              onCheckedChange={(checked) => updatePreference("focusIndicator", checked)}
+              onCheckedChange={(checked) =>
+                updatePreference("focusIndicator", checked)
+              }
             />
           </div>
 
@@ -248,7 +272,9 @@ export function AccessibilitySettings() {
             <Switch
               id="sr-optimized"
               checked={preferences.screenReaderOptimized}
-              onCheckedChange={(checked) => updatePreference("screenReaderOptimized", checked)}
+              onCheckedChange={(checked) =>
+                updatePreference("screenReaderOptimized", checked)
+              }
             />
           </div>
         </div>
@@ -257,9 +283,7 @@ export function AccessibilitySettings() {
           <Button variant="outline" onClick={resetPreferences}>
             Reset to Defaults
           </Button>
-          <Button onClick={() => setIsOpen(false)}>
-            Done
-          </Button>
+          <Button onClick={() => setIsOpen(false)}>Done</Button>
         </div>
       </DialogContent>
     </Dialog>

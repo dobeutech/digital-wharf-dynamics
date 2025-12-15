@@ -22,7 +22,9 @@ export function MobileMenu({
   onClose,
   onLogout,
 }: MobileMenuProps) {
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set(),
+  );
 
   const toggleCategory = (label: string) => {
     setExpandedCategories((prev) => {
@@ -51,7 +53,7 @@ export function MobileMenu({
                   onClick={onClose}
                   className={cn(
                     "flex items-center gap-3 px-3 py-3 text-sm font-medium",
-                    "hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]"
+                    "hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]",
                   )}
                 >
                   {Icon && <Icon className="h-5 w-5" />}
@@ -70,7 +72,7 @@ export function MobileMenu({
                     className={cn(
                       "w-full flex items-center justify-between px-3 py-3",
                       "text-sm font-semibold text-muted-foreground",
-                      "hover:bg-muted rounded-md transition-colors min-h-[44px]"
+                      "hover:bg-muted rounded-md transition-colors min-h-[44px]",
                     )}
                   >
                     {category.label}
@@ -93,7 +95,7 @@ export function MobileMenu({
                               onClick={onClose}
                               className={cn(
                                 "flex items-center gap-3 px-3 py-2.5 text-sm",
-                                "hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]"
+                                "hover:text-primary hover:bg-muted rounded-md transition-colors min-h-[44px]",
                               )}
                             >
                               {Icon && <Icon className="h-4 w-4" />}

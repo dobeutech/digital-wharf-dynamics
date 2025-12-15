@@ -9,6 +9,7 @@ npm install
 ```
 
 This will install all new testing and development dependencies including:
+
 - Vitest (unit testing)
 - Playwright (E2E testing)
 - Testing Library (React testing utilities)
@@ -63,11 +64,13 @@ supabase migration up
 ### Migration Details
 
 **Rate Limits Table:**
+
 - Creates `rate_limits` table for persistent rate limiting
 - Enables RLS (Row Level Security)
 - Sets up automatic cleanup function
 
 **Database Backups Table:**
+
 - Creates `database_backups` table for storing backup records
 - Enables RLS
 - Sets up size calculation triggers
@@ -138,6 +141,7 @@ After deployment, verify security headers are working:
 ## Step 8: Set Up Monitoring (Optional but Recommended)
 
 Follow the guide in `docs/monitoring-setup.md` to:
+
 - Set up Sentry for error tracking
 - Configure uptime monitoring
 - Set up performance monitoring
@@ -166,6 +170,7 @@ SELECT cron.schedule(
 ### Option 2: External Scheduler
 
 Use a service like:
+
 - **GitHub Actions** (scheduled workflow)
 - **Cron job** on your server
 - **Cloud Scheduler** (GCP/AWS)
@@ -177,8 +182,8 @@ name: Daily Backup
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # 2 AM UTC daily
-  workflow_dispatch:  # Allow manual trigger
+    - cron: "0 2 * * *" # 2 AM UTC daily
+  workflow_dispatch: # Allow manual trigger
 
 jobs:
   backup:
@@ -245,8 +250,8 @@ jobs:
 ## Support
 
 If you encounter issues:
+
 1. Check the troubleshooting section above
 2. Review error logs in browser console and Supabase Dashboard
 3. Verify all environment variables are set correctly
 4. Ensure database migrations are applied
-

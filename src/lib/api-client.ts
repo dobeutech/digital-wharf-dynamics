@@ -2,7 +2,12 @@
  * API client with retry logic and error handling
  */
 
-import { handleApiError, logError, ErrorSeverity, ErrorCategory } from './error-handler';
+import {
+  handleApiError,
+  logError,
+  ErrorSeverity,
+  ErrorCategory,
+} from "./error-handler";
 
 interface RequestOptions extends RequestInit {
   retries?: number;
@@ -17,7 +22,7 @@ interface RequestOptions extends RequestInit {
 async function getAuthToken(): Promise<string | null> {
   try {
     // Dynamically import to avoid circular dependency
-    const { useAuth } = await import('@/contexts/AuthContext');
+    const { useAuth } = await import("@/contexts/AuthContext");
     // Note: This won't work directly in a non-React context
     // We'll need to pass the token from components
     return null;
@@ -31,7 +36,7 @@ async function getAuthToken(): Promise<string | null> {
  */
 export async function apiRequest<T>(
   url: string,
-  options: RequestOptions = {}
+  options: RequestOptions = {},
 ): Promise<T> {
   const {
     retries = 3,
@@ -49,7 +54,7 @@ export async function apiRequest<T>(
 
   const headers = new Headers(fetchOptions.headers);
   if (authToken) {
-    headers.set('Authorization', `Bearer ${authToken}`);
+    headers.set("Authorization", `Bearer ${authToken}`);
   }
 
   const controller = new AbortController();
@@ -65,34 +70,34 @@ export async function apiRequest<T>(
         });
 
         if (!res.ok) {
-          const errorText = await res.text().catch(() => 'Unknown error');
+          const errorText = await res.text().catch(() => "Unknown error");
           throw new Error(`HTTP ${res.status}: ${errorText}`);
         }
 
         return res;
       },
-      { retries, retryDelay }
+      { retries, retryDelay },
     );
 
     clearTimeout(timeoutId);
     return await response.json();
   } catch (error) {
     clearTimeout(timeoutId);
-    
+
     if (error instanceof Error) {
-      if (error.name === 'AbortError') {
-        logError(new Error('Request timeout'), {
+      if (error.name === "AbortError") {
+        logError(new Error("Request timeout"), {
           severity: ErrorSeverity.MEDIUM,
           category: ErrorCategory.NETWORK,
           context: { url, timeout },
         });
-        throw new Error('Request timed out');
+        throw new Error("Request timed out");
       }
 
       logError(error, {
         severity: ErrorSeverity.MEDIUM,
         category: ErrorCategory.NETWORK,
-        context: { url, method: fetchOptions.method || 'GET' },
+        context: { url, method: fetchOptions.method || "GET" },
       });
     }
 
@@ -104,18 +109,22 @@ export async function apiRequest<T>(
  * GET request helper
  */
 export function get<T>(url: string, options?: RequestOptions): Promise<T> {
-  return apiRequest<T>(url, { ...options, method: 'GET' });
+  return apiRequest<T>(url, { ...options, method: "GET" });
 }
 
 /**
  * POST request helper
  */
-export function post<T>(url: string, data?: unknown, options?: RequestOptions): Promise<T> {
+export function post<T>(
+  url: string,
+  data?: unknown,
+  options?: RequestOptions,
+): Promise<T> {
   return apiRequest<T>(url, {
     ...options,
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...options?.headers,
     },
     body: data ? JSON.stringify(data) : undefined,
@@ -125,12 +134,16 @@ export function post<T>(url: string, data?: unknown, options?: RequestOptions): 
 /**
  * PUT request helper
  */
-export function put<T>(url: string, data?: unknown, options?: RequestOptions): Promise<T> {
+export function put<T>(
+  url: string,
+  data?: unknown,
+  options?: RequestOptions,
+): Promise<T> {
   return apiRequest<T>(url, {
     ...options,
-    method: 'PUT',
+    method: "PUT",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...options?.headers,
     },
     body: data ? JSON.stringify(data) : undefined,
@@ -141,7 +154,7 @@ export function put<T>(url: string, data?: unknown, options?: RequestOptions): P
  * DELETE request helper
  */
 export function del<T>(url: string, options?: RequestOptions): Promise<T> {
-  return apiRequest<T>(url, { ...options, method: 'DELETE' });
+  return apiRequest<T>(url, { ...options, method: "DELETE" });
 }
 
 /**
@@ -155,20 +168,20 @@ export class NetlifyFunctionsClient {
   constructor(getTokenFn?: () => Promise<string | null>) {
     // Use Netlify Functions URL in production, localhost in development
     this.baseUrl = import.meta.env.PROD
-      ? '/.netlify/functions'
-      : 'http://localhost:8888/.netlify/functions';
+      ? "/.netlify/functions"
+      : "http://localhost:8888/.netlify/functions";
     this.getToken = getTokenFn || null;
   }
 
   private async getHeaders(): Promise<HeadersInit> {
     const headers: HeadersInit = {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     };
 
     if (this.getToken) {
       const token = await this.getToken();
       if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
+        headers["Authorization"] = `Bearer ${token}`;
       }
     }
 
@@ -179,26 +192,34 @@ export class NetlifyFunctionsClient {
     const headers = await this.getHeaders();
     return apiRequest<T>(`${this.baseUrl}${endpoint}`, {
       ...options,
-      method: 'GET',
+      method: "GET",
       headers: { ...headers, ...options?.headers },
     });
   }
 
-  async post<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
+  async post<T>(
+    endpoint: string,
+    data?: unknown,
+    options?: RequestOptions,
+  ): Promise<T> {
     const headers = await this.getHeaders();
     return apiRequest<T>(`${this.baseUrl}${endpoint}`, {
       ...options,
-      method: 'POST',
+      method: "POST",
       headers: { ...headers, ...options?.headers },
       body: data ? JSON.stringify(data) : undefined,
     });
   }
 
-  async put<T>(endpoint: string, data?: unknown, options?: RequestOptions): Promise<T> {
+  async put<T>(
+    endpoint: string,
+    data?: unknown,
+    options?: RequestOptions,
+  ): Promise<T> {
     const headers = await this.getHeaders();
     return apiRequest<T>(`${this.baseUrl}${endpoint}`, {
       ...options,
-      method: 'PUT',
+      method: "PUT",
       headers: { ...headers, ...options?.headers },
       body: data ? JSON.stringify(data) : undefined,
     });
@@ -208,9 +229,8 @@ export class NetlifyFunctionsClient {
     const headers = await this.getHeaders();
     return apiRequest<T>(`${this.baseUrl}${endpoint}`, {
       ...options,
-      method: 'DELETE',
+      method: "DELETE",
       headers: { ...headers, ...options?.headers },
     });
   }
 }
-

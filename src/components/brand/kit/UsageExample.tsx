@@ -22,7 +22,9 @@ export function UsageExample({ title, dos, donts }: UsageExampleProps) {
           <ul className="space-y-2">
             {dos.map((item, index) => (
               <li key={index} className="text-sm flex items-start gap-2">
-                <span className="text-green-600 dark:text-green-400 mt-1">✓</span>
+                <span className="text-green-600 dark:text-green-400 mt-1">
+                  ✓
+                </span>
                 <span>{item}</span>
               </li>
             ))}

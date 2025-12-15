@@ -15,9 +15,20 @@ const LOGO_SOURCES = [
   "/logo.jpeg",
 ];
 
-function SvgTextLogo({ variant, className }: { variant: "default" | "white" | "dark"; className?: string }) {
-  const fillColor = variant === "white" ? "#FFFFFF" : variant === "dark" ? "#000000" : "currentColor";
-  
+function SvgTextLogo({
+  variant,
+  className,
+}: {
+  variant: "default" | "white" | "dark";
+  className?: string;
+}) {
+  const fillColor =
+    variant === "white"
+      ? "#FFFFFF"
+      : variant === "dark"
+        ? "#000000"
+        : "currentColor";
+
   return (
     <svg
       viewBox="0 0 240 60"

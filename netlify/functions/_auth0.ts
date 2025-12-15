@@ -1,5 +1,5 @@
-import type { HandlerEvent } from '@netlify/functions';
-import { createRemoteJWKSet, jwtVerify } from 'jose';
+import type { HandlerEvent } from "@netlify/functions";
+import { createRemoteJWKSet, jwtVerify } from "jose";
 
 export type Auth0Claims = {
   sub: string;
@@ -10,7 +10,7 @@ export type Auth0Claims = {
 
 function requireEnv(name: string): string {
   const val = process.env[name];
-  if (!val || val.trim() === '') {
+  if (!val || val.trim() === "") {
     throw new Error(`Missing required environment variable: ${name}`);
   }
   return val;
@@ -29,24 +29,30 @@ function getBearerToken(event: HandlerEvent): string | null {
   return match ? match[1] : null;
 }
 
-function extractArrayClaim(claims: Record<string, unknown>, key: string): string[] {
+function extractArrayClaim(
+  claims: Record<string, unknown>,
+  key: string,
+): string[] {
   const v = claims[key];
   if (!v) return [];
-  if (Array.isArray(v)) return v.filter((x) => typeof x === 'string') as string[];
+  if (Array.isArray(v))
+    return v.filter((x) => typeof x === "string") as string[];
   return [];
 }
 
-export async function verifyAuth0Jwt(event: HandlerEvent): Promise<Auth0Claims> {
+export async function verifyAuth0Jwt(
+  event: HandlerEvent,
+): Promise<Auth0Claims> {
   const token = getBearerToken(event);
   if (!token) {
-    throw new Error('Missing Authorization bearer token');
+    throw new Error("Missing Authorization bearer token");
   }
 
-  const domain = requireEnv('AUTH0_DOMAIN');
-  const audience = requireEnv('AUTH0_AUDIENCE');
+  const domain = requireEnv("AUTH0_DOMAIN");
+  const audience = requireEnv("AUTH0_AUDIENCE");
   const issuer = `https://${domain}/`;
   if (!jwks) {
-    throw new Error('Auth0 JWKS not configured (missing AUTH0_DOMAIN)');
+    throw new Error("Auth0 JWKS not configured (missing AUTH0_DOMAIN)");
   }
 
   const { payload } = await jwtVerify(token, jwks, {
@@ -55,16 +61,16 @@ export async function verifyAuth0Jwt(event: HandlerEvent): Promise<Auth0Claims> 
   });
 
   const claims = payload as unknown as Record<string, unknown>;
-  const sub = typeof claims.sub === 'string' ? claims.sub : '';
-  if (!sub) throw new Error('Invalid token (missing sub)');
+  const sub = typeof claims.sub === "string" ? claims.sub : "";
+  if (!sub) throw new Error("Invalid token (missing sub)");
 
   // Auth0 RBAC commonly exposes "permissions" on the access token when enabled.
-  const permissions = extractArrayClaim(claims, 'permissions');
+  const permissions = extractArrayClaim(claims, "permissions");
 
   // Roles are often namespaced, but allow a configurable namespace.
   const ns = process.env.AUTH0_CLAIMS_NAMESPACE?.trim();
   const roles = [
-    ...extractArrayClaim(claims, 'roles'),
+    ...extractArrayClaim(claims, "roles"),
     ...(ns ? extractArrayClaim(claims, `${ns}/roles`) : []),
   ];
 
@@ -88,5 +94,3 @@ export function requireRole(claims: Auth0Claims, role: string) {
     throw new Error(`Forbidden (missing role: ${role})`);
   }
 }
-
-

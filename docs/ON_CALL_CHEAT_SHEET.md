@@ -6,30 +6,33 @@
 
 ## 🚨 EMERGENCY CONTACTS
 
-| Role | Contact |
-|------|---------|
-| Engineering Lead | jeremyw@dobeu.wtf |
-| On-Call Slack | #engineering-oncall |
-| Team Slack | #engineering |
-| Incidents | #incidents |
+| Role             | Contact             |
+| ---------------- | ------------------- |
+| Engineering Lead | jeremyw@dobeu.wtf   |
+| On-Call Slack    | #engineering-oncall |
+| Team Slack       | #engineering        |
+| Incidents        | #incidents          |
 
 ---
 
 ## 🔥 IMMEDIATE RESPONSE (< 2 MIN)
 
 ### Site Down
+
 ```bash
 curl -I https://dobeu.net
 netlify rollback
 ```
 
 ### Auth Broken
+
 ```bash
 curl https://status.auth0.com/api/v2/status.json
 netlify logs:function --name=_auth0 | tail -20
 ```
 
 ### Database Down
+
 ```bash
 # Check MongoDB status: https://status.mongodb.com/
 netlify logs:function --name=projects | grep -i mongo
@@ -49,6 +52,7 @@ netlify logs:function --name=projects | grep -i mongo
 ## 🔍 DIAGNOSTIC COMMANDS
 
 ### Quick Health Check
+
 ```bash
 # All-in-one health check
 curl -I https://dobeu.net && \
@@ -57,6 +61,7 @@ echo "✅ Basic health OK"
 ```
 
 ### Check Logs
+
 ```bash
 # Function logs (last 50 lines)
 netlify logs:function --name=<function-name> | tail -50
@@ -69,6 +74,7 @@ netlify logs:function --name=<function> | grep -i error
 ```
 
 ### Check Recent Deploys
+
 ```bash
 # List last 5 deploys
 netlify deploy:list | head -5
@@ -82,16 +88,19 @@ netlify status
 ## 🔄 ROLLBACK PROCEDURES
 
 ### Method 1: CLI (Fastest)
+
 ```bash
 netlify rollback
 ```
 
 ### Method 2: Dashboard
+
 1. Go to: https://app.netlify.com/projects/dobeutech/deploys
 2. Find last successful deploy
 3. Click "Publish deploy"
 
 ### Method 3: Git Revert
+
 ```bash
 git revert HEAD
 git push origin main
@@ -102,23 +111,25 @@ git push origin main
 
 ## 🎯 SEVERITY LEVELS
 
-| Level | Response | Action |
-|-------|----------|--------|
+| Level  | Response  | Action               |
+| ------ | --------- | -------------------- |
 | **P0** | Immediate | Rollback + Page lead |
-| **P1** | < 15 min | Investigate + Slack |
-| **P2** | < 1 hour | Create ticket |
-| **P3** | Next day | Backlog |
+| **P1** | < 15 min  | Investigate + Slack  |
+| **P2** | < 1 hour  | Create ticket        |
+| **P3** | Next day  | Backlog              |
 
 ---
 
 ## 📞 ESCALATION
 
 ### When to Escalate
+
 - P0: Immediately
 - P1: After 15 minutes if not resolved
 - P2: After 1 hour if not resolved
 
 ### How to Escalate
+
 1. Post in #incidents with details
 2. @ mention engineering lead
 3. If after hours: Use PagerDuty (if configured)
@@ -128,6 +139,7 @@ git push origin main
 ## 💬 COMMUNICATION TEMPLATES
 
 ### Initial Alert
+
 ```
 🚨 INCIDENT: [Brief description]
 Severity: P[0-3]
@@ -137,6 +149,7 @@ ETA: [Unknown/15min/30min]
 ```
 
 ### Update (Every 15 min)
+
 ```
 📊 UPDATE: [What we found]
 Actions: [What we did]
@@ -146,6 +159,7 @@ ETA: [Updated]
 ```
 
 ### Resolution
+
 ```
 ✅ RESOLVED: [Brief description]
 Cause: [What caused it]
@@ -159,11 +173,13 @@ Follow-up: [Ticket link]
 ## 🛠️ COMMON FIXES
 
 ### Site Down
+
 ```bash
 netlify rollback
 ```
 
 ### Auth Errors
+
 ```bash
 # Check Auth0 status first
 # If Auth0 is up, check env vars:
@@ -171,12 +187,14 @@ netlify env:list | grep AUTH0
 ```
 
 ### Database Errors
+
 ```bash
 # Restart functions (redeploy)
 netlify deploy --prod
 ```
 
 ### Build Failures
+
 ```bash
 # Check build logs
 netlify logs:deploy
@@ -186,6 +204,7 @@ npm run build
 ```
 
 ### High Error Rate
+
 ```bash
 # Check PostHog: https://us.posthog.com/
 # If recent deploy, rollback:
@@ -196,32 +215,36 @@ netlify rollback
 
 ## 📈 KEY METRICS
 
-| Metric | Normal | Warning | Critical |
-|--------|--------|---------|----------|
-| Response Time | < 500ms | 500-1000ms | > 1000ms |
-| Error Rate | < 0.1% | 0.1-1% | > 1% |
-| Function Duration | < 2s | 2-5s | > 5s |
-| DB Connections | < 100 | 100-200 | > 200 |
+| Metric            | Normal  | Warning    | Critical |
+| ----------------- | ------- | ---------- | -------- |
+| Response Time     | < 500ms | 500-1000ms | > 1000ms |
+| Error Rate        | < 0.1%  | 0.1-1%     | > 1%     |
+| Function Duration | < 2s    | 2-5s       | > 5s     |
+| DB Connections    | < 100   | 100-200    | > 200    |
 
 ---
 
 ## 🔗 QUICK LINKS
 
 ### Production
+
 - Site: https://dobeu.net
 - Health: https://dobeu.net/.netlify/functions/health
 
 ### Dashboards
+
 - Netlify: https://app.netlify.com/projects/dobeutech
 - MongoDB: https://cloud.mongodb.com/
 - PostHog: https://us.posthog.com/
 
 ### Status Pages
+
 - Netlify: https://www.netlifystatus.com/
 - MongoDB: https://status.mongodb.com/
 - Auth0: https://status.auth0.com/
 
 ### Documentation
+
 - Full Runbook: docs/OPERATIONAL_RUNBOOK.md
 - Quick Guide: docs/QUICK_INCIDENT_RESPONSE.md
 - Monitoring: docs/MONITORING_SETUP.md
@@ -252,18 +275,21 @@ Is site accessible?
 ## 🔐 CREDENTIALS
 
 ### Netlify
+
 ```bash
 export NETLIFY_AUTH_TOKEN="<token>"
 # Token stored in: 1Password / Secrets Manager
 ```
 
 ### MongoDB
+
 ```bash
 # Certificate location: ~/.mongodb/cert.pem
 # Connection string in: Netlify env vars
 ```
 
 ### Auth0
+
 ```bash
 # Dashboard: https://manage.auth0.com/
 # Credentials in: 1Password / Secrets Manager
@@ -346,11 +372,11 @@ netlify deploy --prod --dir=dist
 
 ## 📞 EXTERNAL SUPPORT
 
-| Service | Support |
-|---------|---------|
+| Service | Support                          |
+| ------- | -------------------------------- |
 | Netlify | https://www.netlify.com/support/ |
-| MongoDB | https://support.mongodb.com/ |
-| Auth0 | https://support.auth0.com/ |
+| MongoDB | https://support.mongodb.com/     |
+| Auth0   | https://support.auth0.com/       |
 
 ---
 
@@ -374,9 +400,9 @@ netlify deploy --prod --dir=dist
 
 ---
 
-**Print Date:** ___________  
-**On-Call Period:** ___________  
-**Backup Contact:** ___________
+**Print Date:** ****\_\_\_****  
+**On-Call Period:** ****\_\_\_****  
+**Backup Contact:** ****\_\_\_****
 
 ---
 

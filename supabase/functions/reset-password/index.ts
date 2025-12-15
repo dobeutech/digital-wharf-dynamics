@@ -4,7 +4,8 @@ import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
 };
 
 // Simple rate limiting using in-memory store (resets on function restart)
@@ -17,7 +18,10 @@ function isRateLimited(identifier: string): boolean {
   const record = rateLimitMap.get(identifier);
 
   if (!record || now > record.resetTime) {
-    rateLimitMap.set(identifier, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
+    rateLimitMap.set(identifier, {
+      count: 1,
+      resetTime: now + RATE_LIMIT_WINDOW,
+    });
     return false;
   }
 
@@ -39,32 +43,31 @@ serve(async (req) => {
 
     // Validate email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || typeof email !== "string" || !emailRegex.test(email) || email.length > 255) {
-      return new Response(
-        JSON.stringify({ error: "Invalid email address" }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+    if (
+      !email ||
+      typeof email !== "string" ||
+      !emailRegex.test(email) ||
+      email.length > 255
+    ) {
+      return new Response(JSON.stringify({ error: "Invalid email address" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Rate limiting by email
     if (isRateLimited(email.toLowerCase())) {
       console.log(`Rate limit exceeded for email: ${email.substring(0, 3)}***`);
       // Return success anyway to prevent email enumeration
-      return new Response(
-        JSON.stringify({ success: true }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     const supabaseAdmin = createClient(
       Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
     // Get the origin from the request headers
@@ -82,13 +85,10 @@ serve(async (req) => {
     if (error) {
       console.error("Error generating reset link:", error);
       // Return success anyway to prevent email enumeration
-      return new Response(
-        JSON.stringify({ success: true }),
-        {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
     }
 
     // Send reset email via Resend
@@ -136,13 +136,10 @@ serve(async (req) => {
     }
 
     // Always return success to prevent email enumeration
-    return new Response(
-      JSON.stringify({ success: true }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
-    );
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
     console.error("Password reset error:", error);
     return new Response(
@@ -150,7 +147,7 @@ serve(async (req) => {
       {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
-      }
+      },
     );
   }
 });

@@ -19,6 +19,7 @@ This directory contains all operational runbooks, procedures, and guides for man
 Quick reference for common failure modes with immediate mitigation steps.
 
 **Use when:**
+
 - Site is down
 - Users reporting errors
 - Performance degraded
@@ -31,6 +32,7 @@ Quick reference for common failure modes with immediate mitigation steps.
 ### [Operational Runbook](./OPERATIONAL_RUNBOOK.md)
 
 Comprehensive runbook covering:
+
 - Service architecture
 - All failure modes
 - Diagnostic procedures
@@ -38,6 +40,7 @@ Comprehensive runbook covering:
 - Escalation paths
 
 **Use when:**
+
 - Investigating complex issues
 - Need detailed diagnostic steps
 - Planning incident response
@@ -50,6 +53,7 @@ Comprehensive runbook covering:
 ### [Monitoring Setup Guide](./MONITORING_SETUP.md)
 
 Complete monitoring configuration:
+
 - Dashboard setup
 - Alert configuration
 - Log aggregation
@@ -57,6 +61,7 @@ Complete monitoring configuration:
 - Performance monitoring
 
 **Use when:**
+
 - Setting up new monitoring
 - Configuring alerts
 - Troubleshooting monitoring gaps
@@ -164,12 +169,12 @@ mongosh "mongodb+srv://<cluster>.mongodb.net/" --eval "db.runCommand({ping:1})"
 
 ### Severity Levels
 
-| Level | Response | Contact |
-|-------|----------|---------|
+| Level         | Response  | Contact                      |
+| ------------- | --------- | ---------------------------- |
 | P0 - Critical | Immediate | PagerDuty + Engineering Lead |
-| P1 - High | < 15 min | On-call Engineer |
-| P2 - Medium | < 1 hour | Team Slack |
-| P3 - Low | Next day | Backlog |
+| P1 - High     | < 15 min  | On-call Engineer             |
+| P2 - Medium   | < 1 hour  | Team Slack                   |
+| P3 - Low      | Next day  | Backlog                      |
 
 ### Key Contacts
 
@@ -240,18 +245,21 @@ mongosh "mongodb+srv://<cluster>.mongodb.net/" --eval "db.runCommand({ping:1})"
 ### For New On-Call Engineers
 
 **Week 1:**
+
 1. Read [Operational Runbook](./OPERATIONAL_RUNBOOK.md)
 2. Review [Quick Incident Response](./QUICK_INCIDENT_RESPONSE.md)
 3. Get access to all dashboards
 4. Test alert channels
 
 **Week 2:**
+
 1. Shadow current on-call engineer
 2. Practice rollback procedures in staging
 3. Review recent incidents
 4. Conduct tabletop exercises
 
 **Week 3:**
+
 1. Take on-call with backup
 2. Document any gaps in runbooks
 3. Suggest improvements
@@ -259,16 +267,19 @@ mongosh "mongodb+srv://<cluster>.mongodb.net/" --eval "db.runCommand({ping:1})"
 ### Tabletop Exercises
 
 **Scenario 1: Site Down**
+
 - Trigger: Uptime monitor alerts
 - Practice: Rollback procedure
 - Time limit: 5 minutes
 
 **Scenario 2: Database Connection Failure**
+
 - Trigger: MongoDB connection errors
 - Practice: Diagnostic steps, certificate renewal
 - Time limit: 15 minutes
 
 **Scenario 3: High Error Rate**
+
 - Trigger: PostHog error spike
 - Practice: Log analysis, root cause identification
 - Time limit: 30 minutes
@@ -307,16 +318,19 @@ When updating documentation:
 ### Search Tips
 
 **By Symptom:**
+
 - "Site down" → [Quick Response](./QUICK_INCIDENT_RESPONSE.md#-site-down-p0)
 - "Slow performance" → [Quick Response](./QUICK_INCIDENT_RESPONSE.md#-performance-issues-p2)
 - "Auth errors" → [Quick Response](./QUICK_INCIDENT_RESPONSE.md#-auth-failures-p1)
 
 **By Component:**
+
 - Netlify → [Runbook → Architecture](./OPERATIONAL_RUNBOOK.md#architecture)
 - MongoDB → [Runbook → Database Failures](./OPERATIONAL_RUNBOOK.md#3-database-connection-failures)
 - Auth0 → [Runbook → Authentication Failures](./OPERATIONAL_RUNBOOK.md#2-authentication-failures)
 
 **By Task:**
+
 - Deploy → [Runbook → Pre-Deployment](./OPERATIONAL_RUNBOOK.md#pre-deployment-checklist)
 - Rollback → [Runbook → Rollback](./OPERATIONAL_RUNBOOK.md#rollback-procedures)
 - Monitor → [Monitoring Setup](./MONITORING_SETUP.md)
@@ -327,12 +341,12 @@ When updating documentation:
 
 ### Service Level Objectives
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| Availability | 99.9% | Uptime monitoring |
-| Response Time (p95) | < 500ms | PostHog RUM |
-| Error Rate | < 0.1% | PostHog events |
-| Function Success Rate | > 99% | Netlify metrics |
+| Metric                | Target  | Measurement       |
+| --------------------- | ------- | ----------------- |
+| Availability          | 99.9%   | Uptime monitoring |
+| Response Time (p95)   | < 500ms | PostHog RUM       |
+| Error Rate            | < 0.1%  | PostHog events    |
+| Function Success Rate | > 99%   | Netlify metrics   |
 
 ### Tracking
 

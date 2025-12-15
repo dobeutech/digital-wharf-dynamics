@@ -1,10 +1,28 @@
 import { useEffect, useState, useCallback } from "react";
 import { useApi } from "@/lib/api";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { MessageSquare, Mail, Archive } from "lucide-react";
@@ -37,7 +55,8 @@ export default function AdminContacts() {
   const [submissions, setSubmissions] = useState<ContactSubmission[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [selectedSubmission, setSelectedSubmission] = useState<ContactSubmission | null>(null);
+  const [selectedSubmission, setSelectedSubmission] =
+    useState<ContactSubmission | null>(null);
   const [notes, setNotes] = useState("");
   const [updating, setUpdating] = useState(false);
   const { toast } = useToast();
@@ -45,13 +64,20 @@ export default function AdminContacts() {
   const fetchSubmissions = useCallback(async () => {
     setLoading(true);
     try {
-      const endpoint = statusFilter === "all" ? "/contact-submissions" : `/contact-submissions?status=${statusFilter}`;
+      const endpoint =
+        statusFilter === "all"
+          ? "/contact-submissions"
+          : `/contact-submissions?status=${statusFilter}`;
       const data = await api.get<ContactSubmission[]>(endpoint);
 
       setSubmissions(data || []);
       setLoading(false);
     } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to fetch contact submissions" });
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to fetch contact submissions",
+      });
       setLoading(false);
     }
   }, [api, statusFilter, toast]);
@@ -72,10 +98,19 @@ export default function AdminContacts() {
       toast({ title: "Updated", description: "Status updated successfully" });
       fetchSubmissions();
       if (selectedSubmission?.id === id) {
-        setSelectedSubmission({ ...selectedSubmission, status: newStatus, responded_at: updates.responded_at as string || selectedSubmission.responded_at });
+        setSelectedSubmission({
+          ...selectedSubmission,
+          status: newStatus,
+          responded_at:
+            (updates.responded_at as string) || selectedSubmission.responded_at,
+        });
       }
     } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to update status" });
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update status",
+      });
     } finally {
       setUpdating(false);
     }
@@ -86,12 +121,18 @@ export default function AdminContacts() {
     setUpdating(true);
 
     try {
-      await api.patch(`/contact-submissions?id=${selectedSubmission.id}`, { notes });
+      await api.patch(`/contact-submissions?id=${selectedSubmission.id}`, {
+        notes,
+      });
       toast({ title: "Saved", description: "Notes saved successfully" });
       setSelectedSubmission({ ...selectedSubmission, notes });
       fetchSubmissions();
     } catch (error) {
-      toast({ variant: "destructive", title: "Error", description: "Failed to save notes" });
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to save notes",
+      });
     } finally {
       setUpdating(false);
     }
@@ -100,13 +141,12 @@ export default function AdminContacts() {
   const openDetails = async (submission: ContactSubmission) => {
     setSelectedSubmission(submission);
     setNotes(submission.notes || "");
-    
+
     // Mark as read if new
     if (submission.status === "new") {
       await updateStatus(submission.id, "read");
     }
   };
-
 
   return (
     <div className="min-h-screen pt-24 pb-20 px-4">
@@ -116,7 +156,9 @@ export default function AdminContacts() {
             <MessageSquare className="h-8 w-8 text-primary" />
             Contact Submissions
           </h1>
-          <p className="text-muted-foreground">View and respond to contact form submissions</p>
+          <p className="text-muted-foreground">
+            View and respond to contact form submissions
+          </p>
         </div>
 
         <Card className="mb-6">
@@ -124,7 +166,9 @@ export default function AdminContacts() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <CardTitle>All Submissions</CardTitle>
-                <CardDescription>{submissions.length} total submissions</CardDescription>
+                <CardDescription>
+                  {submissions.length} total submissions
+                </CardDescription>
               </div>
               <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-[180px]">
@@ -149,13 +193,18 @@ export default function AdminContacts() {
           </CardContent>
         </Card>
 
-        <Sheet open={!!selectedSubmission} onOpenChange={(open) => !open && setSelectedSubmission(null)}>
+        <Sheet
+          open={!!selectedSubmission}
+          onOpenChange={(open) => !open && setSelectedSubmission(null)}
+        >
           <SheetContent className="sm:max-w-lg overflow-y-auto">
             {selectedSubmission && (
               <>
                 <SheetHeader>
                   <SheetTitle>Contact Details</SheetTitle>
-                  <SheetDescription>From {selectedSubmission.name}</SheetDescription>
+                  <SheetDescription>
+                    From {selectedSubmission.name}
+                  </SheetDescription>
                 </SheetHeader>
                 <div className="mt-6 space-y-6">
                   <div className="grid grid-cols-2 gap-4">
@@ -165,19 +214,27 @@ export default function AdminContacts() {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Email</p>
-                      <a href={`mailto:${selectedSubmission.email}`} className="font-medium text-primary hover:underline">
+                      <a
+                        href={`mailto:${selectedSubmission.email}`}
+                        className="font-medium text-primary hover:underline"
+                      >
                         {selectedSubmission.email}
                       </a>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Phone</p>
-                      <p className="font-medium">{selectedSubmission.phone || "Not provided"}</p>
+                      <p className="font-medium">
+                        {selectedSubmission.phone || "Not provided"}
+                      </p>
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Submitted</p>
                       <p className="font-medium">
-                        {selectedSubmission.submitted_at 
-                          ? format(new Date(selectedSubmission.submitted_at), "MMM d, yyyy h:mm a")
+                        {selectedSubmission.submitted_at
+                          ? format(
+                              new Date(selectedSubmission.submitted_at),
+                              "MMM d, yyyy h:mm a",
+                            )
                           : "Unknown"}
                       </p>
                     </div>
@@ -185,21 +242,31 @@ export default function AdminContacts() {
 
                   <div className="flex gap-2">
                     {selectedSubmission.sms_consent && (
-                      <Badge variant="outline" className="text-green-500 border-green-500/30">
+                      <Badge
+                        variant="outline"
+                        className="text-green-500 border-green-500/30"
+                      >
                         SMS Consent
                       </Badge>
                     )}
                     {selectedSubmission.marketing_consent && (
-                      <Badge variant="outline" className="text-blue-500 border-blue-500/30">
+                      <Badge
+                        variant="outline"
+                        className="text-blue-500 border-blue-500/30"
+                      >
                         Marketing Consent
                       </Badge>
                     )}
                   </div>
 
                   <div>
-                    <p className="text-sm text-muted-foreground mb-2">Message</p>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Message
+                    </p>
                     <div className="bg-muted/50 p-4 rounded-lg">
-                      <p className="whitespace-pre-wrap">{selectedSubmission.message}</p>
+                      <p className="whitespace-pre-wrap">
+                        {selectedSubmission.message}
+                      </p>
                     </div>
                   </div>
 
@@ -207,7 +274,9 @@ export default function AdminContacts() {
                     <p className="text-sm text-muted-foreground mb-2">Status</p>
                     <Select
                       value={selectedSubmission.status}
-                      onValueChange={(value) => updateStatus(selectedSubmission.id, value)}
+                      onValueChange={(value) =>
+                        updateStatus(selectedSubmission.id, value)
+                      }
                       disabled={updating}
                     >
                       <SelectTrigger>
@@ -224,24 +293,33 @@ export default function AdminContacts() {
 
                   {selectedSubmission.responded_at && (
                     <div>
-                      <p className="text-sm text-muted-foreground">Responded At</p>
+                      <p className="text-sm text-muted-foreground">
+                        Responded At
+                      </p>
                       <p className="font-medium text-green-500">
-                        {format(new Date(selectedSubmission.responded_at), "MMM d, yyyy h:mm a")}
+                        {format(
+                          new Date(selectedSubmission.responded_at),
+                          "MMM d, yyyy h:mm a",
+                        )}
                       </p>
                     </div>
                   )}
 
                   <div className="flex gap-2">
                     <Button asChild className="flex-1">
-                      <a href={`mailto:${selectedSubmission.email}?subject=Re: Your inquiry to Dobeu Tech Solutions`}>
+                      <a
+                        href={`mailto:${selectedSubmission.email}?subject=Re: Your inquiry to Dobeu Tech Solutions`}
+                      >
                         <Mail className="h-4 w-4 mr-2" />
                         Reply via Email
                       </a>
                     </Button>
                     {selectedSubmission.status !== "archived" && (
-                      <Button 
-                        variant="outline" 
-                        onClick={() => updateStatus(selectedSubmission.id, "archived")}
+                      <Button
+                        variant="outline"
+                        onClick={() =>
+                          updateStatus(selectedSubmission.id, "archived")
+                        }
                         disabled={updating}
                       >
                         <Archive className="h-4 w-4 mr-1" />
@@ -251,14 +329,20 @@ export default function AdminContacts() {
                   </div>
 
                   <div>
-                    <p className="text-sm text-muted-foreground mb-2">Internal Notes</p>
+                    <p className="text-sm text-muted-foreground mb-2">
+                      Internal Notes
+                    </p>
                     <Textarea
                       value={notes}
                       onChange={(e) => setNotes(e.target.value)}
                       placeholder="Add internal notes about this submission..."
                       rows={4}
                     />
-                    <Button onClick={saveNotes} disabled={updating} className="mt-2">
+                    <Button
+                      onClick={saveNotes}
+                      disabled={updating}
+                      className="mt-2"
+                    >
                       Save Notes
                     </Button>
                   </div>

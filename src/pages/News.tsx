@@ -1,5 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useApi } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
@@ -61,46 +67,57 @@ export default function News() {
       />
       <div className="min-h-screen pt-24 pb-20 px-4">
         <div className="container mx-auto max-w-4xl">
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold mb-4">Latest News</h1>
-          <p className="text-xl text-muted-foreground">Stay updated with our latest announcements and insights</p>
-        </div>
-
-        {posts.length === 0 ? (
-          <Card className="shadow-material">
-            <CardContent className="p-12 text-center">
-              <p className="text-muted-foreground">No news posts available yet</p>
-            </CardContent>
-          </Card>
-        ) : (
-          <div className="space-y-6">
-            {posts.map((post) => (
-              <Card key={post.id} className="shadow-material hover:shadow-material-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Badge variant="outline">Public</Badge>
-                    {post.published_at && (
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                        <Calendar className="h-3 w-3" />
-                        {format(new Date(post.published_at), "MMM d, yyyy")}
-                      </div>
-                    )}
-                  </div>
-                  <CardTitle className="text-2xl">{post.title}</CardTitle>
-                  {post.excerpt && <CardDescription className="text-base">{post.excerpt}</CardDescription>}
-                </CardHeader>
-                <CardContent>
-                  <div className="prose prose-sm max-w-none text-muted-foreground">
-                    {post.content.substring(0, 300)}
-                    {post.content.length > 300 && "..."}
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          <div className="mb-12">
+            <h1 className="text-4xl font-bold mb-4">Latest News</h1>
+            <p className="text-xl text-muted-foreground">
+              Stay updated with our latest announcements and insights
+            </p>
           </div>
-        )}
+
+          {posts.length === 0 ? (
+            <Card className="shadow-material">
+              <CardContent className="p-12 text-center">
+                <p className="text-muted-foreground">
+                  No news posts available yet
+                </p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-6">
+              {posts.map((post) => (
+                <Card
+                  key={post.id}
+                  className="shadow-material hover:shadow-material-lg transition-shadow"
+                >
+                  <CardHeader>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Badge variant="outline">Public</Badge>
+                      {post.published_at && (
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          {format(new Date(post.published_at), "MMM d, yyyy")}
+                        </div>
+                      )}
+                    </div>
+                    <CardTitle className="text-2xl">{post.title}</CardTitle>
+                    {post.excerpt && (
+                      <CardDescription className="text-base">
+                        {post.excerpt}
+                      </CardDescription>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                    <div className="prose prose-sm max-w-none text-muted-foreground">
+                      {post.content.substring(0, 300)}
+                      {post.content.length > 300 && "..."}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
     </>
   );
 }

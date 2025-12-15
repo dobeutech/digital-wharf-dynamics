@@ -1,13 +1,24 @@
 import { useApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 
-type AuditAction = 
-  | "CREATE" | "UPDATE" | "DELETE" | "VIEW"
-  | "STATUS_CHANGE" | "ROLE_CHANGE" | "LOGIN" | "LOGOUT";
+type AuditAction =
+  | "CREATE"
+  | "UPDATE"
+  | "DELETE"
+  | "VIEW"
+  | "STATUS_CHANGE"
+  | "ROLE_CHANGE"
+  | "LOGIN"
+  | "LOGOUT";
 
-type EntityType = 
-  | "user_role" | "service" | "project" | "newsletter_post"
-  | "ccpa_request" | "contact_submission" | "profile";
+type EntityType =
+  | "user_role"
+  | "service"
+  | "project"
+  | "newsletter_post"
+  | "ccpa_request"
+  | "contact_submission"
+  | "profile";
 
 interface AuditLogParams {
   action: AuditAction;
@@ -31,7 +42,8 @@ export function useAuditLog() {
         entity_id: params.entityId || null,
         old_values: params.oldValues || null,
         new_values: params.newValues || null,
-        user_agent: typeof navigator !== "undefined" ? navigator.userAgent : null,
+        user_agent:
+          typeof navigator !== "undefined" ? navigator.userAgent : null,
       });
     } catch (err) {
       console.error("Audit logging error:", err);

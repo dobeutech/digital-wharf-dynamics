@@ -14,5 +14,5 @@ export const BRAND_ASSETS = {
   logo: {
     primary: svgToDataUri(LOGO_PRIMARY_SVG),
     reverse: svgToDataUri(LOGO_REVERSE_SVG),
-  }
+  },
 };

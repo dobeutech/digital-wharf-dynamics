@@ -80,7 +80,9 @@ export function EnhancedNavbar() {
     <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled ? "bg-background/80 backdrop-blur-lg shadow-sm" : "bg-transparent"
+        isScrolled
+          ? "bg-background/80 backdrop-blur-lg shadow-sm"
+          : "bg-transparent",
       )}
       role="navigation"
       aria-label="Main navigation"
@@ -120,7 +122,7 @@ export function EnhancedNavbar() {
                     className={cn(
                       "text-sm font-medium hover:text-primary transition-colors px-3 py-2 rounded-md",
                       "flex items-center gap-1",
-                      showMegaMenu && "text-primary"
+                      showMegaMenu && "text-primary",
                     )}
                     aria-expanded={showMegaMenu}
                     aria-haspopup="true"
@@ -129,7 +131,7 @@ export function EnhancedNavbar() {
                     <ChevronDown
                       className={cn(
                         "h-4 w-4 transition-transform",
-                        showMegaMenu && "rotate-180"
+                        showMegaMenu && "rotate-180",
                       )}
                     />
                   </button>
@@ -148,7 +150,7 @@ export function EnhancedNavbar() {
                       className={cn(
                         "text-sm font-medium hover:text-primary transition-colors px-3 py-2 rounded-md",
                         "flex items-center gap-1",
-                        showAdminMenu && "text-primary"
+                        showAdminMenu && "text-primary",
                       )}
                       aria-expanded={showAdminMenu}
                       aria-haspopup="true"
@@ -157,7 +159,7 @@ export function EnhancedNavbar() {
                       <ChevronDown
                         className={cn(
                           "h-4 w-4 transition-transform",
-                          showAdminMenu && "rotate-180"
+                          showAdminMenu && "rotate-180",
                         )}
                       />
                     </button>
@@ -221,7 +223,10 @@ export function EnhancedNavbar() {
               categories={
                 user
                   ? isAdmin
-                    ? [...authenticatedNavigationCategories, ...adminNavigationCategories]
+                    ? [
+                        ...authenticatedNavigationCategories,
+                        ...adminNavigationCategories,
+                      ]
                     : authenticatedNavigationCategories
                   : []
               }

@@ -1,14 +1,14 @@
 /**
  * Test Utilities
- * 
+ *
  * Reusable utilities for testing React components with all necessary providers.
  */
 
-import { ReactElement } from 'react';
-import { render, RenderOptions } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Auth0Provider } from '@auth0/auth0-react';
+import { ReactElement } from "react";
+import { render, RenderOptions } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Auth0Provider } from "@auth0/auth0-react";
 
 /**
  * Create a new QueryClient for each test to ensure isolation
@@ -31,10 +31,10 @@ export function createTestQueryClient() {
  * Mock Auth0 configuration
  */
 const mockAuth0Config = {
-  domain: 'test.auth0.com',
-  clientId: 'test-client-id',
+  domain: "test.auth0.com",
+  clientId: "test-client-id",
   authorizationParams: {
-    redirect_uri: 'http://localhost:3000',
+    redirect_uri: "http://localhost:3000",
   },
 };
 
@@ -53,9 +53,7 @@ export function AllProviders({ children, queryClient }: AllProvidersProps) {
   return (
     <Auth0Provider {...mockAuth0Config}>
       <QueryClientProvider client={client}>
-        <BrowserRouter>
-          {children}
-        </BrowserRouter>
+        <BrowserRouter>{children}</BrowserRouter>
       </QueryClientProvider>
     </Auth0Provider>
   );
@@ -64,21 +62,19 @@ export function AllProviders({ children, queryClient }: AllProvidersProps) {
 /**
  * Custom render function that includes all providers
  */
-interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
+interface CustomRenderOptions extends Omit<RenderOptions, "wrapper"> {
   queryClient?: QueryClient;
 }
 
 export function renderWithProviders(
   ui: ReactElement,
-  options?: CustomRenderOptions
+  options?: CustomRenderOptions,
 ) {
   const { queryClient, ...renderOptions } = options || {};
 
   return render(ui, {
     wrapper: ({ children }) => (
-      <AllProviders queryClient={queryClient}>
-        {children}
-      </AllProviders>
+      <AllProviders queryClient={queryClient}>{children}</AllProviders>
     ),
     ...renderOptions,
   });
@@ -88,17 +84,22 @@ export function renderWithProviders(
  * Wait for loading states to complete
  */
 export async function waitForLoadingToFinish() {
-  const { waitFor } = await import('@testing-library/react');
-  await waitFor(() => {
-    expect(document.querySelector('[data-loading="true"]')).not.toBeInTheDocument();
-  }, { timeout: 3000 });
+  const { waitFor } = await import("@testing-library/react");
+  await waitFor(
+    () => {
+      expect(
+        document.querySelector('[data-loading="true"]'),
+      ).not.toBeInTheDocument();
+    },
+    { timeout: 3000 },
+  );
 }
 
 /**
  * Mock window.matchMedia for responsive tests
  */
 export function mockMatchMedia(matches = false) {
-  Object.defineProperty(window, 'matchMedia', {
+  Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: vi.fn().mockImplementation((query) => ({
       matches,
@@ -149,7 +150,7 @@ export function mockLocalStorage() {
     };
   })();
 
-  Object.defineProperty(window, 'localStorage', {
+  Object.defineProperty(window, "localStorage", {
     value: localStorageMock,
   });
 
@@ -161,12 +162,12 @@ export function mockLocalStorage() {
  */
 export function createMockUser(overrides = {}) {
   return {
-    sub: 'auth0|123456',
-    name: 'Test User',
-    email: 'test@example.com',
+    sub: "auth0|123456",
+    name: "Test User",
+    email: "test@example.com",
     email_verified: true,
-    picture: 'https://example.com/avatar.jpg',
-    updated_at: '2023-01-01T00:00:00.000Z',
+    picture: "https://example.com/avatar.jpg",
+    updated_at: "2023-01-01T00:00:00.000Z",
     ...overrides,
   };
 }
@@ -195,8 +196,12 @@ export function createMockSupabaseClient() {
       })),
     })),
     auth: {
-      getSession: vi.fn(() => Promise.resolve({ data: { session: null }, error: null })),
-      getUser: vi.fn(() => Promise.resolve({ data: { user: null }, error: null })),
+      getSession: vi.fn(() =>
+        Promise.resolve({ data: { session: null }, error: null }),
+      ),
+      getUser: vi.fn(() =>
+        Promise.resolve({ data: { user: null }, error: null }),
+      ),
       signIn: vi.fn(() => Promise.resolve({ data: null, error: null })),
       signOut: vi.fn(() => Promise.resolve({ error: null })),
     },
@@ -224,7 +229,7 @@ export function createMockApiResponse<T>(data: T, success = true) {
   return {
     success,
     data,
-    error: success ? null : 'Mock error',
+    error: success ? null : "Mock error",
   };
 }
 
@@ -233,7 +238,7 @@ export function createMockApiResponse<T>(data: T, success = true) {
  */
 export function mockConsole() {
   const originalConsole = { ...console };
-  
+
   beforeAll(() => {
     console.error = vi.fn();
     console.warn = vi.fn();
@@ -251,5 +256,5 @@ export function mockConsole() {
 }
 
 // Re-export everything from Testing Library
-export * from '@testing-library/react';
-export { default as userEvent } from '@testing-library/user-event';
+export * from "@testing-library/react";
+export { default as userEvent } from "@testing-library/user-event";

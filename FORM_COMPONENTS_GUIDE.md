@@ -28,9 +28,9 @@ cp src/components/forms/FormTemplate.tsx src/components/forms/MyNewForm.tsx
 
 ```typescript
 const myFormSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  message: z.string().min(10, 'Message too short'),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Invalid email address"),
+  message: z.string().min(10, "Message too short"),
 });
 
 type MyFormValues = z.infer<typeof myFormSchema>;
@@ -62,11 +62,11 @@ Replace the example fields with your own:
 const onSubmit = async (data: MyFormValues) => {
   setIsSubmitting(true);
   try {
-    await api.post('/endpoint', data);
-    toast.success('Success!');
+    await api.post("/endpoint", data);
+    toast.success("Success!");
     form.reset();
   } catch (error) {
-    toast.error('Failed to submit');
+    toast.error("Failed to submit");
   } finally {
     setIsSubmitting(false);
   }
@@ -125,31 +125,37 @@ All forms in this project must follow these patterns:
 
 ```tsx
 import {
-  Form,           // Form wrapper (provides context)
-  FormControl,    // Wraps input elements
+  Form, // Form wrapper (provides context)
+  FormControl, // Wraps input elements
   FormDescription, // Optional field description
-  FormField,      // Connects field to react-hook-form
-  FormItem,       // Container for field
-  FormLabel,      // Field label
-  FormMessage,    // Displays validation errors
-} from '@/components/ui/form';
+  FormField, // Connects field to react-hook-form
+  FormItem, // Container for field
+  FormLabel, // Field label
+  FormMessage, // Displays validation errors
+} from "@/components/ui/form";
 ```
 
 ### Input Components
 
 ```tsx
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 ```
 
 ### Utilities
 
 ```tsx
-import { toast } from 'sonner';  // Toast notifications
-import { Loader2 } from 'lucide-react';  // Loading spinner icon
+import { toast } from "sonner"; // Toast notifications
+import { Loader2 } from "lucide-react"; // Loading spinner icon
 ```
 
 ---
@@ -176,8 +182,9 @@ import { Loader2 } from 'lucide-react';  // Loading spinner icon
 ```
 
 **Schema:**
+
 ```typescript
-name: z.string().trim().min(2, 'Too short').max(100, 'Too long')
+name: z.string().trim().min(2, "Too short").max(100, "Too long");
 ```
 
 ### Email Input
@@ -190,7 +197,12 @@ name: z.string().trim().min(2, 'Too short').max(100, 'Too long')
     <FormItem>
       <FormLabel>Email *</FormLabel>
       <FormControl>
-        <Input type="email" placeholder="john@example.com" {...field} disabled={isSubmitting} />
+        <Input
+          type="email"
+          placeholder="john@example.com"
+          {...field}
+          disabled={isSubmitting}
+        />
       </FormControl>
       <FormMessage />
     </FormItem>
@@ -199,8 +211,9 @@ name: z.string().trim().min(2, 'Too short').max(100, 'Too long')
 ```
 
 **Schema:**
+
 ```typescript
-email: z.string().trim().email('Invalid email address')
+email: z.string().trim().email("Invalid email address");
 ```
 
 ### Number Input
@@ -213,7 +226,12 @@ email: z.string().trim().email('Invalid email address')
     <FormItem>
       <FormLabel>Age *</FormLabel>
       <FormControl>
-        <Input type="number" placeholder="18" {...field} disabled={isSubmitting} />
+        <Input
+          type="number"
+          placeholder="18"
+          {...field}
+          disabled={isSubmitting}
+        />
       </FormControl>
       <FormMessage />
     </FormItem>
@@ -222,8 +240,9 @@ email: z.string().trim().email('Invalid email address')
 ```
 
 **Schema:**
+
 ```typescript
-age: z.coerce.number().int().min(18, 'Must be 18+').max(120, 'Invalid age')
+age: z.coerce.number().int().min(18, "Must be 18+").max(120, "Invalid age");
 ```
 
 ### Select Dropdown
@@ -235,7 +254,11 @@ age: z.coerce.number().int().min(18, 'Must be 18+').max(120, 'Invalid age')
   render={({ field }) => (
     <FormItem>
       <FormLabel>Category *</FormLabel>
-      <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isSubmitting}>
+      <Select
+        onValueChange={field.onChange}
+        defaultValue={field.value}
+        disabled={isSubmitting}
+      >
         <FormControl>
           <SelectTrigger>
             <SelectValue placeholder="Select..." />
@@ -253,8 +276,9 @@ age: z.coerce.number().int().min(18, 'Must be 18+').max(120, 'Invalid age')
 ```
 
 **Schema:**
+
 ```typescript
-category: z.string().min(1, 'Please select a category')
+category: z.string().min(1, "Please select a category");
 ```
 
 ### Textarea
@@ -281,8 +305,9 @@ category: z.string().min(1, 'Please select a category')
 ```
 
 **Schema:**
+
 ```typescript
-message: z.string().trim().min(10, 'Too short').max(1000, 'Too long')
+message: z.string().trim().min(10, "Too short").max(1000, "Too long");
 ```
 
 ### Checkbox
@@ -311,10 +336,11 @@ message: z.string().trim().min(10, 'Too short').max(1000, 'Too long')
 ```
 
 **Schema:**
+
 ```typescript
 agreeToTerms: z.boolean().refine((val) => val === true, {
-  message: 'You must agree to continue',
-})
+  message: "You must agree to continue",
+});
 ```
 
 ---
@@ -324,9 +350,7 @@ agreeToTerms: z.boolean().refine((val) => val === true, {
 ### Form Container
 
 ```tsx
-<div className="space-y-6">
-  {/* Form fields */}
-</div>
+<div className="space-y-6">{/* Form fields */}</div>
 ```
 
 ### Form Layout
@@ -349,8 +373,12 @@ agreeToTerms: z.boolean().refine((val) => val === true, {
 
 ```tsx
 <div className="flex items-center gap-4">
-  <Button type="submit" disabled={isSubmitting}>Submit</Button>
-  <Button type="button" variant="outline" onClick={() => form.reset()}>Reset</Button>
+  <Button type="submit" disabled={isSubmitting}>
+    Submit
+  </Button>
+  <Button type="button" variant="outline" onClick={() => form.reset()}>
+    Reset
+  </Button>
 </div>
 ```
 
@@ -361,21 +389,21 @@ agreeToTerms: z.boolean().refine((val) => val === true, {
 ### Test File Structure
 
 ```typescript
-describe('MyForm', () => {
-  describe('Rendering', () => {
-    it('renders all form fields', () => {
+describe("MyForm", () => {
+  describe("Rendering", () => {
+    it("renders all form fields", () => {
       // Test field rendering
     });
   });
 
-  describe('Validation', () => {
-    it('shows error for invalid input', async () => {
+  describe("Validation", () => {
+    it("shows error for invalid input", async () => {
       // Test validation
     });
   });
 
-  describe('Form Submission', () => {
-    it('submits form with valid data', async () => {
+  describe("Form Submission", () => {
+    it("submits form with valid data", async () => {
       // Test submission
     });
   });
@@ -422,8 +450,10 @@ it('shows error when name is too short', async () => {
 
 ```tsx
 <FormField name="email">
-  <FormControl><Input {...field} /></FormControl>
-  <FormMessage />  {/* ✅ Required */}
+  <FormControl>
+    <Input {...field} />
+  </FormControl>
+  <FormMessage /> {/* ✅ Required */}
 </FormField>
 ```
 
@@ -434,10 +464,7 @@ it('shows error when name is too short', async () => {
 **Solution:** Use `checked` and `onCheckedChange`:
 
 ```tsx
-<Checkbox
-  checked={field.value}
-  onCheckedChange={field.onChange}
-/>
+<Checkbox checked={field.value} onCheckedChange={field.onChange} />
 ```
 
 ### Issue: TypeScript Errors
@@ -448,7 +475,7 @@ it('shows error when name is too short', async () => {
 
 ```typescript
 const schema = z.object({ name: z.string() });
-type FormValues = z.infer<typeof schema>;  // ✅ Correct
+type FormValues = z.infer<typeof schema>; // ✅ Correct
 
 const form = useForm<FormValues>({
   resolver: zodResolver(schema),
@@ -460,26 +487,34 @@ const form = useForm<FormValues>({
 ## 📚 Examples in Project
 
 ### Simple Form
+
 **File:** `src/pages/CCPAOptOut.tsx`
+
 - Basic form with few fields
 - Simple validation
 - Good starting point
 
 ### Complex Form
+
 **File:** `src/pages/Contact.tsx`
+
 - Multiple field types
 - Conditional validation
 - Draft saving
 - Advanced patterns
 
 ### Template Form
+
 **File:** `src/components/forms/FormTemplate.tsx`
+
 - Minimal boilerplate
 - Copy and customize
 - All required patterns
 
 ### Complete Example
+
 **File:** `src/components/forms/ExampleForm.tsx`
+
 - All field types demonstrated
 - Comprehensive validation
 - Success/error handling
@@ -490,11 +525,13 @@ const form = useForm<FormValues>({
 ## 🔗 Resources
 
 ### Documentation
+
 - [react-hook-form](https://react-hook-form.com/)
 - [Zod](https://zod.dev/)
 - [shadcn/ui Forms](https://ui.shadcn.com/docs/components/form)
 
 ### Project Files
+
 - [Form Components README](./src/components/forms/README.md)
 - [Form Template](./src/components/forms/FormTemplate.tsx)
 - [Example Form](./src/components/forms/ExampleForm.tsx)
@@ -537,6 +574,7 @@ Before submitting a PR with a new form:
 ### Practice Exercise
 
 Create a "Feedback Form" with:
+
 - Name (required, 2-100 chars)
 - Email (required, valid email)
 - Rating (required, 1-5 stars)

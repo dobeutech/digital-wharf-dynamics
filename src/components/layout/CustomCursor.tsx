@@ -16,9 +16,9 @@ export function CustomCursor() {
       const target = e.target as HTMLElement;
       setIsPointer(
         target.tagName === "A" ||
-        target.tagName === "BUTTON" ||
-        target.closest("a") !== null ||
-        target.closest("button") !== null
+          target.tagName === "BUTTON" ||
+          target.closest("a") !== null ||
+          target.closest("button") !== null,
       );
     };
 

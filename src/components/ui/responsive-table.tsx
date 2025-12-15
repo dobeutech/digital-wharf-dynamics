@@ -1,30 +1,32 @@
-import { ReactNode } from 'react';
-import { useDeviceType } from '@/hooks/use-mobile';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ReactNode } from "react";
+import { useDeviceType } from "@/hooks/use-mobile";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ResponsiveTableProps {
   children: ReactNode;
   mobileView?: ReactNode;
-  breakpoint?: 'md' | 'lg';
+  breakpoint?: "md" | "lg";
 }
 
 /**
  * Wrapper component that shows table on desktop and cards on mobile
  */
-export function ResponsiveTable({ 
-  children, 
-  mobileView, 
-  breakpoint = 'md' 
+export function ResponsiveTable({
+  children,
+  mobileView,
+  breakpoint = "md",
 }: ResponsiveTableProps) {
   const deviceType = useDeviceType();
-  const isMobile = deviceType === 'mobile';
+  const isMobile = deviceType === "mobile";
 
   if (isMobile && mobileView) {
     return <div className="space-y-4">{mobileView}</div>;
   }
 
   return (
-    <div className={`${breakpoint === 'md' ? 'hidden md:block' : 'hidden lg:block'}`}>
+    <div
+      className={`${breakpoint === "md" ? "hidden md:block" : "hidden lg:block"}`}
+    >
       {children}
     </div>
   );
@@ -39,10 +41,10 @@ interface MobileCardViewProps<T> {
 /**
  * Mobile card view for table data
  */
-export function MobileCardView<T>({ 
-  items, 
-  renderCard, 
-  emptyMessage = 'No items found' 
+export function MobileCardView<T>({
+  items,
+  renderCard,
+  emptyMessage = "No items found",
 }: MobileCardViewProps<T>) {
   if (items.length === 0) {
     return (
@@ -55,11 +57,8 @@ export function MobileCardView<T>({
   return (
     <div className="space-y-4 md:hidden">
       {items.map((item, index) => (
-        <div key={index}>
-          {renderCard(item, index)}
-        </div>
+        <div key={index}>{renderCard(item, index)}</div>
       ))}
     </div>
   );
 }
-

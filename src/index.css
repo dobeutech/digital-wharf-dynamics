@@ -8,7 +8,17 @@ All colors MUST be HSL.
 
 /* ===== TYPOGRAPHY - Inter Font Family ===== */
 html {
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -17,24 +27,33 @@ html {
 /* Inter variable font settings for supported browsers */
 @supports (font-variation-settings: normal) {
   html {
-    font-family: 'Inter var', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-family:
+      "Inter var",
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      Roboto,
+      "Helvetica Neue",
+      Arial,
+      sans-serif;
   }
 }
 
 @layer base {
   :root {
     /* ===== DOBEU BRAND COLOR SYSTEM ===== */
-    
+
     /* Core Brand Colors (from Brand Kit) */
-    --brand-electric-lemon: 48 96% 53%;      /* #FACC15 - Primary Yellow */
-    --brand-void-black: 0 0% 0%;             /* #000000 */
-    --brand-stark-white: 0 0% 100%;          /* #FFFFFF */
-    --brand-azure-tech: 217 91% 60%;         /* #3B82F6 - Tech Blue */
-    --brand-neon-rose: 330 81% 60%;          /* #EC4899 - Pink */
-    --brand-deep-violet: 271 81% 56%;        /* #A855F7 - Purple */
-    --brand-graphite: 0 0% 9%;               /* #171717 */
-    --brand-muted-metal: 220 9% 46%;         /* #6B7280 */
-    
+    --brand-electric-lemon: 48 96% 53%; /* #FACC15 - Primary Yellow */
+    --brand-void-black: 0 0% 0%; /* #000000 */
+    --brand-stark-white: 0 0% 100%; /* #FFFFFF */
+    --brand-azure-tech: 217 91% 60%; /* #3B82F6 - Tech Blue */
+    --brand-neon-rose: 330 81% 60%; /* #EC4899 - Pink */
+    --brand-deep-violet: 271 81% 56%; /* #A855F7 - Purple */
+    --brand-graphite: 0 0% 9%; /* #171717 */
+    --brand-muted-metal: 220 9% 46%; /* #6B7280 */
+
     /* Light Mode Theme */
     --background: 0 0% 98%;
     --foreground: 0 0% 9%;
@@ -49,7 +68,7 @@ html {
     --primary: 48 96% 45%;
     --primary-foreground: 0 0% 100%;
     --primary-hover: 45 93% 40%;
-    
+
     /* Secondary */
     --secondary: 0 0% 92%;
     --secondary-foreground: 0 0% 9%;
@@ -71,25 +90,53 @@ html {
     --radius: 0.5rem;
 
     /* Extended Brand Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(48 96% 53%), hsl(25 95% 53%));
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(48 96% 53%),
+      hsl(25 95% 53%)
+    );
     --gradient-secondary: linear-gradient(135deg, hsl(0 0% 95%), hsl(0 0% 90%));
     --gradient-hero: linear-gradient(180deg, hsl(0 0% 98%), hsl(0 0% 94%));
-    --gradient-electric: linear-gradient(135deg, hsl(48 96% 53%), hsl(330 81% 60%));
-    --gradient-tech: linear-gradient(135deg, hsl(217 91% 60%), hsl(271 81% 56%));
-    --gradient-neon: linear-gradient(135deg, hsl(330 81% 60%), hsl(271 81% 56%));
-    --gradient-sunset: linear-gradient(135deg, hsl(48 96% 53%), hsl(25 95% 53%), hsl(330 81% 60%));
-    --gradient-aurora: linear-gradient(135deg, hsl(217 91% 60%), hsl(271 81% 56%), hsl(330 81% 60%));
-    
+    --gradient-electric: linear-gradient(
+      135deg,
+      hsl(48 96% 53%),
+      hsl(330 81% 60%)
+    );
+    --gradient-tech: linear-gradient(
+      135deg,
+      hsl(217 91% 60%),
+      hsl(271 81% 56%)
+    );
+    --gradient-neon: linear-gradient(
+      135deg,
+      hsl(330 81% 60%),
+      hsl(271 81% 56%)
+    );
+    --gradient-sunset: linear-gradient(
+      135deg,
+      hsl(48 96% 53%),
+      hsl(25 95% 53%),
+      hsl(330 81% 60%)
+    );
+    --gradient-aurora: linear-gradient(
+      135deg,
+      hsl(217 91% 60%),
+      hsl(271 81% 56%),
+      hsl(330 81% 60%)
+    );
+
     /* Shadows */
     --shadow-sm: 0 1px 3px hsl(0 0% 0% / 0.1);
     --shadow-md: 0 4px 6px hsl(0 0% 0% / 0.1), 0 2px 4px hsl(48 96% 45% / 0.05);
-    --shadow-lg: 0 10px 15px hsl(0 0% 0% / 0.1), 0 4px 6px hsl(48 96% 45% / 0.08);
-    --shadow-xl: 0 20px 25px hsl(0 0% 0% / 0.15), 0 8px 10px hsl(48 96% 45% / 0.1);
+    --shadow-lg:
+      0 10px 15px hsl(0 0% 0% / 0.1), 0 4px 6px hsl(48 96% 45% / 0.08);
+    --shadow-xl:
+      0 20px 25px hsl(0 0% 0% / 0.15), 0 8px 10px hsl(48 96% 45% / 0.1);
     --shadow-glow-yellow: 0 0 30px hsl(48 96% 53% / 0.3);
     --shadow-glow-pink: 0 0 30px hsl(330 81% 60% / 0.3);
     --shadow-glow-blue: 0 0 30px hsl(217 91% 60% / 0.3);
     --shadow-glow-purple: 0 0 30px hsl(271 81% 56% / 0.3);
-    
+
     /* Transitions */
     --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -130,19 +177,48 @@ html {
     --ring: 48 96% 53%;
 
     /* Dark Mode Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(48 96% 53%), hsl(25 95% 53%));
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(48 96% 53%),
+      hsl(25 95% 53%)
+    );
     --gradient-secondary: linear-gradient(135deg, hsl(0 0% 10%), hsl(0 0% 20%));
     --gradient-hero: linear-gradient(180deg, hsl(0 0% 0%), hsl(0 0% 5%));
-    --gradient-electric: linear-gradient(135deg, hsl(48 96% 53%), hsl(330 81% 60%));
-    --gradient-tech: linear-gradient(135deg, hsl(217 91% 60%), hsl(271 81% 56%));
-    --gradient-neon: linear-gradient(135deg, hsl(330 81% 60%), hsl(271 81% 56%));
-    --gradient-sunset: linear-gradient(135deg, hsl(48 96% 53%), hsl(25 95% 53%), hsl(330 81% 60%));
-    --gradient-aurora: linear-gradient(135deg, hsl(217 91% 60%), hsl(271 81% 56%), hsl(330 81% 60%));
-    
+    --gradient-electric: linear-gradient(
+      135deg,
+      hsl(48 96% 53%),
+      hsl(330 81% 60%)
+    );
+    --gradient-tech: linear-gradient(
+      135deg,
+      hsl(217 91% 60%),
+      hsl(271 81% 56%)
+    );
+    --gradient-neon: linear-gradient(
+      135deg,
+      hsl(330 81% 60%),
+      hsl(271 81% 56%)
+    );
+    --gradient-sunset: linear-gradient(
+      135deg,
+      hsl(48 96% 53%),
+      hsl(25 95% 53%),
+      hsl(330 81% 60%)
+    );
+    --gradient-aurora: linear-gradient(
+      135deg,
+      hsl(217 91% 60%),
+      hsl(271 81% 56%),
+      hsl(330 81% 60%)
+    );
+
     --shadow-sm: 0 1px 3px hsl(0 0% 0% / 0.3);
-    --shadow-md: 0 4px 6px hsl(0 0% 0% / 0.25), 0 2px 4px hsl(48 96% 53% / 0.05);
-    --shadow-lg: 0 10px 15px hsl(0 0% 0% / 0.3), 0 4px 6px hsl(48 96% 53% / 0.1);
-    --shadow-xl: 0 20px 25px hsl(0 0% 0% / 0.4), 0 8px 10px hsl(48 96% 53% / 0.15);
+    --shadow-md:
+      0 4px 6px hsl(0 0% 0% / 0.25), 0 2px 4px hsl(48 96% 53% / 0.05);
+    --shadow-lg:
+      0 10px 15px hsl(0 0% 0% / 0.3), 0 4px 6px hsl(48 96% 53% / 0.1);
+    --shadow-xl:
+      0 20px 25px hsl(0 0% 0% / 0.4), 0 8px 10px hsl(48 96% 53% / 0.15);
     --shadow-glow-yellow: 0 0 40px hsl(48 96% 53% / 0.4);
     --shadow-glow-pink: 0 0 40px hsl(330 81% 60% / 0.4);
     --shadow-glow-blue: 0 0 40px hsl(217 91% 60% / 0.4);
@@ -159,11 +235,16 @@ html {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "liga", "kern";
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-bold;
   }
-  
+
   /* Dobeu brand selection colors - Yellow background with black text */
   ::selection {
     @apply bg-primary text-primary-foreground;
@@ -183,7 +264,10 @@ html {
   }
 
   /* Ensure interactive elements have sufficient contrast */
-  a, button, [role="button"], [tabindex] {
+  a,
+  button,
+  [role="button"],
+  [tabindex] {
     @apply focus-visible:outline-2 focus-visible:outline-offset-2;
   }
 
@@ -199,27 +283,27 @@ html {
   .shadow-material {
     box-shadow: var(--shadow-md);
   }
-  
+
   .shadow-material-lg {
     box-shadow: var(--shadow-lg);
   }
-  
+
   .shadow-material-xl {
     box-shadow: var(--shadow-xl);
   }
-  
+
   .transition-material {
     transition: all var(--transition-base);
   }
-  
+
   .gradient-primary {
     background: var(--gradient-primary);
   }
-  
+
   .gradient-secondary {
     background: var(--gradient-secondary);
   }
-  
+
   .gradient-hero {
     background: var(--gradient-hero);
   }
@@ -263,27 +347,42 @@ html {
 
   /* Premium animations */
   @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
   }
 
   @keyframes pulse-glow {
-    0%, 100% { 
+    0%,
+    100% {
       box-shadow: 0 0 20px hsla(48, 96%, 53%, 0.3);
     }
-    50% { 
+    50% {
       box-shadow: 0 0 40px hsla(48, 96%, 53%, 0.5);
     }
   }
 
   @keyframes shimmer {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
   }
 
   @keyframes gradient-x {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
   }
 
   @keyframes fade-in-up {
@@ -348,7 +447,11 @@ html {
 
   /* Gradient text */
   .gradient-text {
-    background: linear-gradient(135deg, hsl(48, 96%, 53%) 0%, hsl(25, 95%, 53%) 100%);
+    background: linear-gradient(
+      135deg,
+      hsl(48, 96%, 53%) 0%,
+      hsl(25, 95%, 53%) 100%
+    );
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -360,14 +463,23 @@ html {
   }
 
   .gradient-border::before {
-    content: '';
+    content: "";
     position: absolute;
     inset: 0;
     padding: 1px;
     border-radius: inherit;
-    background: linear-gradient(135deg, hsla(48, 96%, 53%, 0.5), transparent, hsla(25, 95%, 53%, 0.5));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    background: linear-gradient(
+      135deg,
+      hsla(48, 96%, 53%, 0.5),
+      transparent,
+      hsla(25, 95%, 53%, 0.5)
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
@@ -375,7 +487,9 @@ html {
 
   /* Hover lift effect */
   .hover-lift {
-    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+    transition:
+      transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.3s ease;
   }
 
   .hover-lift:hover {
@@ -390,11 +504,15 @@ html {
   }
 
   .card-glow::after {
-    content: '';
+    content: "";
     position: absolute;
     inset: -1px;
     border-radius: inherit;
-    background: linear-gradient(135deg, hsla(48, 96%, 53%, 0), hsla(48, 96%, 53%, 0.3));
+    background: linear-gradient(
+      135deg,
+      hsla(48, 96%, 53%, 0),
+      hsla(48, 96%, 53%, 0.3)
+    );
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -407,30 +525,30 @@ html {
   }
 
   /* ===== DOBEU BRAND COLOR UTILITIES ===== */
-  
+
   /* Brand gradient utilities */
   .gradient-electric {
-    background: linear-gradient(135deg, #FACC15, #EC4899);
+    background: linear-gradient(135deg, #facc15, #ec4899);
   }
 
   .gradient-tech {
-    background: linear-gradient(135deg, #3B82F6, #A855F7);
+    background: linear-gradient(135deg, #3b82f6, #a855f7);
   }
 
   .gradient-neon {
-    background: linear-gradient(135deg, #EC4899, #A855F7);
+    background: linear-gradient(135deg, #ec4899, #a855f7);
   }
 
   .gradient-sunset {
-    background: linear-gradient(135deg, #FACC15, #F97316, #EC4899);
+    background: linear-gradient(135deg, #facc15, #f97316, #ec4899);
   }
 
   .gradient-aurora {
-    background: linear-gradient(135deg, #3B82F6, #A855F7, #EC4899);
+    background: linear-gradient(135deg, #3b82f6, #a855f7, #ec4899);
   }
 
   .gradient-full-brand {
-    background: linear-gradient(135deg, #FACC15, #EC4899, #A855F7, #3B82F6);
+    background: linear-gradient(135deg, #facc15, #ec4899, #a855f7, #3b82f6);
     background-size: 300% 300%;
   }
 
@@ -447,35 +565,35 @@ html {
 
   /* Brand gradient text variants */
   .gradient-text-electric {
-    background: linear-gradient(135deg, #FACC15, #EC4899);
+    background: linear-gradient(135deg, #facc15, #ec4899);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .gradient-text-tech {
-    background: linear-gradient(135deg, #3B82F6, #A855F7);
+    background: linear-gradient(135deg, #3b82f6, #a855f7);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .gradient-text-neon {
-    background: linear-gradient(135deg, #EC4899, #A855F7);
+    background: linear-gradient(135deg, #ec4899, #a855f7);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .gradient-text-aurora {
-    background: linear-gradient(135deg, #3B82F6, #A855F7, #EC4899);
+    background: linear-gradient(135deg, #3b82f6, #a855f7, #ec4899);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
   .gradient-text-full {
-    background: linear-gradient(135deg, #FACC15, #EC4899, #A855F7, #3B82F6);
+    background: linear-gradient(135deg, #facc15, #ec4899, #a855f7, #3b82f6);
     background-size: 300% 300%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -501,7 +619,7 @@ html {
   }
 
   .glow-multi {
-    box-shadow: 
+    box-shadow:
       0 0 30px hsla(48, 96%, 53%, 0.2),
       0 0 60px hsla(330, 81%, 60%, 0.15),
       0 0 90px hsla(271, 81%, 56%, 0.1);
@@ -510,52 +628,71 @@ html {
   /* Brand border gradients */
   .border-gradient-electric {
     border: 2px solid transparent;
-    background-image: linear-gradient(hsl(var(--background)), hsl(var(--background))), 
-                      linear-gradient(135deg, #FACC15, #EC4899);
+    background-image:
+      linear-gradient(hsl(var(--background)), hsl(var(--background))),
+      linear-gradient(135deg, #facc15, #ec4899);
     background-origin: border-box;
     background-clip: padding-box, border-box;
   }
 
   .border-gradient-tech {
     border: 2px solid transparent;
-    background-image: linear-gradient(hsl(var(--background)), hsl(var(--background))), 
-                      linear-gradient(135deg, #3B82F6, #A855F7);
+    background-image:
+      linear-gradient(hsl(var(--background)), hsl(var(--background))),
+      linear-gradient(135deg, #3b82f6, #a855f7);
     background-origin: border-box;
     background-clip: padding-box, border-box;
   }
 
   .border-gradient-aurora {
     border: 2px solid transparent;
-    background-image: linear-gradient(hsl(var(--background)), hsl(var(--background))), 
-                      linear-gradient(135deg, #3B82F6, #A855F7, #EC4899);
+    background-image:
+      linear-gradient(hsl(var(--background)), hsl(var(--background))),
+      linear-gradient(135deg, #3b82f6, #a855f7, #ec4899);
     background-origin: border-box;
     background-clip: padding-box, border-box;
   }
 
   /* Pulsing brand glow animations */
   @keyframes pulse-glow-pink {
-    0%, 100% { box-shadow: 0 0 20px hsla(330, 81%, 60%, 0.3); }
-    50% { box-shadow: 0 0 40px hsla(330, 81%, 60%, 0.5); }
+    0%,
+    100% {
+      box-shadow: 0 0 20px hsla(330, 81%, 60%, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px hsla(330, 81%, 60%, 0.5);
+    }
   }
 
   @keyframes pulse-glow-blue {
-    0%, 100% { box-shadow: 0 0 20px hsla(217, 91%, 60%, 0.3); }
-    50% { box-shadow: 0 0 40px hsla(217, 91%, 60%, 0.5); }
+    0%,
+    100% {
+      box-shadow: 0 0 20px hsla(217, 91%, 60%, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px hsla(217, 91%, 60%, 0.5);
+    }
   }
 
   @keyframes pulse-glow-purple {
-    0%, 100% { box-shadow: 0 0 20px hsla(271, 81%, 56%, 0.3); }
-    50% { box-shadow: 0 0 40px hsla(271, 81%, 56%, 0.5); }
+    0%,
+    100% {
+      box-shadow: 0 0 20px hsla(271, 81%, 56%, 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px hsla(271, 81%, 56%, 0.5);
+    }
   }
 
   @keyframes pulse-glow-multi {
-    0%, 100% { 
-      box-shadow: 
+    0%,
+    100% {
+      box-shadow:
         0 0 20px hsla(48, 96%, 53%, 0.2),
         0 0 40px hsla(330, 81%, 60%, 0.15);
     }
-    50% { 
-      box-shadow: 
+    50% {
+      box-shadow:
         0 0 40px hsla(48, 96%, 53%, 0.35),
         0 0 80px hsla(330, 81%, 60%, 0.25);
     }
@@ -579,9 +716,16 @@ html {
 
   /* Color shift animation */
   @keyframes color-shift {
-    0%, 100% { filter: hue-rotate(0deg); }
-    33% { filter: hue-rotate(60deg); }
-    66% { filter: hue-rotate(-60deg); }
+    0%,
+    100% {
+      filter: hue-rotate(0deg);
+    }
+    33% {
+      filter: hue-rotate(60deg);
+    }
+    66% {
+      filter: hue-rotate(-60deg);
+    }
   }
 
   .animate-color-shift {
@@ -589,26 +733,58 @@ html {
   }
 
   /* Brand accent backgrounds */
-  .bg-brand-yellow { background-color: #FACC15; }
-  .bg-brand-pink { background-color: #EC4899; }
-  .bg-brand-blue { background-color: #3B82F6; }
-  .bg-brand-purple { background-color: #A855F7; }
-  .bg-brand-graphite { background-color: #171717; }
-  .bg-brand-metal { background-color: #6B7280; }
+  .bg-brand-yellow {
+    background-color: #facc15;
+  }
+  .bg-brand-pink {
+    background-color: #ec4899;
+  }
+  .bg-brand-blue {
+    background-color: #3b82f6;
+  }
+  .bg-brand-purple {
+    background-color: #a855f7;
+  }
+  .bg-brand-graphite {
+    background-color: #171717;
+  }
+  .bg-brand-metal {
+    background-color: #6b7280;
+  }
 
   /* Brand text colors */
-  .text-brand-yellow { color: #FACC15; }
-  .text-brand-pink { color: #EC4899; }
-  .text-brand-blue { color: #3B82F6; }
-  .text-brand-purple { color: #A855F7; }
-  .text-brand-graphite { color: #171717; }
-  .text-brand-metal { color: #6B7280; }
+  .text-brand-yellow {
+    color: #facc15;
+  }
+  .text-brand-pink {
+    color: #ec4899;
+  }
+  .text-brand-blue {
+    color: #3b82f6;
+  }
+  .text-brand-purple {
+    color: #a855f7;
+  }
+  .text-brand-graphite {
+    color: #171717;
+  }
+  .text-brand-metal {
+    color: #6b7280;
+  }
 
   /* Brand border colors */
-  .border-brand-yellow { border-color: #FACC15; }
-  .border-brand-pink { border-color: #EC4899; }
-  .border-brand-blue { border-color: #3B82F6; }
-  .border-brand-purple { border-color: #A855F7; }
+  .border-brand-yellow {
+    border-color: #facc15;
+  }
+  .border-brand-pink {
+    border-color: #ec4899;
+  }
+  .border-brand-blue {
+    border-color: #3b82f6;
+  }
+  .border-brand-purple {
+    border-color: #a855f7;
+  }
 }
 
 /* Accessibility Settings Styles */
@@ -688,11 +864,23 @@ html {
     font-size: 118.75% !important;
   }
 
-  .large-text h1 { font-size: 3.5rem !important; }
-  .large-text h2 { font-size: 2.5rem !important; }
-  .large-text h3 { font-size: 2rem !important; }
-  .large-text h4 { font-size: 1.5rem !important; }
-  .large-text p, .large-text li, .large-text span { font-size: 1.25rem !important; }
+  .large-text h1 {
+    font-size: 3.5rem !important;
+  }
+  .large-text h2 {
+    font-size: 2.5rem !important;
+  }
+  .large-text h3 {
+    font-size: 2rem !important;
+  }
+  .large-text h4 {
+    font-size: 1.5rem !important;
+  }
+  .large-text p,
+  .large-text li,
+  .large-text span {
+    font-size: 1.25rem !important;
+  }
 
   /* Respect system reduced motion preference */
   @media (prefers-reduced-motion: reduce) {
@@ -715,7 +903,7 @@ html {
       --primary: 48 100% 35%;
       --muted-foreground: 0 0% 20%;
     }
-    
+
     .dark {
       --foreground: 0 0% 100%;
       --background: 0 0% 0%;
@@ -724,15 +912,16 @@ html {
       --muted-foreground: 0 0% 80%;
     }
 
-    a, button {
+    a,
+    button {
       text-decoration: underline;
     }
   }
 
   /* Mobile-specific touch targets */
   @media (max-width: 768px) {
-    button, 
-    a, 
+    button,
+    a,
     [role="button"],
     input[type="submit"],
     input[type="button"] {

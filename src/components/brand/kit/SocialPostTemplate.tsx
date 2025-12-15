@@ -8,7 +8,11 @@ interface SocialPostTemplateProps {
   preview: React.ReactNode;
 }
 
-export function SocialPostTemplate({ platform, dimensions, preview }: SocialPostTemplateProps) {
+export function SocialPostTemplate({
+  platform,
+  dimensions,
+  preview,
+}: SocialPostTemplateProps) {
   return (
     <Card className="overflow-hidden">
       <div className="bg-muted p-8 flex items-center justify-center min-h-[300px]">

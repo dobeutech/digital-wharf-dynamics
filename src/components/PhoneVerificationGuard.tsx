@@ -1,13 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 /**
  * Component that checks phone verification status and redirects if needed
  * Should be used in protected routes that require phone verification
  */
-export function PhoneVerificationGuard({ children }: { children: React.ReactNode }) {
+export function PhoneVerificationGuard({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { user, getAccessToken, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
@@ -26,21 +30,24 @@ export function PhoneVerificationGuard({ children }: { children: React.ReactNode
           return;
         }
 
-        const response = await fetch('/.netlify/functions/check-phone-verification', {
-          headers: {
-            Authorization: `Bearer ${token}`,
+        const response = await fetch(
+          "/.netlify/functions/check-phone-verification",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        });
+        );
 
         if (response.ok) {
           const data = await response.json();
           if (!data.phone_verified) {
-            navigate('/verify-phone');
+            navigate("/verify-phone");
             return;
           }
         }
       } catch (error) {
-        console.error('Error checking phone verification:', error);
+        console.error("Error checking phone verification:", error);
       } finally {
         setChecking(false);
       }
@@ -62,4 +69,3 @@ export function PhoneVerificationGuard({ children }: { children: React.ReactNode
 
   return <>{children}</>;
 }
-

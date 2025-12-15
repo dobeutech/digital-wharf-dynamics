@@ -1,7 +1,7 @@
-import type { Handler } from '@netlify/functions';
-import Stripe from 'stripe';
-import { errorResponse, jsonResponse, readJson } from './_http';
-import { requireAuth } from './_auth0';
+import type { Handler } from "@netlify/functions";
+import Stripe from "stripe";
+import { errorResponse, jsonResponse, readJson } from "./_http";
+import { requireAuth } from "./_auth0";
 
 interface CheckoutRequest {
   serviceId: string;
@@ -13,20 +13,24 @@ interface CheckoutRequest {
 
 export const handler: Handler = async (event) => {
   try {
-    if (event.httpMethod === 'OPTIONS') {
-      return jsonResponse(200, {}, {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'authorization, content-type',
-      });
+    if (event.httpMethod === "OPTIONS") {
+      return jsonResponse(
+        200,
+        {},
+        {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Headers": "authorization, content-type",
+        },
+      );
     }
 
-    if (event.httpMethod !== 'POST') {
-      return errorResponse(405, 'Method not allowed');
+    if (event.httpMethod !== "POST") {
+      return errorResponse(405, "Method not allowed");
     }
 
     const stripeKey = process.env.STRIPE_SECRET_KEY;
     if (!stripeKey) {
-      return errorResponse(500, 'Stripe is not configured');
+      return errorResponse(500, "Stripe is not configured");
     }
 
     // Get authenticated user
@@ -35,18 +39,27 @@ export const handler: Handler = async (event) => {
     const userId = claims.sub;
 
     if (!userEmail) {
-      return errorResponse(400, 'User email not found');
+      return errorResponse(400, "User email not found");
     }
 
     const body = await readJson<CheckoutRequest>(event);
-    const { serviceId, serviceName, totalAmount, selectedAddOns, isSubscription } = body;
+    const {
+      serviceId,
+      serviceName,
+      totalAmount,
+      selectedAddOns,
+      isSubscription,
+    } = body;
 
     const stripe = new Stripe(stripeKey, {
-      apiVersion: '2023-10-16',
+      apiVersion: "2023-10-16",
     });
 
     // Check if customer exists
-    const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
+    const customers = await stripe.customers.list({
+      email: userEmail,
+      limit: 1,
+    });
     let customerId: string;
 
     if (customers.data.length > 0) {
@@ -60,27 +73,31 @@ export const handler: Handler = async (event) => {
     }
 
     // Build line items description
-    const addOnsDescription = selectedAddOns.length > 0 
-      ? ` + ${selectedAddOns.map(a => a.name).join(', ')}`
-      : '';
+    const addOnsDescription =
+      selectedAddOns.length > 0
+        ? ` + ${selectedAddOns.map((a) => a.name).join(", ")}`
+        : "";
 
-    const origin = event.headers?.['origin'] || event.headers?.['Origin'] || 'https://dobeu.net';
+    const origin =
+      event.headers?.["origin"] ||
+      event.headers?.["Origin"] ||
+      "https://dobeu.net";
 
     if (isSubscription) {
       // Monthly retainer - create subscription
       const session = await stripe.checkout.sessions.create({
         customer: customerId,
-        mode: 'subscription',
+        mode: "subscription",
         line_items: [
           {
             price_data: {
-              currency: 'usd',
+              currency: "usd",
               product_data: {
                 name: serviceName,
                 description: `Monthly retainer service${addOnsDescription}`,
               },
               unit_amount: Math.round(totalAmount * 100),
-              recurring: { interval: 'month' },
+              recurring: { interval: "month" },
             },
             quantity: 1,
           },
@@ -99,11 +116,11 @@ export const handler: Handler = async (event) => {
       // One-time payment
       const session = await stripe.checkout.sessions.create({
         customer: customerId,
-        mode: 'payment',
+        mode: "payment",
         line_items: [
           {
             price_data: {
-              currency: 'usd',
+              currency: "usd",
               product_data: {
                 name: serviceName,
                 description: `Project-based service${addOnsDescription}`,
@@ -125,8 +142,8 @@ export const handler: Handler = async (event) => {
       return jsonResponse(200, { url: session.url });
     }
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'An unexpected error occurred';
+    const errorMessage =
+      err instanceof Error ? err.message : "An unexpected error occurred";
     return errorResponse(400, errorMessage);
   }
 };
-

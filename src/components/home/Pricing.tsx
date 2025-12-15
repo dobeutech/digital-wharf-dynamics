@@ -1,6 +1,12 @@
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -86,11 +92,13 @@ export function Pricing() {
               transition={{ duration: 0.5, delay: index * 0.15 }}
               className={option.popular ? "md:scale-105" : ""}
             >
-              <Card className={`h-full relative ${
-                option.popular 
-                  ? "border-primary shadow-xl shadow-primary/20 bg-gradient-to-b from-card to-card/50" 
-                  : "bg-card/50 backdrop-blur-sm border-border hover:border-primary/30"
-              } transition-all duration-300`}>
+              <Card
+                className={`h-full relative ${
+                  option.popular
+                    ? "border-primary shadow-xl shadow-primary/20 bg-gradient-to-b from-card to-card/50"
+                    : "bg-card/50 backdrop-blur-sm border-border hover:border-primary/30"
+                } transition-all duration-300`}
+              >
                 {option.popular && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                     <div className="bg-primary text-primary-foreground px-4 py-1 rounded-full text-sm font-bold flex items-center gap-1">
@@ -99,29 +107,37 @@ export function Pricing() {
                     </div>
                   </div>
                 )}
-                
+
                 <CardHeader className="pb-8 pt-8">
-                  <CardTitle className="text-2xl mb-2">{option.title}</CardTitle>
-                  <CardDescription className="text-base">{option.description}</CardDescription>
+                  <CardTitle className="text-2xl mb-2">
+                    {option.title}
+                  </CardTitle>
+                  <CardDescription className="text-base">
+                    {option.description}
+                  </CardDescription>
                   <div className="mt-6">
                     <span className="text-5xl font-bold">{option.price}</span>
                     {option.period && (
-                      <span className="text-muted-foreground ml-2">{option.period}</span>
+                      <span className="text-muted-foreground ml-2">
+                        {option.period}
+                      </span>
                     )}
                   </div>
                 </CardHeader>
-                
+
                 <CardContent className="space-y-6">
                   <ul className="space-y-3">
                     {option.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-3">
                         <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                        <span className="text-sm leading-relaxed">{feature}</span>
+                        <span className="text-sm leading-relaxed">
+                          {feature}
+                        </span>
                       </li>
                     ))}
                   </ul>
-                  
-                  <Button 
+
+                  <Button
                     asChild
                     className={`w-full py-6 text-base font-semibold ${
                       option.popular
@@ -145,11 +161,14 @@ export function Pricing() {
         >
           <Card className="max-w-2xl mx-auto bg-gradient-to-br from-card to-primary/5 border-primary/20">
             <CardContent className="p-8">
-              <h3 className="text-2xl font-bold mb-4">Need a Custom Solution?</h3>
+              <h3 className="text-2xl font-bold mb-4">
+                Need a Custom Solution?
+              </h3>
               <p className="text-muted-foreground mb-6">
-                We'll craft a tailored engagement that perfectly fits your unique requirements
+                We'll craft a tailored engagement that perfectly fits your
+                unique requirements
               </p>
-              <Button 
+              <Button
                 asChild
                 size="lg"
                 variant="outline"

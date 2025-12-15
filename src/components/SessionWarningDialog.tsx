@@ -35,15 +35,11 @@ export function SessionWarningDialog({
             Session Timeout Warning
           </AlertDialogTitle>
           <AlertDialogDescription className="space-y-2">
-            <p>
-              Your session will expire due to inactivity.
-            </p>
+            <p>Your session will expire due to inactivity.</p>
             <p className="text-2xl font-mono font-bold text-foreground">
               {minutes}:{seconds.toString().padStart(2, "0")}
             </p>
-            <p>
-              Click "Stay Logged In" to continue your session.
-            </p>
+            <p>Click "Stay Logged In" to continue your session.</p>
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

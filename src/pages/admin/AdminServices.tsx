@@ -1,6 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -98,7 +104,9 @@ export default function AdminServices() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-4xl font-bold mb-2">Services Management</h1>
-            <p className="text-muted-foreground">Manage your service offerings</p>
+            <p className="text-muted-foreground">
+              Manage your service offerings
+            </p>
           </div>
           <Button asChild>
             <Link to="/admin/services/new">
@@ -111,11 +119,15 @@ export default function AdminServices() {
         <Card className="shadow-material">
           <CardHeader>
             <CardTitle>All Services</CardTitle>
-            <CardDescription>View and manage your service catalog</CardDescription>
+            <CardDescription>
+              View and manage your service catalog
+            </CardDescription>
           </CardHeader>
           <CardContent>
             {services.length === 0 ? (
-              <p className="text-center text-muted-foreground py-8">No services yet. Create your first one!</p>
+              <p className="text-center text-muted-foreground py-8">
+                No services yet. Create your first one!
+              </p>
             ) : (
               <Table>
                 <TableHeader>
@@ -130,13 +142,23 @@ export default function AdminServices() {
                 <TableBody>
                   {services.map((service) => (
                     <TableRow key={service.id}>
-                      <TableCell className="font-medium">{service.name}</TableCell>
-                      <TableCell className="capitalize">{service.category}</TableCell>
-                      <TableCell>${service.base_price.toLocaleString()}</TableCell>
+                      <TableCell className="font-medium">
+                        {service.name}
+                      </TableCell>
+                      <TableCell className="capitalize">
+                        {service.category}
+                      </TableCell>
+                      <TableCell>
+                        ${service.base_price.toLocaleString()}
+                      </TableCell>
                       <TableCell>
                         <Badge
                           variant="outline"
-                          className={service.is_active ? "bg-green-500/10 text-green-500 border-green-500/20" : ""}
+                          className={
+                            service.is_active
+                              ? "bg-green-500/10 text-green-500 border-green-500/20"
+                              : ""
+                          }
                         >
                           {service.is_active ? "Active" : "Inactive"}
                         </Badge>
@@ -145,7 +167,9 @@ export default function AdminServices() {
                         <Button
                           variant="ghost"
                           size="sm"
-                          onClick={() => toggleServiceStatus(service.id, service.is_active)}
+                          onClick={() =>
+                            toggleServiceStatus(service.id, service.is_active)
+                          }
                         >
                           {service.is_active ? "Deactivate" : "Activate"}
                         </Button>

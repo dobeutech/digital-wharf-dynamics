@@ -1,8 +1,8 @@
-import type { Handler } from '@netlify/functions';
-import { ObjectId } from 'mongodb';
-import { errorResponse, jsonResponse, readJson } from './_http';
-import { requireAuth, requirePermission } from './_auth0';
-import { getMongoDb } from './_mongo';
+import type { Handler } from "@netlify/functions";
+import { ObjectId } from "mongodb";
+import { errorResponse, jsonResponse, readJson } from "./_http";
+import { requireAuth, requirePermission } from "./_auth0";
+import { getMongoDb } from "./_mongo";
 
 type ProfileDoc = {
   _id: ObjectId;
@@ -14,7 +14,7 @@ type ProfileDoc = {
 type UserRoleDoc = {
   _id: ObjectId;
   user_id: string; // Auth0 subject
-  role: 'admin' | 'moderator' | 'user';
+  role: "admin" | "moderator" | "user";
   created_at: string;
 };
 
@@ -30,13 +30,13 @@ function toProfile(d: ProfileDoc) {
 export const handler: Handler = async (event) => {
   try {
     const claims = await requireAuth(event);
-    requirePermission(claims, 'admin:access');
+    requirePermission(claims, "admin:access");
 
     const db = await getMongoDb();
-    const profiles = db.collection<ProfileDoc>('profiles');
-    const roles = db.collection<UserRoleDoc>('user_roles');
+    const profiles = db.collection<ProfileDoc>("profiles");
+    const roles = db.collection<UserRoleDoc>("user_roles");
 
-    if (event.httpMethod === 'GET') {
+    if (event.httpMethod === "GET") {
       const [profilesDocs, rolesDocs] = await Promise.all([
         profiles.find({}).sort({ created_at: -1 }).toArray(),
         roles.find({}).toArray(),
@@ -48,34 +48,52 @@ export const handler: Handler = async (event) => {
       });
     }
 
-    if (event.httpMethod === 'POST') {
+    if (event.httpMethod === "POST") {
       // Toggle role assignment (idempotent-ish).
       const rawBody = await readJson<unknown>(event);
-      if (!rawBody || typeof rawBody !== 'object') {
-        return errorResponse(400, 'Invalid JSON body');
+      if (!rawBody || typeof rawBody !== "object") {
+        return errorResponse(400, "Invalid JSON body");
       }
-      const body = rawBody as { user_id?: string; role?: 'admin' | 'moderator' | 'user'; enabled?: boolean };
-      if (!body.user_id || !body.role) return errorResponse(400, 'Missing user_id or role');
+      const body = rawBody as {
+        user_id?: string;
+        role?: "admin" | "moderator" | "user";
+        enabled?: boolean;
+      };
+      if (!body.user_id || !body.role)
+        return errorResponse(400, "Missing user_id or role");
       const enabled = body.enabled !== false;
       const now = new Date().toISOString();
 
       if (!enabled) {
         await roles.deleteOne({ user_id: body.user_id, role: body.role });
-        return jsonResponse(200, { user_id: body.user_id, role: body.role, enabled: false });
+        return jsonResponse(200, {
+          user_id: body.user_id,
+          role: body.role,
+          enabled: false,
+        });
       }
 
       await roles.updateOne(
         { user_id: body.user_id, role: body.role },
-        { $setOnInsert: { _id: new ObjectId(), user_id: body.user_id, role: body.role, created_at: now } },
-        { upsert: true }
+        {
+          $setOnInsert: {
+            _id: new ObjectId(),
+            user_id: body.user_id,
+            role: body.role,
+            created_at: now,
+          },
+        },
+        { upsert: true },
       );
-      return jsonResponse(200, { user_id: body.user_id, role: body.role, enabled: true });
+      return jsonResponse(200, {
+        user_id: body.user_id,
+        role: body.role,
+        enabled: true,
+      });
     }
 
-    return errorResponse(405, 'Method not allowed');
+    return errorResponse(405, "Method not allowed");
   } catch (err) {
-    return errorResponse(500, 'Internal error');
+    return errorResponse(500, "Internal error");
   }
 };
-
-

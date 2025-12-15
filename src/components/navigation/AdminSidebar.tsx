@@ -35,7 +35,7 @@ export function AdminSidebar({ className }: AdminSidebarProps) {
                     className={cn(
                       "flex items-center gap-3 px-3 py-2 text-sm rounded-md transition-colors",
                       "hover:bg-muted hover:text-primary",
-                      isActive && "bg-primary/10 text-primary font-medium"
+                      isActive && "bg-primary/10 text-primary font-medium",
                     )}
                     aria-current={isActive ? "page" : undefined}
                   >

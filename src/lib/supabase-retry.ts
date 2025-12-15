@@ -2,8 +2,8 @@
  * Retry logic wrapper for Supabase operations
  */
 
-import { PostgrestError } from '@supabase/supabase-js';
-import { logError, ErrorSeverity, ErrorCategory } from './error-handler';
+import { PostgrestError } from "@supabase/supabase-js";
+import { logError, ErrorSeverity, ErrorCategory } from "./error-handler";
 
 interface RetryOptions {
   maxRetries?: number;
@@ -12,14 +12,14 @@ interface RetryOptions {
 }
 
 const DEFAULT_RETRYABLE_ERRORS = [
-  'network',
-  'timeout',
-  'ECONNRESET',
-  'ETIMEDOUT',
-  'ENOTFOUND',
-  '503',
-  '502',
-  '504',
+  "network",
+  "timeout",
+  "ECONNRESET",
+  "ETIMEDOUT",
+  "ENOTFOUND",
+  "503",
+  "502",
+  "504",
 ];
 
 /**
@@ -29,13 +29,13 @@ function isRetryableError(error: unknown): boolean {
   if (error instanceof Error) {
     const errorMessage = error.message.toLowerCase();
     return DEFAULT_RETRYABLE_ERRORS.some((retryable) =>
-      errorMessage.includes(retryable.toLowerCase())
+      errorMessage.includes(retryable.toLowerCase()),
     );
   }
 
-  if (typeof error === 'object' && error !== null && 'code' in error) {
+  if (typeof error === "object" && error !== null && "code" in error) {
     const code = String((error as { code: unknown }).code);
-    return ['503', '502', '504', 'ECONNRESET', 'ETIMEDOUT'].includes(code);
+    return ["503", "502", "504", "ECONNRESET", "ETIMEDOUT"].includes(code);
   }
 
   return false;
@@ -53,7 +53,7 @@ function sleep(ms: number): Promise<void> {
  */
 export async function withRetry<T>(
   operation: () => Promise<{ data: T | null; error: PostgrestError | null }>,
-  options: RetryOptions = {}
+  options: RetryOptions = {},
 ): Promise<{ data: T | null; error: PostgrestError | null }> {
   const {
     maxRetries = 3,
@@ -117,8 +117,7 @@ export async function withRetry<T>(
  */
 export function createRetryableQuery<T>(
   queryFn: () => Promise<{ data: T | null; error: PostgrestError | null }>,
-  options?: RetryOptions
+  options?: RetryOptions,
 ) {
   return () => withRetry(queryFn, options);
 }
-

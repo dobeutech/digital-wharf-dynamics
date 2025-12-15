@@ -38,7 +38,7 @@ export function Breadcrumbs({ className }: BreadcrumbsProps) {
                   to={crumb.href}
                   className={cn(
                     "hover:text-primary transition-colors inline-flex items-center gap-1",
-                    isFirst && "text-muted-foreground"
+                    isFirst && "text-muted-foreground",
                   )}
                 >
                   {isFirst && <Home className="h-4 w-4" aria-hidden="true" />}

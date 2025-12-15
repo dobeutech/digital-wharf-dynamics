@@ -54,7 +54,9 @@ export function Navbar() {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-background/80 backdrop-blur-lg shadow-sm" : "bg-transparent"
+        isScrolled
+          ? "bg-background/80 backdrop-blur-lg shadow-sm"
+          : "bg-transparent"
       }`}
       role="navigation"
       aria-label="Main navigation"
@@ -70,44 +72,80 @@ export function Navbar() {
             {user ? (
               <>
                 {isAdmin && (
-                  <NavLink to="/admin" className="text-sm font-medium hover:text-primary transition-colors">
+                  <NavLink
+                    to="/admin"
+                    className="text-sm font-medium hover:text-primary transition-colors"
+                  >
                     Admin
                   </NavLink>
                 )}
-                <NavLink to="/dashboard" className="text-sm font-medium hover:text-primary transition-colors">
+                <NavLink
+                  to="/dashboard"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
                   Dashboard
                 </NavLink>
-                <NavLink to="/dashboard/projects" className="text-sm font-medium hover:text-primary transition-colors">
+                <NavLink
+                  to="/dashboard/projects"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
                   Projects
                 </NavLink>
-                <NavLink to="/dashboard/shop" className="text-sm font-medium hover:text-primary transition-colors">
+                <NavLink
+                  to="/dashboard/shop"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
                   Shop
                 </NavLink>
-                <NavLink to="/dashboard/files" className="text-sm font-medium hover:text-primary transition-colors">
+                <NavLink
+                  to="/dashboard/files"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
                   Files
                 </NavLink>
-                <NavLink to="/newsletter" className="text-sm font-medium hover:text-primary transition-colors">
+                <NavLink
+                  to="/newsletter"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
                   Newsletter
                 </NavLink>
-                <NavLink to="/brand" className="text-sm font-medium hover:text-primary transition-colors">
+                <NavLink
+                  to="/brand"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
                   Brand Kit
                 </NavLink>
               </>
             ) : (
               <>
-                <NavLink to="/services" className="text-sm font-medium hover:text-primary transition-colors">
+                <NavLink
+                  to="/services"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
                   Services
                 </NavLink>
-                <NavLink to="/pricing" className="text-sm font-medium hover:text-primary transition-colors">
+                <NavLink
+                  to="/pricing"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
                   Pricing
                 </NavLink>
-                <NavLink to="/about" className="text-sm font-medium hover:text-primary transition-colors">
+                <NavLink
+                  to="/about"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
                   About
                 </NavLink>
-                <NavLink to="/contact" className="text-sm font-medium hover:text-primary transition-colors">
+                <NavLink
+                  to="/contact"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
                   Contact
                 </NavLink>
-                <NavLink to="/news" className="text-sm font-medium hover:text-primary transition-colors">
+                <NavLink
+                  to="/news"
+                  className="text-sm font-medium hover:text-primary transition-colors"
+                >
                   News
                 </NavLink>
               </>
@@ -118,7 +156,12 @@ export function Navbar() {
           <div className="hidden md:flex items-center gap-2">
             <ThemeToggle />
             {user ? (
-              <Button onClick={handleLogout} variant="outline" size="sm" className="min-h-[44px] min-w-[44px]">
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                size="sm"
+                className="min-h-[44px] min-w-[44px]"
+              >
                 Logout
               </Button>
             ) : (
@@ -138,14 +181,18 @@ export function Navbar() {
               aria-expanded={isMobileMenuOpen}
               aria-controls="mobile-menu"
             >
-              {isMobileMenuOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
+              {isMobileMenuOpen ? (
+                <X className="h-6 w-6" aria-hidden="true" />
+              ) : (
+                <Menu className="h-6 w-6" aria-hidden="true" />
+              )}
             </button>
           </div>
         </div>
 
         {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div 
+          <div
             id="mobile-menu"
             className="md:hidden py-4 space-y-1 border-t animate-fade-in"
             role="menu"
@@ -257,7 +304,12 @@ export function Navbar() {
             )}
             <div className="pt-4 mt-4 border-t">
               {user ? (
-                <Button onClick={handleLogout} variant="outline" size="sm" className="w-full min-h-[44px]">
+                <Button
+                  onClick={handleLogout}
+                  variant="outline"
+                  size="sm"
+                  className="w-full min-h-[44px]"
+                >
                   Logout
                 </Button>
               ) : (

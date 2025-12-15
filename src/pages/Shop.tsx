@@ -1,5 +1,12 @@
 import { useEffect, useState, useCallback } from "react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useApi } from "@/lib/api";
@@ -8,7 +15,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Check, ShoppingCart } from "lucide-react";
 import { ServiceDetailModal } from "@/components/shop/ServiceDetailModal";
 import { trackEvent, MIXPANEL_EVENTS, trackFunnelStep } from "@/lib/mixpanel";
-import { trackFunnelStep as trackPostHogFunnel, FUNNEL_STEPS } from "@/lib/posthog";
+import {
+  trackFunnelStep as trackPostHogFunnel,
+  FUNNEL_STEPS,
+} from "@/lib/posthog";
 
 interface Service {
   id: string;
@@ -48,7 +58,7 @@ export default function Shop() {
   useEffect(() => {
     fetchServices();
     // Track funnel: Shop Viewed
-    trackFunnelStep('FUNNEL_SHOP_VIEWED');
+    trackFunnelStep("FUNNEL_SHOP_VIEWED");
     trackPostHogFunnel(FUNNEL_STEPS.SHOP_VIEWED);
   }, [fetchServices]);
 
@@ -61,7 +71,7 @@ export default function Shop() {
       });
       return;
     }
-    
+
     // Track service view
     trackEvent(MIXPANEL_EVENTS.SERVICE_VIEWED, {
       service_id: service.id,
@@ -69,9 +79,9 @@ export default function Shop() {
       category: service.category,
       base_price: service.base_price,
     });
-    
+
     // Track funnel: Service Detail Viewed
-    trackFunnelStep('FUNNEL_SERVICE_DETAIL_VIEWED', {
+    trackFunnelStep("FUNNEL_SERVICE_DETAIL_VIEWED", {
       service_id: service.id,
       service_name: service.name,
     });
@@ -79,12 +89,18 @@ export default function Shop() {
       service_id: service.id,
       service_name: service.name,
     });
-    
+
     setSelectedService(service);
     setIsModalOpen(true);
   };
 
-  const handlePurchase = async (serviceId: string, totalAmount: number, selectedAddOns: Array<Record<string, unknown>>, serviceName: string, isSubscription: boolean) => {
+  const handlePurchase = async (
+    serviceId: string,
+    totalAmount: number,
+    selectedAddOns: Array<Record<string, unknown>>,
+    serviceName: string,
+    isSubscription: boolean,
+  ) => {
     if (!user) {
       toast({
         title: "Authentication Required",
@@ -108,9 +124,9 @@ export default function Shop() {
         add_ons_count: selectedAddOns.length,
         is_subscription: isSubscription,
       });
-      
+
       // Track funnel: Checkout Initiated
-      trackFunnelStep('FUNNEL_CHECKOUT_INITIATED', {
+      trackFunnelStep("FUNNEL_CHECKOUT_INITIATED", {
         service_id: serviceId,
         total_amount: totalAmount,
       });
@@ -119,13 +135,16 @@ export default function Shop() {
         total_amount: totalAmount,
       });
 
-      const response = await api.post<{ url?: string; error?: string }>("/create-checkout", {
-        serviceId,
-        serviceName,
-        totalAmount,
-        selectedAddOns,
-        isSubscription,
-      });
+      const response = await api.post<{ url?: string; error?: string }>(
+        "/create-checkout",
+        {
+          serviceId,
+          serviceName,
+          totalAmount,
+          selectedAddOns,
+          isSubscription,
+        },
+      );
 
       if (response.error) {
         throw new Error(response.error);
@@ -140,7 +159,10 @@ export default function Shop() {
       console.error("Checkout error:", error);
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to create checkout. Please try again.",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to create checkout. Please try again.",
         variant: "destructive",
       });
     }
@@ -170,20 +192,30 @@ export default function Shop() {
       <div className="container mx-auto max-w-7xl">
         <div className="mb-12">
           <h1 className="text-4xl font-bold mb-4">Services</h1>
-          <p className="text-xl text-muted-foreground">Choose the perfect solution for your needs</p>
+          <p className="text-xl text-muted-foreground">
+            Choose the perfect solution for your needs
+          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {services.map((service) => (
-            <Card key={service.id} className="shadow-material hover:shadow-material-lg transition-shadow flex flex-col">
+            <Card
+              key={service.id}
+              className="shadow-material hover:shadow-material-lg transition-shadow flex flex-col"
+            >
               <CardHeader>
                 <div className="flex items-start justify-between mb-2">
-                  <Badge variant="outline" className={getCategoryColor(service.category)}>
+                  <Badge
+                    variant="outline"
+                    className={getCategoryColor(service.category)}
+                  >
                     {service.category}
                   </Badge>
                 </div>
                 <CardTitle className="text-2xl">{service.name}</CardTitle>
-                <CardDescription className="text-base">{service.description}</CardDescription>
+                <CardDescription className="text-base">
+                  {service.description}
+                </CardDescription>
               </CardHeader>
               <CardContent className="flex-1 space-y-4">
                 <div className="text-3xl font-bold text-primary">
@@ -199,13 +231,16 @@ export default function Shop() {
                     <span className="text-lg">Contact for Quote</span>
                   )}
                 </div>
-                
+
                 {service.features && service.features.length > 0 && (
                   <div className="space-y-2">
                     <p className="text-sm font-semibold">Includes:</p>
                     <ul className="space-y-2">
                       {service.features.map((feature, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-sm">
+                        <li
+                          key={idx}
+                          className="flex items-start gap-2 text-sm"
+                        >
                           <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
                           <span>{feature}</span>
                         </li>
@@ -233,7 +268,9 @@ export default function Shop() {
                   onClick={() => openServiceModal(service)}
                 >
                   <ShoppingCart className="mr-2 h-4 w-4" />
-                  {service.base_price > 0 ? "View Details & Purchase" : "View Details & Contact"}
+                  {service.base_price > 0
+                    ? "View Details & Purchase"
+                    : "View Details & Contact"}
                 </Button>
               </CardFooter>
             </Card>
@@ -243,7 +280,9 @@ export default function Shop() {
         {services.length === 0 && (
           <Card className="shadow-material">
             <CardContent className="p-12 text-center">
-              <p className="text-muted-foreground">No services available at this time</p>
+              <p className="text-muted-foreground">
+                No services available at this time
+              </p>
             </CardContent>
           </Card>
         )}
@@ -252,8 +291,14 @@ export default function Shop() {
           service={selectedService}
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          onPurchase={(serviceId, totalAmount, selectedAddOns) => 
-            handlePurchase(serviceId, totalAmount, selectedAddOns, selectedService?.name || "", selectedService?.category.toLowerCase() === "retainer")
+          onPurchase={(serviceId, totalAmount, selectedAddOns) =>
+            handlePurchase(
+              serviceId,
+              totalAmount,
+              selectedAddOns,
+              selectedService?.name || "",
+              selectedService?.category.toLowerCase() === "retainer",
+            )
           }
         />
       </div>

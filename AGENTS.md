@@ -47,15 +47,15 @@ Review git diff and help me write a commit message.
 
 ### Tech Stack
 
-| Category | Technologies |
-|----------|-------------|
-| **Frontend** | React 18, TypeScript 5, Vite 7 |
-| **UI Framework** | Tailwind CSS, Radix UI, shadcn/ui |
-| **Backend** | Supabase (PostgreSQL, Auth, Storage, Edge Functions) |
-| **State Management** | React Query (TanStack Query) |
-| **Testing** | Vitest (unit), Playwright (E2E) |
-| **Deployment** | Netlify (CDN, Edge Functions) |
-| **Analytics** | PostHog, Mixpanel |
+| Category             | Technologies                                         |
+| -------------------- | ---------------------------------------------------- |
+| **Frontend**         | React 18, TypeScript 5, Vite 7                       |
+| **UI Framework**     | Tailwind CSS, Radix UI, shadcn/ui                    |
+| **Backend**          | Supabase (PostgreSQL, Auth, Storage, Edge Functions) |
+| **State Management** | React Query (TanStack Query)                         |
+| **Testing**          | Vitest (unit), Playwright (E2E)                      |
+| **Deployment**       | Netlify (CDN, Edge Functions)                        |
+| **Analytics**        | PostHog, Mixpanel                                    |
 
 ### Project Structure
 
@@ -275,6 +275,7 @@ I'm ready to commit my changes. Help me:
 ```
 
 **Ona will:**
+
 1. Show `git status` and `git diff`
 2. Run `npm run lint` and `npm run test`
 3. Help stage files with `git add`
@@ -463,6 +464,7 @@ Show me what variables are required and where to set them.
 ```
 
 **Ona will reference:**
+
 - `.env.example` for required variables
 - `src/config/env.ts` for validation
 - `netlify.toml` for Netlify-specific vars
@@ -477,6 +479,7 @@ Help me verify everything is ready and push to main.
 ```
 
 **Ona will:**
+
 1. Run pre-deployment checks
 2. Verify branch is up to date
 3. Confirm environment variables are set in Netlify
@@ -509,6 +512,7 @@ Help me fix it.
 ```
 
 **Common Issues Ona Can Help With:**
+
 - TypeScript type errors
 - Missing dependencies
 - Import path issues
@@ -525,6 +529,7 @@ Help me debug it.
 ```
 
 **Ona will:**
+
 1. Analyze the error message
 2. Check relevant code files
 3. Suggest fixes
@@ -583,6 +588,7 @@ The [page/component] is slow. Help me:
 ❌ **Too Large:** "Build the entire admin dashboard"
 
 ✅ **Broken Down:**
+
 ```
 1. Create the admin layout component with sidebar navigation
 2. Add the dashboard overview page with stats cards
@@ -779,6 +785,7 @@ Start the development server and give me the preview URL.
 ```
 
 **Ona will:**
+
 1. Run `npm run dev` on port 8080
 2. Create a preview server
 3. Return the public URL
@@ -815,17 +822,15 @@ export function PageName() {
 
 ```typescript
 // src/hooks/useData.ts
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export function useData() {
   return useQuery({
-    queryKey: ['data'],
+    queryKey: ["data"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('table_name')
-        .select('*');
-      
+      const { data, error } = await supabase.from("table_name").select("*");
+
       if (error) throw error;
       return data;
     },
@@ -895,27 +900,26 @@ CREATE POLICY "Users can update own data"
 
 ```typescript
 // supabase/functions/function-name/index.ts
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 serve(async (req) => {
   try {
     const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
     );
 
     // Function logic
 
-    return new Response(
-      JSON.stringify({ success: true }),
-      { headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (error) {
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
-    );
+    return new Response(JSON.stringify({ error: error.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 });
 ```
@@ -926,39 +930,39 @@ serve(async (req) => {
 
 ### Common Commands
 
-| Task | Command |
-|------|---------|
-| Start dev server | `npm run dev` |
-| Run tests | `npm run test` |
-| Run E2E tests | `npm run test:e2e` |
-| Lint code | `npm run lint` |
-| Fix lint issues | `npm run lint:fix` |
-| Type check | `npx tsc --noEmit` |
-| Build for production | `npm run build` |
-| Preview build | `npm run preview` |
-| Verify setup | `npm run verify` |
+| Task                 | Command            |
+| -------------------- | ------------------ |
+| Start dev server     | `npm run dev`      |
+| Run tests            | `npm run test`     |
+| Run E2E tests        | `npm run test:e2e` |
+| Lint code            | `npm run lint`     |
+| Fix lint issues      | `npm run lint:fix` |
+| Type check           | `npx tsc --noEmit` |
+| Build for production | `npm run build`    |
+| Preview build        | `npm run preview`  |
+| Verify setup         | `npm run verify`   |
 
 ### File Paths
 
-| Type | Path |
-|------|------|
-| Components | `src/components/[category]/` |
-| Pages | `src/pages/` |
-| Hooks | `src/hooks/` |
-| Utils | `src/lib/` |
-| Config | `src/config/` |
-| Tests | `src/__tests__/` or `[file]/__tests__/` |
-| Migrations | `supabase/migrations/` |
-| Edge Functions | `supabase/functions/` |
+| Type           | Path                                    |
+| -------------- | --------------------------------------- |
+| Components     | `src/components/[category]/`            |
+| Pages          | `src/pages/`                            |
+| Hooks          | `src/hooks/`                            |
+| Utils          | `src/lib/`                              |
+| Config         | `src/config/`                           |
+| Tests          | `src/__tests__/` or `[file]/__tests__/` |
+| Migrations     | `supabase/migrations/`                  |
+| Edge Functions | `supabase/functions/`                   |
 
 ### Environment Variables
 
-| Variable | Purpose |
-|----------|---------|
-| `VITE_SUPABASE_URL` | Supabase project URL |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase anon key |
-| `VITE_POSTHOG_KEY` | PostHog analytics key |
-| `VITE_POSTHOG_HOST` | PostHog API host |
+| Variable                        | Purpose               |
+| ------------------------------- | --------------------- |
+| `VITE_SUPABASE_URL`             | Supabase project URL  |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase anon key     |
+| `VITE_POSTHOG_KEY`              | PostHog analytics key |
+| `VITE_POSTHOG_HOST`             | PostHog API host      |
 
 ### Useful Ona Prompts
 

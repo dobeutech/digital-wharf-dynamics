@@ -1,4 +1,11 @@
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from "react";
 import { useLocation } from "react-router-dom";
 
 interface NavigationContextType {
@@ -11,7 +18,9 @@ interface NavigationContextType {
   navigationHistory: string[];
 }
 
-const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
+const NavigationContext = createContext<NavigationContextType | undefined>(
+  undefined,
+);
 
 const MAX_RECENT_PAGES = 5;
 const STORAGE_KEY_RECENT = "nav_recent_pages";

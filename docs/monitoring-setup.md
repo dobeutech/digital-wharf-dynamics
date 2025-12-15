@@ -107,7 +107,7 @@ VITE_SENTRY_DSN=your-sentry-dsn-here
 Already integrated via PostHog and Mixpanel. To add custom tracking:
 
 ```typescript
-import { onCLS, onFID, onLCP } from 'web-vitals';
+import { onCLS, onFID, onLCP } from "web-vitals";
 
 onCLS(console.log);
 onFID(console.log);
@@ -138,10 +138,10 @@ onLCP(console.log);
 
 ```typescript
 async function sendSlackAlert(message: string) {
-  const webhook = Deno.env.get('SLACK_WEBHOOK_URL');
+  const webhook = Deno.env.get("SLACK_WEBHOOK_URL");
   if (webhook) {
     await fetch(webhook, {
-      method: 'POST',
+      method: "POST",
       body: JSON.stringify({ text: message }),
     });
   }
@@ -166,4 +166,3 @@ The application includes health check endpoints:
 3. **Set up alerting thresholds** - Don't alert on every error, use thresholds
 4. **Monitor error rates** - Track error rates over time
 5. **Set up dashboards** - Create dashboards for key metrics
-

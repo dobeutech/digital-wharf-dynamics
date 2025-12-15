@@ -8,15 +8,17 @@
 export function generateCsrfToken(): string {
   const array = new Uint8Array(32);
   crypto.getRandomValues(array);
-  return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
+  return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
+    "",
+  );
 }
 
 /**
  * Store CSRF token in session storage
  */
 export function setCsrfToken(token: string): void {
-  if (typeof window !== 'undefined') {
-    sessionStorage.setItem('csrf_token', token);
+  if (typeof window !== "undefined") {
+    sessionStorage.setItem("csrf_token", token);
   }
 }
 
@@ -24,8 +26,8 @@ export function setCsrfToken(token: string): void {
  * Get CSRF token from session storage
  */
 export function getCsrfToken(): string | null {
-  if (typeof window !== 'undefined') {
-    return sessionStorage.getItem('csrf_token');
+  if (typeof window !== "undefined") {
+    return sessionStorage.getItem("csrf_token");
   }
   return null;
 }
@@ -47,20 +49,25 @@ export function initCsrfToken(): string {
  */
 export function addCsrfHeader(headers: HeadersInit = {}): HeadersInit {
   const token = getCsrfToken() || initCsrfToken();
-  const headersObj = headers instanceof Headers ? Object.fromEntries(headers.entries()) : headers;
+  const headersObj =
+    headers instanceof Headers
+      ? Object.fromEntries(headers.entries())
+      : headers;
   return {
     ...headersObj,
-    'X-CSRF-Token': token,
+    "X-CSRF-Token": token,
   };
 }
 
 /**
  * Validate CSRF token (for use in edge functions)
  */
-export function validateCsrfToken(requestToken: string | null, storedToken: string | null): boolean {
+export function validateCsrfToken(
+  requestToken: string | null,
+  storedToken: string | null,
+): boolean {
   if (!requestToken || !storedToken) {
     return false;
   }
   return requestToken === storedToken;
 }
-

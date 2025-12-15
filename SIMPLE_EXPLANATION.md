@@ -17,11 +17,13 @@ This guide explains the performance optimizations and automation workflows in si
 ### The Problem
 
 Imagine you're running a restaurant (our website). When customers (users) come in, they want:
+
 - **Fast service** (quick page loads)
 - **Fresh food** (up-to-date data)
 - **No mistakes** (no bugs or errors)
 
 But we had some issues:
+
 - The kitchen was making too many trips to the storage room (too many database queries)
 - The waiter kept asking the same questions over and over (no caching)
 - We weren't checking if the food was good before serving it (no automated testing)
@@ -29,6 +31,7 @@ But we had some issues:
 ### The Solution
 
 We made the restaurant more efficient:
+
 - **Batch trips to storage** (combine database queries)
 - **Remember regular orders** (caching)
 - **Automated quality checks** (automated testing)
@@ -44,6 +47,7 @@ We made the restaurant more efficient:
 Think of the database as a library. Every time you need information, you have to walk to the library and ask the librarian.
 
 **Before**, when loading the admin dashboard, we made **9 separate trips** to the library:
+
 1. "How many services do we have?"
 2. "How many projects?"
 3. "How many users?"
@@ -61,6 +65,7 @@ Each trip takes time. 9 trips = slow!
 We got smarter and combined some trips:
 
 **Now**, we make only **7 trips**:
+
 1. "How many services?" ✓
 2. "How many projects?" ✓
 3. "How many users?" ✓
@@ -76,12 +81,14 @@ We got smarter and combined some trips:
 ```typescript
 // BEFORE: Two separate trips
 const totalCCPA = await database.count("ccpa_requests");
-const pendingCCPA = await database.count("ccpa_requests WHERE status = pending");
+const pendingCCPA = await database.count(
+  "ccpa_requests WHERE status = pending",
+);
 
 // AFTER: One trip, count ourselves
 const allCCPA = await database.getAll("ccpa_requests");
 const totalCCPA = allCCPA.length;
-const pendingCCPA = allCCPA.filter(r => r.status === "pending").length;
+const pendingCCPA = allCCPA.filter((r) => r.status === "pending").length;
 ```
 
 **Why this works**: Getting all the data once and filtering it in memory (your computer's RAM) is faster than making two separate trips to the database.
@@ -95,6 +102,7 @@ const pendingCCPA = allCCPA.filter(r => r.status === "pending").length;
 Imagine you're a security guard at a building. Every time someone walks by, you check your list to see if they're an admin.
 
 **Before**, we checked the database EVERY SINGLE TIME:
+
 - User walks to page A → Check database: "Is this person an admin?"
 - User walks to page B → Check database again: "Is this person an admin?"
 - User walks to page C → Check database again: "Is this person an admin?"
@@ -104,6 +112,7 @@ This is like asking the same question over and over!
 #### The Solution (After)
 
 We gave the security guard a **memory** (cache):
+
 - First time: Check database → Remember the answer for 5 minutes
 - Next times: Just look at your notes (cache) instead of checking database
 
@@ -125,16 +134,16 @@ function isUserAdmin(userId) {
   if (memory[userId] !== undefined) {
     return memory[userId]; // We already know!
   }
-  
+
   // If not in notes, check database
   const result = database.query("Is user " + userId + " an admin?");
-  
+
   // Write it down for next time
   memory[userId] = result;
-  
+
   // Forget after 5 minutes
   setTimeout(() => delete memory[userId], 5 * 60 * 1000);
-  
+
   return result;
 }
 ```
@@ -148,6 +157,7 @@ function isUserAdmin(userId) {
 #### The Problem (Before)
 
 Imagine you're packing a suitcase. You have a method where you:
+
 1. Take everything out of the suitcase
 2. Add one new item
 3. Put everything back in
@@ -158,9 +168,9 @@ This is what the **spread operator** does:
 ```typescript
 // BEFORE: Unpack and repack every time
 let suitcase = ["shirt", "pants"];
-suitcase = [...suitcase, "socks"];     // Unpack, add socks, repack
-suitcase = [...suitcase, "shoes"];     // Unpack, add shoes, repack
-suitcase = [...suitcase, "jacket"];    // Unpack, add jacket, repack
+suitcase = [...suitcase, "socks"]; // Unpack, add socks, repack
+suitcase = [...suitcase, "shoes"]; // Unpack, add shoes, repack
+suitcase = [...suitcase, "jacket"]; // Unpack, add jacket, repack
 ```
 
 #### The Solution (After)
@@ -170,9 +180,9 @@ Just **add items directly** without unpacking:
 ```typescript
 // AFTER: Just add items
 let suitcase = ["shirt", "pants"];
-suitcase.push("socks");   // Just add socks
-suitcase.push("shoes");   // Just add shoes
-suitcase.push("jacket");  // Just add jacket
+suitcase.push("socks"); // Just add socks
+suitcase.push("shoes"); // Just add shoes
+suitcase.push("jacket"); // Just add jacket
 ```
 
 **Result**: Much faster, especially with lots of items!
@@ -197,7 +207,7 @@ function MyComponent() {
   const handleClick = () => {
     console.log("Clicked!");
   };
-  
+
   return <Button onClick={handleClick} />;
 }
 // Every time MyComponent renders, handleClick is a NEW function
@@ -208,13 +218,14 @@ function MyComponent() {
   const handleClick = useCallback(() => {
     console.log("Clicked!");
   }, []); // Remember this function
-  
+
   return <Button onClick={handleClick} />;
 }
 // handleClick stays the same, so Button doesn't re-render unnecessarily
 ```
 
-**Real-world analogy**: 
+**Real-world analogy**:
+
 - **Before**: "Here's a new recipe card" (even though it's the same recipe)
 - **After**: "Here's the same recipe card as before" (no need to read it again)
 
@@ -252,6 +263,7 @@ Think of automations as **robots that do chores for you**.
 ### 1. Nightly Test Suite - The Night Janitor
 
 **What it does**: Every night at 2 AM, a robot:
+
 1. Checks if all the code still works
 2. Runs all the tests
 3. Makes sure nothing broke
@@ -266,6 +278,7 @@ Think of automations as **robots that do chores for you**.
 ### 2. Database Backup - The Safety Net
 
 **What it does**: Every night at 3 AM, a robot:
+
 1. Makes a copy of all your data
 2. Stores it safely
 3. Checks that the copy is good
@@ -279,6 +292,7 @@ Think of automations as **robots that do chores for you**.
 ### 3. Security Scan - The Security Guard
 
 **What it does**: Every day at 10 AM, a robot:
+
 1. Checks for security vulnerabilities
 2. Looks for outdated software
 3. Scans for accidentally exposed passwords
@@ -293,6 +307,7 @@ Think of automations as **robots that do chores for you**.
 ### 4. Pre-Commit Quality Check - The Editor
 
 **What it does**: Before you save your code, a robot:
+
 1. Checks for typos and errors
 2. Makes sure formatting is correct
 3. Runs quick tests
@@ -307,6 +322,7 @@ Think of automations as **robots that do chores for you**.
 ### 5. Post-Deployment Verification - The Inspector
 
 **What it does**: After deploying new code, a robot:
+
 1. Waits for deployment to finish
 2. Checks if the website is working
 3. Tests critical pages
@@ -321,6 +337,7 @@ Think of automations as **robots that do chores for you**.
 ### 6. Performance Monitoring - The Speed Checker
 
 **What it does**: Every 6 hours, a robot:
+
 1. Tests website speed
 2. Checks performance score
 3. Alerts if site gets slower
@@ -335,6 +352,7 @@ Think of automations as **robots that do chores for you**.
 ### 7. Database Cleanup - The Organizer
 
 **What it does**: Every Sunday at 4 AM, a robot:
+
 1. Deletes old logs (older than 90 days)
 2. Removes expired sessions
 3. Optimizes database
@@ -348,6 +366,7 @@ Think of automations as **robots that do chores for you**.
 ### 8. Dependency Check - The Update Checker
 
 **What it does**: Every Monday at 9 AM, a robot:
+
 1. Checks for outdated software packages
 2. Looks for security updates
 3. Notifies you of important updates
@@ -361,6 +380,7 @@ Think of automations as **robots that do chores for you**.
 ### 9. Environment Sync Check - The Configuration Checker
 
 **What it does**: When you change configuration files, a robot:
+
 1. Checks if all required settings are present
 2. Validates configuration
 3. Alerts if something is missing
@@ -556,6 +576,7 @@ DATABASE BACKUP:
 ---
 
 **Remember**: The goal of all these optimizations and automations is to make the website:
+
 - **Faster** for users
 - **More reliable** (fewer bugs)
 - **More secure** (protected from threats)

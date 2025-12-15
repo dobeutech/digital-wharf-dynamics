@@ -30,7 +30,13 @@ export function PageSkeleton() {
 /**
  * Table loading skeleton
  */
-export function TableSkeleton({ rows = 5, columns = 4 }: { rows?: number; columns?: number }) {
+export function TableSkeleton({
+  rows = 5,
+  columns = 4,
+}: {
+  rows?: number;
+  columns?: number;
+}) {
   return (
     <div className="space-y-2">
       <div className="flex gap-2">
@@ -107,4 +113,3 @@ export function FormSkeleton({ fields = 4 }: { fields?: number }) {
     </div>
   );
 }
-

@@ -1,9 +1,9 @@
-import type { Handler } from '@netlify/functions';
-import { ObjectId } from 'mongodb';
-import { errorResponse, jsonResponse } from './_http';
-import { requireAuth, requirePermission } from './_auth0';
-import { getMongoDb } from './_mongo';
-import { getGridFsBucket } from './_gridfs';
+import type { Handler } from "@netlify/functions";
+import { ObjectId } from "mongodb";
+import { errorResponse, jsonResponse } from "./_http";
+import { requireAuth, requirePermission } from "./_auth0";
+import { getMongoDb } from "./_mongo";
+import { getGridFsBucket } from "./_gridfs";
 
 type ClientFileDoc = {
   _id: ObjectId;
@@ -42,31 +42,35 @@ export const handler: Handler = async (event) => {
   try {
     const claims = await requireAuth(event);
     const db = await getMongoDb();
-    const col = db.collection<ClientFileDoc>('client_files');
+    const col = db.collection<ClientFileDoc>("client_files");
 
     const id = event.queryStringParameters?.id?.trim();
-    const download = event.queryStringParameters?.download === 'true';
+    const download = event.queryStringParameters?.download === "true";
     const userIdParam = event.queryStringParameters?.user_id?.trim();
 
-    if (event.httpMethod !== 'GET') return errorResponse(405, 'Method not allowed');
+    if (event.httpMethod !== "GET")
+      return errorResponse(405, "Method not allowed");
 
     if (!id) {
       // List files (user can only list their own; admin can list any user if user_id passed)
       let userId = claims.sub;
       if (userIdParam && userIdParam !== claims.sub) {
-        requirePermission(claims, 'admin:access');
+        requirePermission(claims, "admin:access");
         userId = userIdParam;
       }
 
-      const docs = await col.find({ user_id: userId }).sort({ created_at: -1 }).toArray();
+      const docs = await col
+        .find({ user_id: userId })
+        .sort({ created_at: -1 })
+        .toArray();
       return jsonResponse(200, docs.map(toClientFile));
     }
 
     const doc = await col.findOne({ _id: new ObjectId(id) });
-    if (!doc) return errorResponse(404, 'Not found');
+    if (!doc) return errorResponse(404, "Not found");
     const isOwner = doc.user_id === claims.sub;
-    const isAdmin = (claims.permissions || []).includes('admin:access');
-    if (!isOwner && !isAdmin) return errorResponse(403, 'Forbidden');
+    const isAdmin = (claims.permissions || []).includes("admin:access");
+    if (!isOwner && !isAdmin) return errorResponse(403, "Forbidden");
 
     if (!download) {
       return jsonResponse(200, toClientFile(doc));
@@ -81,15 +85,17 @@ export const handler: Handler = async (event) => {
       statusCode: 200,
       isBase64Encoded: true,
       headers: {
-        'Content-Type': doc.file_type || 'application/octet-stream',
-        'Content-Disposition': `attachment; filename="${encodeURIComponent(doc.file_name)}"`,
-        'Cache-Control': 'private, max-age=0, must-revalidate',
+        "Content-Type": doc.file_type || "application/octet-stream",
+        "Content-Disposition": `attachment; filename="${encodeURIComponent(doc.file_name)}"`,
+        "Cache-Control": "private, max-age=0, must-revalidate",
       },
-      body: buf.toString('base64'),
+      body: buf.toString("base64"),
     };
   } catch (err) {
-    return errorResponse(500, 'Internal error', err instanceof Error ? err.message : String(err));
+    return errorResponse(
+      500,
+      "Internal error",
+      err instanceof Error ? err.message : String(err),
+    );
   }
 };
-
-

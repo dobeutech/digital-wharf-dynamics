@@ -8,21 +8,24 @@ const testimonials = [
   {
     name: "Sarah Johnson",
     role: "CEO, TechStart Inc.",
-    content: "The team delivered beyond our expectations. Our new platform has revolutionized how we serve our customers.",
+    content:
+      "The team delivered beyond our expectations. Our new platform has revolutionized how we serve our customers.",
     avatar: "/placeholder.svg",
     rating: 5,
   },
   {
     name: "Michael Chen",
     role: "CTO, DataFlow Systems",
-    content: "Outstanding technical expertise and professionalism. They transformed our legacy system into a modern, scalable solution.",
+    content:
+      "Outstanding technical expertise and professionalism. They transformed our legacy system into a modern, scalable solution.",
     avatar: "/placeholder.svg",
     rating: 5,
   },
   {
     name: "Emily Rodriguez",
     role: "Director, Creative Labs",
-    content: "A perfect blend of creativity and technical prowess. Our website now truly represents our brand vision.",
+    content:
+      "A perfect blend of creativity and technical prowess. Our website now truly represents our brand vision.",
     avatar: "/placeholder.svg",
     rating: 5,
   },
@@ -35,7 +38,7 @@ export function Work() {
   return (
     <section className="relative py-24 md:py-32 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-card/50 to-background" />
-      
+
       <div className="container relative z-10 px-4 mx-auto">
         <motion.div
           ref={ref}
@@ -68,26 +71,34 @@ export function Work() {
                   <div className="flex items-center justify-between">
                     <div className="flex gap-1">
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="w-5 h-5 fill-primary text-primary" />
+                        <Star
+                          key={i}
+                          className="w-5 h-5 fill-primary text-primary"
+                        />
                       ))}
                     </div>
                     <Quote className="w-8 h-8 text-primary/20" />
                   </div>
-                  
+
                   <p className="text-foreground leading-relaxed">
                     "{testimonial.content}"
                   </p>
-                  
+
                   <div className="flex items-center gap-4 pt-4 border-t border-border">
                     <Avatar className="w-12 h-12">
                       <AvatarImage src={testimonial.avatar} />
                       <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                        {testimonial.name.split(' ').map(n => n[0]).join('')}
+                        {testimonial.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <p className="font-semibold">{testimonial.name}</p>
-                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {testimonial.role}
+                      </p>
                     </div>
                   </div>
                 </CardContent>

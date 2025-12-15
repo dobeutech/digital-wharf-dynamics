@@ -7,7 +7,8 @@ const values = [
   {
     icon: Target,
     title: "Precision",
-    description: "Pixel-perfect execution with meticulous attention to every detail",
+    description:
+      "Pixel-perfect execution with meticulous attention to every detail",
     gradient: "from-blue-500 to-cyan-400",
   },
   {
@@ -42,13 +43,13 @@ const containerVariants = {
 };
 
 const itemVariants = {
-  hidden: { 
-    opacity: 0, 
+  hidden: {
+    opacity: 0,
     y: 60,
     filter: "blur(10px)",
   },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     filter: "blur(0px)",
     transition: {
@@ -67,7 +68,7 @@ export function Mission() {
       {/* Background with subtle gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-card/50 to-background" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,hsla(48,96%,53%,0.03),transparent_70%)]" />
-      
+
       <div className="container relative z-10 px-4 mx-auto">
         <motion.div
           ref={ref}
@@ -78,7 +79,9 @@ export function Mission() {
         >
           <motion.span
             initial={{ opacity: 0, scale: 0.9 }}
-            animate={inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }}
+            animate={
+              inView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.9 }
+            }
             transition={{ duration: 0.5 }}
             className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
           >
@@ -91,11 +94,12 @@ export function Mission() {
             </span>
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground font-light">
-            We craft digital experiences that combine stunning design with powerful functionality
+            We craft digital experiences that combine stunning design with
+            powerful functionality
           </p>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto"
           variants={containerVariants}
           initial="hidden"
@@ -110,11 +114,11 @@ export function Mission() {
               <Card className="h-full bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/30 transition-all duration-500 group card-glow overflow-hidden">
                 <CardContent className="p-8 text-center space-y-4 relative">
                   {/* Gradient glow on hover */}
-                  <div 
+                  <div
                     className={`absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-500 bg-gradient-to-br ${value.gradient}`}
                   />
-                  
-                  <motion.div 
+
+                  <motion.div
                     className={`relative inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br ${value.gradient} bg-opacity-10 group-hover:scale-110 transition-transform duration-300`}
                     whileHover={{ rotate: [0, -5, 5, 0] }}
                     transition={{ duration: 0.5 }}

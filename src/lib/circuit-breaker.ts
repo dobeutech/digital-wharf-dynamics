@@ -4,9 +4,9 @@
  */
 
 export enum CircuitState {
-  CLOSED = 'closed', // Normal operation
-  OPEN = 'open', // Failing, reject requests immediately
-  HALF_OPEN = 'half-open', // Testing if service recovered
+  CLOSED = "closed", // Normal operation
+  OPEN = "open", // Failing, reject requests immediately
+  HALF_OPEN = "half-open", // Testing if service recovered
 }
 
 interface CircuitBreakerOptions {
@@ -50,8 +50,11 @@ export class CircuitBreaker {
     this.updateState();
 
     if (this.state.state === CircuitState.OPEN) {
-      if (this.state.nextAttemptTime && Date.now() < this.state.nextAttemptTime) {
-        throw new Error('Circuit breaker is OPEN - service unavailable');
+      if (
+        this.state.nextAttemptTime &&
+        Date.now() < this.state.nextAttemptTime
+      ) {
+        throw new Error("Circuit breaker is OPEN - service unavailable");
       }
       // Transition to half-open
       this.state.state = CircuitState.HALF_OPEN;
@@ -145,7 +148,8 @@ export class CircuitBreaker {
 /**
  * Create a circuit breaker instance
  */
-export function createCircuitBreaker(options?: Partial<CircuitBreakerOptions>): CircuitBreaker {
+export function createCircuitBreaker(
+  options?: Partial<CircuitBreakerOptions>,
+): CircuitBreaker {
   return new CircuitBreaker(options);
 }
-

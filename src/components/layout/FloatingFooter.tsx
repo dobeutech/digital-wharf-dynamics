@@ -37,31 +37,33 @@ export function FloatingFooter() {
   return (
     <>
       {/* Top gradient fade for floating effect */}
-      <div 
+      <div
         className="relative h-32 pointer-events-none -mb-32"
         style={{
-          background: "linear-gradient(to top, hsl(var(--background)) 0%, transparent 100%)",
+          background:
+            "linear-gradient(to top, hsl(var(--background)) 0%, transparent 100%)",
         }}
         aria-hidden="true"
       />
-      
-      <footer 
+
+      <footer
         ref={footerRef}
         className="relative bg-card/50 backdrop-blur-sm border-t border-border/50"
         role="contentinfo"
       >
         {/* Animated gradient border at top - full brand colors */}
-        <div 
+        <div
           className="absolute top-0 left-0 right-0 h-[1px]"
           style={{
-            background: "linear-gradient(90deg, transparent, #FACC15, #EC4899, #A855F7, #3B82F6, transparent)",
+            background:
+              "linear-gradient(90deg, transparent, #FACC15, #EC4899, #A855F7, #3B82F6, transparent)",
             backgroundSize: "200% 100%",
             animation: "gradient-x 5s ease infinite",
           }}
         />
 
         {/* CTA Section */}
-        <motion.div 
+        <motion.div
           className="container mx-auto px-4 py-16"
           initial={{ opacity: 0, y: 40 }}
           animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
@@ -70,10 +72,11 @@ export function FloatingFooter() {
           <div className="max-w-4xl mx-auto text-center space-y-6 pb-16 border-b border-border/50">
             <h2 className="text-3xl md:text-5xl font-bold">
               Ready to{" "}
-              <span 
+              <span
                 className="text-transparent bg-clip-text"
                 style={{
-                  backgroundImage: "linear-gradient(135deg, #FACC15, #EC4899, #A855F7)",
+                  backgroundImage:
+                    "linear-gradient(135deg, #FACC15, #EC4899, #A855F7)",
                   backgroundSize: "200% 200%",
                   animation: "gradient-x 5s ease infinite",
                 }}
@@ -83,10 +86,14 @@ export function FloatingFooter() {
               ?
             </h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Let's build something incredible together. Start a conversation today.
+              Let's build something incredible together. Start a conversation
+              today.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 <Button
                   asChild
                   size="lg"
@@ -99,14 +106,18 @@ export function FloatingFooter() {
                 </Button>
               </motion.div>
               <WantToLearnMoreLink source="footer-cta" variant="footer" />
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 <Button
                   asChild
                   size="lg"
                   variant="outline"
                   className="border-2 border-transparent font-semibold px-8 py-6 text-lg rounded-full relative overflow-hidden"
                   style={{
-                    backgroundImage: "linear-gradient(hsl(var(--background)), hsl(var(--background))), linear-gradient(135deg, #FACC15, #EC4899, #A855F7)",
+                    backgroundImage:
+                      "linear-gradient(hsl(var(--background)), hsl(var(--background))), linear-gradient(135deg, #FACC15, #EC4899, #A855F7)",
                     backgroundOrigin: "border-box",
                     backgroundClip: "padding-box, border-box",
                   }}
@@ -119,20 +130,21 @@ export function FloatingFooter() {
         </motion.div>
 
         {/* Links Section */}
-        <motion.div 
+        <motion.div
           className="container mx-auto px-4 pb-12"
           variants={containerVariants}
           initial="hidden"
           animate={isInView ? "visible" : "hidden"}
         >
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8">
-            <motion.div 
+            <motion.div
               className="col-span-2 sm:col-span-3 md:col-span-1 space-y-4"
               variants={itemVariants}
             >
               <Logo className="h-8" />
               <p className="text-sm text-muted-foreground">
-                Building exceptional digital experiences that drive growth and innovation.
+                Building exceptional digital experiences that drive growth and
+                innovation.
               </p>
             </motion.div>
 
@@ -146,8 +158,8 @@ export function FloatingFooter() {
                   { label: "Learning & Training", href: "/services#learning" },
                 ].map((link) => (
                   <li key={link.href}>
-                    <Link 
-                      to={link.href} 
+                    <Link
+                      to={link.href}
                       className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
                     >
                       {link.label}
@@ -168,8 +180,8 @@ export function FloatingFooter() {
                   { label: "Brand Kit", href: "/brand" },
                 ].map((link) => (
                   <li key={link.href}>
-                    <Link 
-                      to={link.href} 
+                    <Link
+                      to={link.href}
                       className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
                     >
                       {link.label}
@@ -184,25 +196,31 @@ export function FloatingFooter() {
               <h3 className="font-semibold mb-4">Connect</h3>
               <ul className="space-y-3">
                 <li>
-                  <a 
-                    href="https://contra.com/jeremy_williams_fx413nca?referralExperimentNid=DEFAULT_REFERRAL_PROGRAM&referrerUsername=jeremy_williams_fx413nca" 
-                    target="_blank" 
+                  <a
+                    href="https://contra.com/jeremy_williams_fx413nca?referralExperimentNid=DEFAULT_REFERRAL_PROGRAM&referrerUsername=jeremy_williams_fx413nca"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
                   >
                     Hire on Contra
-                    <ExternalLink className="w-3 h-3 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+                    <ExternalLink
+                      className="w-3 h-3 opacity-70 group-hover:opacity-100 transition-opacity"
+                      aria-hidden="true"
+                    />
                   </a>
                 </li>
                 <li>
-                  <a 
-                    href="https://www.behance.net/jeremywilliams62" 
-                    target="_blank" 
+                  <a
+                    href="https://www.behance.net/jeremywilliams62"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
                   >
                     View on Behance
-                    <ExternalLink className="w-3 h-3 opacity-70 group-hover:opacity-100 transition-opacity" aria-hidden="true" />
+                    <ExternalLink
+                      className="w-3 h-3 opacity-70 group-hover:opacity-100 transition-opacity"
+                      aria-hidden="true"
+                    />
                   </a>
                 </li>
               </ul>
@@ -218,8 +236,8 @@ export function FloatingFooter() {
                   { label: "Do Not Sell My Data", href: "/ccpa-optout" },
                 ].map((link) => (
                   <li key={link.href}>
-                    <Link 
-                      to={link.href} 
+                    <Link
+                      to={link.href}
                       className="text-sm text-muted-foreground hover:text-primary transition-colors"
                     >
                       {link.label}
@@ -232,7 +250,7 @@ export function FloatingFooter() {
         </motion.div>
 
         {/* Bottom bar */}
-        <motion.div 
+        <motion.div
           className="border-t border-border/50"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : { opacity: 0 }}

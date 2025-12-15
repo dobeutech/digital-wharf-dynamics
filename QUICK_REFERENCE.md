@@ -6,12 +6,12 @@ A one-page reference for performance optimizations and automations.
 
 ### What Changed?
 
-| Component | Before | After | Improvement |
-|-----------|--------|-------|-------------|
+| Component       | Before    | After     | Improvement    |
+| --------------- | --------- | --------- | -------------- |
 | Admin Dashboard | 2.5s load | 1.0s load | **60% faster** |
-| Admin Check | 150ms | 50ms | **66% faster** |
-| User List | 1.8s load | 0.8s load | **55% faster** |
-| Auth Re-renders | Many | Few | **80% less** |
+| Admin Check     | 150ms     | 50ms      | **66% faster** |
+| User List       | 1.8s load | 0.8s load | **55% faster** |
+| Auth Re-renders | Many      | Few       | **80% less**   |
 
 ### How It Works (Simple)
 
@@ -26,17 +26,17 @@ A one-page reference for performance optimizations and automations.
 
 ### What Runs Automatically?
 
-| Automation | When | What It Does |
-|------------|------|--------------|
-| **Nightly Tests** | 2 AM daily | Runs all tests to catch bugs |
-| **Database Backup** | 3 AM daily | Backs up all data |
-| **Security Scan** | 10 AM daily | Checks for vulnerabilities |
-| **Dependency Check** | Monday 9 AM | Checks for updates |
-| **Performance Check** | Every 6 hours | Monitors website speed |
-| **Database Cleanup** | Sunday 4 AM | Removes old data |
-| **Pre-Commit Check** | Before commit | Validates code quality |
-| **Post-Deploy Check** | After deploy | Verifies deployment |
-| **Env Sync Check** | On config change | Validates settings |
+| Automation            | When             | What It Does                 |
+| --------------------- | ---------------- | ---------------------------- |
+| **Nightly Tests**     | 2 AM daily       | Runs all tests to catch bugs |
+| **Database Backup**   | 3 AM daily       | Backs up all data            |
+| **Security Scan**     | 10 AM daily      | Checks for vulnerabilities   |
+| **Dependency Check**  | Monday 9 AM      | Checks for updates           |
+| **Performance Check** | Every 6 hours    | Monitors website speed       |
+| **Database Cleanup**  | Sunday 4 AM      | Removes old data             |
+| **Pre-Commit Check**  | Before commit    | Validates code quality       |
+| **Post-Deploy Check** | After deploy     | Verifies deployment          |
+| **Env Sync Check**    | On config change | Validates settings           |
 
 ### Why Automations Matter
 
@@ -101,14 +101,16 @@ QUICK_REFERENCE.md                        - This file
 ### For Developers
 
 1. **Use the performance monitor**:
+
    ```typescript
-   import { perfMonitor } from '@/lib/performance';
-   perfMonitor.start('operation');
+   import { perfMonitor } from "@/lib/performance";
+   perfMonitor.start("operation");
    // ... your code
-   perfMonitor.end('operation');
+   perfMonitor.end("operation");
    ```
 
 2. **Check slow operations**:
+
    ```typescript
    perfMonitor.logSlowOperations(1000); // Log ops > 1s
    ```
@@ -153,14 +155,17 @@ QUICK_REFERENCE.md                        - This file
 ## 📚 Where to Learn More
 
 ### For Beginners
+
 - [SIMPLE_EXPLANATION.md](./SIMPLE_EXPLANATION.md) - Easy-to-understand guide
 - [VISUAL_GUIDE.md](./VISUAL_GUIDE.md) - Diagrams and flowcharts
 
 ### For Developers
+
 - [PERFORMANCE_OPTIMIZATIONS.md](./PERFORMANCE_OPTIMIZATIONS.md) - Technical details
 - [AGENTS.md](./AGENTS.md) - Ona agent usage guide
 
 ### For Managers
+
 - [PERFORMANCE_AND_AUTOMATION_SUMMARY.md](./PERFORMANCE_AND_AUTOMATION_SUMMARY.md) - Executive summary
 
 ---
@@ -187,18 +192,22 @@ A: Pre-commit checks will block bad code. Plus, we have daily backups!
 ## 🎓 Key Concepts
 
 ### Caching
+
 **Simple**: Remember answers instead of looking them up every time  
 **Technical**: Store frequently accessed data in memory with TTL
 
 ### Memoization
+
 **Simple**: Don't recalculate if inputs haven't changed  
 **Technical**: Cache function results based on input parameters
 
 ### Query Optimization
+
 **Simple**: Make fewer trips to the database  
 **Technical**: Batch queries and filter in memory when appropriate
 
 ### Automation
+
 **Simple**: Robots that do chores automatically  
 **Technical**: Scheduled tasks that run without human intervention
 

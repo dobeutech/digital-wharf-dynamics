@@ -1,5 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -46,12 +52,14 @@ export default function Projects() {
       const projectsWithTasks = await Promise.all(
         (projectsData || []).map(async (project) => {
           try {
-            const tasks = await api.get<Task[]>(`/project-tasks?project_id=${project.id}`);
+            const tasks = await api.get<Task[]>(
+              `/project-tasks?project_id=${project.id}`,
+            );
             return { ...project, tasks: tasks || [] };
           } catch {
             return { ...project, tasks: [] };
           }
-        })
+        }),
       );
 
       setProjects(projectsWithTasks);
@@ -70,7 +78,11 @@ export default function Projects() {
     fetchProjects();
   }, [fetchProjects]);
 
-  const toggleTask = async (projectId: string, taskId: string, currentStatus: boolean) => {
+  const toggleTask = async (
+    projectId: string,
+    taskId: string,
+    currentStatus: boolean,
+  ) => {
     try {
       await api.patch(`/project-tasks?id=${taskId}`, {
         is_completed: !currentStatus,
@@ -112,7 +124,9 @@ export default function Projects() {
       <div className="container mx-auto max-w-6xl">
         <div className="mb-12">
           <h1 className="text-4xl font-bold mb-4">Your Projects</h1>
-          <p className="text-xl text-muted-foreground">Track progress and manage tasks</p>
+          <p className="text-xl text-muted-foreground">
+            Track progress and manage tasks
+          </p>
         </div>
 
         {projects.length === 0 ? (
@@ -131,12 +145,19 @@ export default function Projects() {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
-                      <CardTitle className="text-2xl mb-2">{project.title}</CardTitle>
+                      <CardTitle className="text-2xl mb-2">
+                        {project.title}
+                      </CardTitle>
                       {project.description && (
-                        <CardDescription className="text-base">{project.description}</CardDescription>
+                        <CardDescription className="text-base">
+                          {project.description}
+                        </CardDescription>
                       )}
                     </div>
-                    <Badge variant="outline" className={getStatusColor(project.status)}>
+                    <Badge
+                      variant="outline"
+                      className={getStatusColor(project.status)}
+                    >
                       {project.status.replace("_", " ").toUpperCase()}
                     </Badge>
                   </div>
@@ -145,22 +166,33 @@ export default function Projects() {
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-muted-foreground">Progress</span>
-                      <span className="font-semibold">{project.progress_percentage}%</span>
+                      <span className="font-semibold">
+                        {project.progress_percentage}%
+                      </span>
                     </div>
-                    <Progress value={project.progress_percentage} className="h-3" />
+                    <Progress
+                      value={project.progress_percentage}
+                      className="h-3"
+                    />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     {project.start_date && (
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Clock className="h-4 w-4" />
-                        <span>Started: {format(new Date(project.start_date), "MMM d, yyyy")}</span>
+                        <span>
+                          Started:{" "}
+                          {format(new Date(project.start_date), "MMM d, yyyy")}
+                        </span>
                       </div>
                     )}
                     {project.end_date && (
                       <div className="flex items-center gap-2 text-muted-foreground">
                         <Calendar className="h-4 w-4" />
-                        <span>Due: {format(new Date(project.end_date), "MMM d, yyyy")}</span>
+                        <span>
+                          Due:{" "}
+                          {format(new Date(project.end_date), "MMM d, yyyy")}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -179,19 +211,29 @@ export default function Projects() {
                           >
                             <Checkbox
                               checked={task.is_completed}
-                              onCheckedChange={() => toggleTask(project.id, task.id, task.is_completed)}
+                              onCheckedChange={() =>
+                                toggleTask(
+                                  project.id,
+                                  task.id,
+                                  task.is_completed,
+                                )
+                              }
                               className="mt-1"
                             />
                             <div className="flex-1">
                               <p
                                 className={`font-medium ${
-                                  task.is_completed ? "line-through text-muted-foreground" : ""
+                                  task.is_completed
+                                    ? "line-through text-muted-foreground"
+                                    : ""
                                 }`}
                               >
                                 {task.title}
                               </p>
                               {task.description && (
-                                <p className="text-sm text-muted-foreground mt-1">{task.description}</p>
+                                <p className="text-sm text-muted-foreground mt-1">
+                                  {task.description}
+                                </p>
                               )}
                             </div>
                           </div>

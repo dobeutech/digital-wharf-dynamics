@@ -28,4 +28,3 @@ The logo is automatically used throughout the website via the `Logo` component l
 `src/components/layout/Logo.tsx`
 
 If the image file is not found, the component will fall back to an SVG text-based logo.
-

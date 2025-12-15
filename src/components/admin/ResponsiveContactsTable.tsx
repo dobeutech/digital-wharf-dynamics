@@ -1,6 +1,9 @@
 import { useMemo } from "react";
 import { AccessibleContactsTable } from "./AccessibleContactsTable";
-import { ResponsiveTable, MobileCardView } from "@/components/ui/responsive-table";
+import {
+  ResponsiveTable,
+  MobileCardView,
+} from "@/components/ui/responsive-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,16 +40,23 @@ const statusColors: Record<string, string> = {
 export function ResponsiveContactsTable({
   submissions,
   onViewDetails,
-  loading = false
+  loading = false,
 }: ResponsiveContactsTableProps) {
   const mobileCards = useMemo(() => {
     return submissions.map((submission) => (
-      <Card key={submission.id} className={submission.status === "new" ? "border-primary/20 bg-primary/5" : ""}>
+      <Card
+        key={submission.id}
+        className={
+          submission.status === "new" ? "border-primary/20 bg-primary/5" : ""
+        }
+      >
         <CardHeader>
           <div className="flex items-start justify-between">
             <div className="flex-1">
               <CardTitle className="text-lg">{submission.name}</CardTitle>
-              <p className="text-sm text-muted-foreground mt-1">{submission.email}</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                {submission.email}
+              </p>
             </div>
             <Badge className={statusColors[submission.status] || ""}>
               {submission.status}
@@ -69,7 +79,10 @@ export function ResponsiveContactsTable({
               <p className="text-xs text-muted-foreground">Submitted</p>
               <p className="text-sm">
                 <time dateTime={submission.submitted_at}>
-                  {format(new Date(submission.submitted_at), "MMM d, yyyy 'at' h:mm a")}
+                  {format(
+                    new Date(submission.submitted_at),
+                    "MMM d, yyyy 'at' h:mm a",
+                  )}
                 </time>
               </p>
             </div>
@@ -110,4 +123,3 @@ export function ResponsiveContactsTable({
     </>
   );
 }
-

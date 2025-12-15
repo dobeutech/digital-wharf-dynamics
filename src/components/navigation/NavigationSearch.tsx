@@ -25,10 +25,11 @@ export function NavigationSearch() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { isAdmin } = useAdmin();
-  const isMac = typeof navigator !== 'undefined' && 
-    (navigator.userAgent.indexOf('Mac') !== -1 || 
-     navigator.userAgent.indexOf('iPhone') !== -1 || 
-     navigator.userAgent.indexOf('iPad') !== -1);
+  const isMac =
+    typeof navigator !== "undefined" &&
+    (navigator.userAgent.indexOf("Mac") !== -1 ||
+      navigator.userAgent.indexOf("iPhone") !== -1 ||
+      navigator.userAgent.indexOf("iPad") !== -1);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -42,7 +43,9 @@ export function NavigationSearch() {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  const flattenCategories = (categories: NavigationCategory[]): NavigationItem[] => {
+  const flattenCategories = (
+    categories: NavigationCategory[],
+  ): NavigationItem[] => {
     return categories.flatMap((cat) => cat.items);
   };
 
@@ -108,18 +111,20 @@ export function NavigationSearch() {
           ) : (
             <>
               <CommandGroup heading="Dashboard">
-                {flattenCategories(authenticatedNavigationCategories).map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <CommandItem
-                      key={item.href}
-                      onSelect={() => handleSelect(item.href)}
-                    >
-                      {Icon && <Icon className="mr-2 h-4 w-4" />}
-                      <span>{item.label}</span>
-                    </CommandItem>
-                  );
-                })}
+                {flattenCategories(authenticatedNavigationCategories).map(
+                  (item) => {
+                    const Icon = item.icon;
+                    return (
+                      <CommandItem
+                        key={item.href}
+                        onSelect={() => handleSelect(item.href)}
+                      >
+                        {Icon && <Icon className="mr-2 h-4 w-4" />}
+                        <span>{item.label}</span>
+                      </CommandItem>
+                    );
+                  },
+                )}
               </CommandGroup>
               {isAdmin && (
                 <CommandGroup heading="Admin">

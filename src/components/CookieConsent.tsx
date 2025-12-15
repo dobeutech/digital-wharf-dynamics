@@ -45,8 +45,9 @@ export const CookieConsentBanner = () => {
     >
       <div className="text-foreground">
         <p className="text-sm mb-2">
-          We use cookies to enhance your experience, analyze site traffic, and personalize content. 
-          We may sell your data to third parties for marketing and advertising purposes.
+          We use cookies to enhance your experience, analyze site traffic, and
+          personalize content. We may sell your data to third parties for
+          marketing and advertising purposes.
         </p>
         <div className="flex flex-wrap gap-4 text-xs">
           <Link to="/privacy" className="text-primary hover:underline">
@@ -55,7 +56,10 @@ export const CookieConsentBanner = () => {
           <Link to="/terms" className="text-primary hover:underline">
             Terms of Service
           </Link>
-          <Link to="/ccpa-optout" className="text-primary hover:underline font-semibold">
+          <Link
+            to="/ccpa-optout"
+            className="text-primary hover:underline font-semibold"
+          >
             Do Not Sell My Data
           </Link>
         </div>

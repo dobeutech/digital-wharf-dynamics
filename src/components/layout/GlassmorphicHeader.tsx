@@ -81,21 +81,22 @@ export function GlassmorphicHeader() {
   return (
     <>
       {/* Top gradient fade for floating effect */}
-      <div 
+      <div
         className="fixed top-0 left-0 right-0 h-32 pointer-events-none z-40"
         style={{
-          background: "linear-gradient(to bottom, hsl(var(--background)) 0%, transparent 100%)",
+          background:
+            "linear-gradient(to bottom, hsl(var(--background)) 0%, transparent 100%)",
         }}
         aria-hidden="true"
       />
-      
+
       <motion.nav
         className={cn(
           "fixed top-0 left-0 right-0 z-50",
           "border-b transition-all duration-500",
-          isScrolled 
-            ? "border-border/20 shadow-lg shadow-black/5" 
-            : "border-transparent"
+          isScrolled
+            ? "border-border/20 shadow-lg shadow-black/5"
+            : "border-transparent",
         )}
         style={{
           backgroundColor: `hsla(var(--background) / ${headerOpacity.get()})`,
@@ -109,18 +110,19 @@ export function GlassmorphicHeader() {
         aria-label="Main navigation"
       >
         {/* Animated gradient border at bottom - uses all brand colors */}
-        <div 
+        <div
           className={cn(
             "absolute bottom-0 left-0 right-0 h-[1px] transition-opacity duration-500",
-            isScrolled ? "opacity-100" : "opacity-0"
+            isScrolled ? "opacity-100" : "opacity-0",
           )}
           style={{
-            background: "linear-gradient(90deg, transparent, #FACC15, #EC4899, #A855F7, #3B82F6, transparent)",
+            background:
+              "linear-gradient(90deg, transparent, #FACC15, #EC4899, #A855F7, #3B82F6, transparent)",
             backgroundSize: "200% 100%",
             animation: "gradient-x 5s ease infinite",
           }}
         />
-        
+
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
             <motion.div
@@ -139,7 +141,7 @@ export function GlassmorphicHeader() {
             </motion.div>
 
             {/* Desktop Navigation */}
-            <motion.div 
+            <motion.div
               className="hidden md:flex items-center gap-1"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -164,7 +166,7 @@ export function GlassmorphicHeader() {
                           "after:absolute after:bottom-0 after:left-1/2 after:w-0 after:h-0.5",
                           "after:bg-gradient-to-r after:from-yellow-400 after:via-pink-500 after:to-purple-500",
                           "after:transition-all after:duration-300 after:-translate-x-1/2",
-                          "hover:after:w-1/2"
+                          "hover:after:w-1/2",
                         )}
                       >
                         {item.label}
@@ -182,7 +184,7 @@ export function GlassmorphicHeader() {
                         "text-sm font-medium px-4 py-2 rounded-full",
                         "transition-all duration-300 flex items-center gap-1",
                         "hover:text-primary hover:bg-primary/10",
-                        showMegaMenu && "text-primary bg-primary/10"
+                        showMegaMenu && "text-primary bg-primary/10",
                       )}
                       aria-expanded={showMegaMenu}
                       aria-haspopup="true"
@@ -191,7 +193,7 @@ export function GlassmorphicHeader() {
                       <ChevronDown
                         className={cn(
                           "h-4 w-4 transition-transform duration-300",
-                          showMegaMenu && "rotate-180"
+                          showMegaMenu && "rotate-180",
                         )}
                       />
                     </button>
@@ -211,7 +213,7 @@ export function GlassmorphicHeader() {
                           "text-sm font-medium px-4 py-2 rounded-full",
                           "transition-all duration-300 flex items-center gap-1",
                           "hover:text-primary hover:bg-primary/10",
-                          showAdminMenu && "text-primary bg-primary/10"
+                          showAdminMenu && "text-primary bg-primary/10",
                         )}
                         aria-expanded={showAdminMenu}
                         aria-haspopup="true"
@@ -220,7 +222,7 @@ export function GlassmorphicHeader() {
                         <ChevronDown
                           className={cn(
                             "h-4 w-4 transition-transform duration-300",
-                            showAdminMenu && "rotate-180"
+                            showAdminMenu && "rotate-180",
                           )}
                         />
                       </button>
@@ -236,7 +238,7 @@ export function GlassmorphicHeader() {
             </motion.div>
 
             {/* Right side actions */}
-            <motion.div 
+            <motion.div
               className="hidden md:flex items-center gap-2"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -247,7 +249,9 @@ export function GlassmorphicHeader() {
               <AccessibilitySettings />
               <CursorToggle />
               <ThemeToggle />
-              {!user && <WantToLearnMoreLink source="header" variant="header" />}
+              {!user && (
+                <WantToLearnMoreLink source="header" variant="header" />
+              )}
               {user ? (
                 <Button
                   onClick={handleLogout}
@@ -258,9 +262,9 @@ export function GlassmorphicHeader() {
                   Logout
                 </Button>
               ) : (
-                <Button 
-                  asChild 
-                  size="sm" 
+                <Button
+                  asChild
+                  size="sm"
                   className={cn(
                     "relative min-h-[44px] rounded-full px-6 overflow-hidden",
                     "bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500",
@@ -268,10 +272,12 @@ export function GlassmorphicHeader() {
                     "shadow-lg hover:shadow-xl",
                     "transition-all duration-300 hover:scale-105",
                     "before:absolute before:inset-0 before:bg-gradient-to-r before:from-purple-500 before:via-pink-500 before:to-yellow-400",
-                    "before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100"
+                    "before:opacity-0 before:transition-opacity before:duration-300 hover:before:opacity-100",
                   )}
                 >
-                  <Link to="/auth" className="relative z-10">Sign In</Link>
+                  <Link to="/auth" className="relative z-10">
+                    Sign In
+                  </Link>
                 </Button>
               )}
             </motion.div>
@@ -285,7 +291,7 @@ export function GlassmorphicHeader() {
               <motion.button
                 className={cn(
                   "p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full",
-                  "hover:bg-primary/10 transition-colors"
+                  "hover:bg-primary/10 transition-colors",
                 )}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                 aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
@@ -304,8 +310,8 @@ export function GlassmorphicHeader() {
 
           {/* Mobile Menu */}
           {isMobileMenuOpen && (
-            <motion.div 
-              id="mobile-menu" 
+            <motion.div
+              id="mobile-menu"
               role="menu"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
@@ -317,7 +323,10 @@ export function GlassmorphicHeader() {
                 categories={
                   user
                     ? isAdmin
-                      ? [...authenticatedNavigationCategories, ...adminNavigationCategories]
+                      ? [
+                          ...authenticatedNavigationCategories,
+                          ...adminNavigationCategories,
+                        ]
                       : authenticatedNavigationCategories
                     : []
                 }

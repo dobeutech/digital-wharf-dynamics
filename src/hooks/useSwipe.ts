@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from "react";
 
 interface SwipeHandlers {
   onSwipeLeft?: () => void;
@@ -20,12 +20,11 @@ const DEFAULT_OPTIONS: Required<SwipeOptions> = {
 /**
  * Hook for detecting swipe gestures
  */
-export function useSwipe(
-  handlers: SwipeHandlers,
-  options: SwipeOptions = {}
-) {
+export function useSwipe(handlers: SwipeHandlers, options: SwipeOptions = {}) {
   const { threshold, velocity } = { ...DEFAULT_OPTIONS, ...options };
-  const touchStart = useRef<{ x: number; y: number; time: number } | null>(null);
+  const touchStart = useRef<{ x: number; y: number; time: number } | null>(
+    null,
+  );
   const [swipeDirection, setSwipeDirection] = useState<string | null>(null);
 
   useEffect(() => {
@@ -56,19 +55,19 @@ export function useSwipe(
         if (absX > absY) {
           // Horizontal swipe
           if (deltaX > 0) {
-            setSwipeDirection('right');
+            setSwipeDirection("right");
             handlers.onSwipeRight?.();
           } else {
-            setSwipeDirection('left');
+            setSwipeDirection("left");
             handlers.onSwipeLeft?.();
           }
         } else {
           // Vertical swipe
           if (deltaY > 0) {
-            setSwipeDirection('down');
+            setSwipeDirection("down");
             handlers.onSwipeDown?.();
           } else {
-            setSwipeDirection('up');
+            setSwipeDirection("up");
             handlers.onSwipeUp?.();
           }
         }
@@ -78,15 +77,14 @@ export function useSwipe(
     };
 
     const element = document.body;
-    element.addEventListener('touchstart', handleTouchStart, { passive: true });
-    element.addEventListener('touchend', handleTouchEnd, { passive: true });
+    element.addEventListener("touchstart", handleTouchStart, { passive: true });
+    element.addEventListener("touchend", handleTouchEnd, { passive: true });
 
     return () => {
-      element.removeEventListener('touchstart', handleTouchStart);
-      element.removeEventListener('touchend', handleTouchEnd);
+      element.removeEventListener("touchstart", handleTouchStart);
+      element.removeEventListener("touchend", handleTouchEnd);
     };
   }, [handlers, threshold, velocity]);
 
   return { swipeDirection };
 }
-

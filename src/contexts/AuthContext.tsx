@@ -1,8 +1,20 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { Auth0Provider, useAuth0 } from '@auth0/auth0-react';
-import { useNavigate } from 'react-router-dom';
-import { trackEvent, identifyUser, resetUser, MIXPANEL_EVENTS, trackFunnelStep } from '@/lib/mixpanel';
-import { identifyPostHogUser, resetPostHogUser, trackFunnelStep as trackPostHogFunnel, FUNNEL_STEPS, reloadFeatureFlags } from '@/lib/posthog';
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { Auth0Provider, useAuth0 } from "@auth0/auth0-react";
+import { useNavigate } from "react-router-dom";
+import {
+  trackEvent,
+  identifyUser,
+  resetUser,
+  MIXPANEL_EVENTS,
+  trackFunnelStep,
+} from "@/lib/mixpanel";
+import {
+  identifyPostHogUser,
+  resetPostHogUser,
+  trackFunnelStep as trackPostHogFunnel,
+  FUNNEL_STEPS,
+  reloadFeatureFlags,
+} from "@/lib/posthog";
 
 export interface AuthUser {
   id: string;
@@ -22,8 +34,15 @@ export interface AuthError {
 interface AuthContextType {
   user: AuthUser | null;
   session: AuthSession | null;
-  signIn: (email?: string, password?: string) => Promise<{ error: AuthError | null }>;
-  signUp: (email?: string, password?: string, username?: string) => Promise<{ error: AuthError | null }>;
+  signIn: (
+    email?: string,
+    password?: string,
+  ) => Promise<{ error: AuthError | null }>;
+  signUp: (
+    email?: string,
+    password?: string,
+    username?: string,
+  ) => Promise<{ error: AuthError | null }>;
   signInWithGoogle: () => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<void>;
   resendVerificationEmail: () => Promise<{ error: AuthError | Error | null }>;
@@ -35,10 +54,12 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 function decodeJwtPayload(token: string): Record<string, unknown> | null {
   try {
-    const parts = token.split('.');
+    const parts = token.split(".");
     if (parts.length < 2) return null;
-    const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
-    const json = atob(payload.padEnd(payload.length + ((4 - (payload.length % 4)) % 4), '='));
+    const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const json = atob(
+      payload.padEnd(payload.length + ((4 - (payload.length % 4)) % 4), "="),
+    );
     return JSON.parse(json) as Record<string, unknown>;
   } catch {
     return null;
@@ -46,7 +67,14 @@ function decodeJwtPayload(token: string): Record<string, unknown> | null {
 }
 
 function AuthContextInner({ children }: { children: React.ReactNode }) {
-  const { isLoading, isAuthenticated, user: auth0User, loginWithRedirect, logout, getAccessTokenSilently } = useAuth0();
+  const {
+    isLoading,
+    isAuthenticated,
+    user: auth0User,
+    loginWithRedirect,
+    logout,
+    getAccessTokenSilently,
+  } = useAuth0();
   const navigate = useNavigate();
   const [session, setSession] = useState<AuthSession | null>(null);
 
@@ -76,23 +104,29 @@ function AuthContextInner({ children }: { children: React.ReactNode }) {
         const token = await getAccessTokenSilently();
         if (!token) return;
 
-        const response = await fetch('/.netlify/functions/check-phone-verification', {
-          headers: {
-            Authorization: `Bearer ${token}`,
+        const response = await fetch(
+          "/.netlify/functions/check-phone-verification",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           },
-        });
+        );
 
         if (response.ok) {
           const data = await response.json();
           // If user is new or phone not verified, redirect to phone verification
           // Skip if already on verify-phone page to avoid redirect loop
-          if (!data.phone_verified && !window.location.pathname.includes('/verify-phone')) {
-            navigate('/verify-phone');
+          if (
+            !data.phone_verified &&
+            !window.location.pathname.includes("/verify-phone")
+          ) {
+            navigate("/verify-phone");
           }
         }
       } catch (error) {
         // Silently fail - don't block user if check fails
-        console.error('Error checking phone verification:', error);
+        console.error("Error checking phone verification:", error);
       }
     };
 
@@ -102,29 +136,33 @@ function AuthContextInner({ children }: { children: React.ReactNode }) {
   }, [isAuthenticated, user, isLoading, getAccessTokenSilently, navigate]);
 
   const getAccessToken = useMemo(
-    () =>
-      async (): Promise<string | null> => {
-        if (!isAuthenticated) return null;
-        try {
-          const token = await getAccessTokenSilently();
-          setSession({ accessToken: token, claims: decodeJwtPayload(token) ?? undefined });
-          return token;
-        } catch {
-          return null;
-        }
-      },
-    [isAuthenticated, getAccessTokenSilently]
+    () => async (): Promise<string | null> => {
+      if (!isAuthenticated) return null;
+      try {
+        const token = await getAccessTokenSilently();
+        setSession({
+          accessToken: token,
+          claims: decodeJwtPayload(token) ?? undefined,
+        });
+        return token;
+      } catch {
+        return null;
+      }
+    },
+    [isAuthenticated, getAccessTokenSilently],
   );
 
   const signIn = async () => {
     try {
       trackEvent(MIXPANEL_EVENTS.SIGN_IN);
       await loginWithRedirect({
-        appState: { returnTo: '/' },
+        appState: { returnTo: "/" },
       });
       return { error: null };
     } catch (e) {
-      return { error: { message: e instanceof Error ? e.message : 'Login failed' } };
+      return {
+        error: { message: e instanceof Error ? e.message : "Login failed" },
+      };
     }
   };
 
@@ -132,14 +170,16 @@ function AuthContextInner({ children }: { children: React.ReactNode }) {
     try {
       trackEvent(MIXPANEL_EVENTS.SIGN_UP);
       await loginWithRedirect({
-        authorizationParams: { screen_hint: 'signup' },
-        appState: { returnTo: '/' },
+        authorizationParams: { screen_hint: "signup" },
+        appState: { returnTo: "/" },
       });
-      trackFunnelStep('FUNNEL_SIGNUP_COMPLETE');
+      trackFunnelStep("FUNNEL_SIGNUP_COMPLETE");
       trackPostHogFunnel(FUNNEL_STEPS.SIGNUP_COMPLETE);
       return { error: null };
     } catch (e) {
-      return { error: { message: e instanceof Error ? e.message : 'Signup failed' } };
+      return {
+        error: { message: e instanceof Error ? e.message : "Signup failed" },
+      };
     }
   };
 
@@ -147,11 +187,15 @@ function AuthContextInner({ children }: { children: React.ReactNode }) {
     try {
       trackEvent(MIXPANEL_EVENTS.SIGN_IN_GOOGLE);
       await loginWithRedirect({
-        appState: { returnTo: '/' },
+        appState: { returnTo: "/" },
       });
       return { error: null };
     } catch (e) {
-      return { error: { message: e instanceof Error ? e.message : 'Google sign-in failed' } };
+      return {
+        error: {
+          message: e instanceof Error ? e.message : "Google sign-in failed",
+        },
+      };
     }
   };
 
@@ -160,13 +204,17 @@ function AuthContextInner({ children }: { children: React.ReactNode }) {
     resetUser();
     resetPostHogUser();
     setSession(null);
-    await logout({ logoutParams: { returnTo: `${window.location.origin}/auth` } });
-    navigate('/auth');
+    await logout({
+      logoutParams: { returnTo: `${window.location.origin}/auth` },
+    });
+    navigate("/auth");
   };
 
   const resendVerificationEmail = async () => {
     // Auth0 verification resend is handled via Auth0 flows (Universal Login / email templates).
-    return { error: new Error('Email verification resend is managed by Auth0') };
+    return {
+      error: new Error("Email verification resend is managed by Auth0"),
+    };
   };
 
   return (
@@ -202,11 +250,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         value={{
           user: null,
           session: null,
-          signIn: async () => ({ error: { message: 'Auth is not configured' } }),
-          signUp: async () => ({ error: { message: 'Auth is not configured' } }),
-          signInWithGoogle: async () => ({ error: { message: 'Auth is not configured' } }),
+          signIn: async () => ({
+            error: { message: "Auth is not configured" },
+          }),
+          signUp: async () => ({
+            error: { message: "Auth is not configured" },
+          }),
+          signInWithGoogle: async () => ({
+            error: { message: "Auth is not configured" },
+          }),
           signOut: async () => undefined,
-          resendVerificationEmail: async () => ({ error: new Error('Auth is not configured') }),
+          resendVerificationEmail: async () => ({
+            error: new Error("Auth is not configured"),
+          }),
           getAccessToken: async () => null,
           loading: false,
         }}
@@ -228,7 +284,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }}
       onRedirectCallback={(appState) => {
         const to = (appState as { returnTo?: string } | undefined)?.returnTo;
-        navigate(to || '/');
+        navigate(to || "/");
       }}
     >
       <AuthContextInner>{children}</AuthContextInner>
@@ -239,7 +295,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

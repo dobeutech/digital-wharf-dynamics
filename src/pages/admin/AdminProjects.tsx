@@ -73,9 +73,13 @@ export default function AdminProjects() {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-xl mb-2">{project.title}</CardTitle>
+                    <CardTitle className="text-xl mb-2">
+                      {project.title}
+                    </CardTitle>
                     {project.description && (
-                      <p className="text-muted-foreground text-sm">{project.description}</p>
+                      <p className="text-muted-foreground text-sm">
+                        {project.description}
+                      </p>
                     )}
                   </div>
                   <Badge className={getStatusColor(project.status)}>

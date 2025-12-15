@@ -7,6 +7,7 @@ The Intercom chat widget was not appearing on https://dobeu.net. The widget shou
 ## Root Cause
 
 The implementation had restrictive visibility logic that only showed the widget:
+
 1. On the homepage (`/`) only
 2. After a 5-second delay
 3. Required manual `Intercom('show')` call
@@ -16,6 +17,7 @@ This made the widget invisible on all other pages and difficult to discover.
 ## Solution
 
 Modified `src/components/Analytics.tsx` to:
+
 1. ✅ Remove homepage-only restriction
 2. ✅ Remove 5-second delay
 3. ✅ Add `hide_default_launcher: false` configuration
@@ -27,20 +29,22 @@ Modified `src/components/Analytics.tsx` to:
 ### File: `src/components/Analytics.tsx`
 
 **Before**:
+
 ```typescript
 // Only showed on homepage after 5 seconds
 useEffect(() => {
-  if (location.pathname !== '/') return;
-  
+  if (location.pathname !== "/") return;
+
   const timer = window.setTimeout(() => {
-    Intercom('show');
+    Intercom("show");
   }, 5000);
-  
+
   return () => window.clearTimeout(timer);
 }, [location.pathname]);
 ```
 
 **After**:
+
 ```typescript
 // Widget visible by default on all pages
 const baseConfig = {
@@ -100,12 +104,13 @@ Run through this checklist:
 If widget still doesn't appear:
 
 1. **Check Browser Console**:
+
    ```javascript
    // Should return 'function'
    console.log(typeof Intercom);
-   
+
    // Should return visitor ID
-   Intercom('getVisitorId');
+   Intercom("getVisitorId");
    ```
 
 2. **Check Network Tab**:
@@ -141,12 +146,14 @@ If widget still doesn't appear:
 ### Deploy Steps
 
 1. **Build and Test Locally**:
+
    ```bash
    npm run build
    npm run preview
    ```
 
 2. **Deploy to Production**:
+
    ```bash
    ./scripts/deploy-production.sh
    ```
@@ -161,6 +168,7 @@ If widget still doesn't appear:
 If issues occur:
 
 1. **Quick Rollback**:
+
    ```bash
    git revert [commit-hash]
    ./scripts/deploy-production.sh

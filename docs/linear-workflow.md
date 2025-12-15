@@ -47,6 +47,7 @@ At each stop point during development, the following should be updated in Linear
 ## Issue Templates
 
 ### Feature Issue
+
 ```
 Title: [Feature] Description
 Description:
@@ -59,6 +60,7 @@ Description:
 ```
 
 ### Bug Issue
+
 ```
 Title: [Bug] Description
 Description:
@@ -70,6 +72,7 @@ Description:
 ```
 
 ### Refactoring Issue
+
 ```
 Title: [Refactor] Description
 Description:
@@ -83,6 +86,7 @@ Description:
 ## Automation
 
 The development workflow includes automatic Linear updates at stop points:
+
 - After code changes
 - Before commits
 - After documentation updates
@@ -95,4 +99,3 @@ The development workflow includes automatic Linear updates at stop points:
 3. **Link Related Work**: Use issue relationships
 4. **Document Decisions**: Add context to issue descriptions
 5. **Track Time**: Use estimates and track actual time when possible
-

@@ -16,39 +16,39 @@ automations:
   nightly-tests:
     name: "Nightly Test Suite"
     description: "Run comprehensive tests every night to catch regressions"
-    
+
     trigger:
       schedule:
-        cron: "0 2 * * *"  # 2 AM UTC daily
+        cron: "0 2 * * *" # 2 AM UTC daily
         timezone: "UTC"
-    
+
     conditions:
       - branch: "main"
       - environment: "production"
-    
+
     actions:
       - name: "Install Dependencies"
         command: "npm ci"
         timeout: 300
-        
+
       - name: "Run Unit Tests"
         command: "npm run test:ci"
         timeout: 600
-        on_failure: "continue"  # Continue even if tests fail
-        
+        on_failure: "continue" # Continue even if tests fail
+
       - name: "Run E2E Tests"
         command: "npm run test:e2e"
         timeout: 1200
         on_failure: "continue"
-        
+
       - name: "Generate Coverage Report"
         command: "npm run test:ci -- --coverage"
         timeout: 600
-        
+
       - name: "Check Bundle Size"
         command: "npm run build && du -sh dist/"
         timeout: 300
-        
+
       - name: "Notify Results"
         command: |
           if [ $? -eq 0 ]; then
@@ -56,7 +56,7 @@ automations:
           else
             echo "❌ Nightly tests failed - check logs"
           fi
-    
+
     notifications:
       on_success:
         - type: "log"
@@ -72,15 +72,15 @@ automations:
   database-backup:
     name: "Database Backup"
     description: "Automated database backup to prevent data loss"
-    
+
     trigger:
       schedule:
-        cron: "0 3 * * *"  # 3 AM UTC daily
+        cron: "0 3 * * *" # 3 AM UTC daily
         timezone: "UTC"
-    
+
     conditions:
       - environment: "production"
-    
+
     actions:
       - name: "Trigger Supabase Backup"
         command: |
@@ -89,13 +89,13 @@ automations:
             -H "Content-Type: application/json" \
             ${VITE_SUPABASE_URL}/functions/v1/backup-database
         timeout: 600
-        
+
       - name: "Verify Backup"
         command: |
           # Check if backup was created in last hour
           echo "Backup verification would go here"
         timeout: 60
-    
+
     notifications:
       on_success:
         - type: "log"
@@ -111,26 +111,26 @@ automations:
   dependency-check:
     name: "Dependency Security Check"
     description: "Check for outdated and vulnerable dependencies"
-    
+
     trigger:
       schedule:
-        cron: "0 9 * * 1"  # 9 AM UTC every Monday
+        cron: "0 9 * * 1" # 9 AM UTC every Monday
         timezone: "UTC"
-    
+
     actions:
       - name: "Check for Outdated Packages"
         command: "npm outdated || true"
         timeout: 120
-        
+
       - name: "Security Audit"
         command: "npm audit --audit-level=moderate"
         timeout: 120
         on_failure: "continue"
-        
+
       - name: "Check TypeScript Version"
         command: "npm list typescript"
         timeout: 30
-    
+
     notifications:
       on_failure:
         - type: "log"
@@ -143,25 +143,25 @@ automations:
   pre-commit-quality:
     name: "Pre-Commit Quality Checks"
     description: "Run quality checks before allowing commits"
-    
+
     trigger:
       git:
         event: "pre-commit"
-    
+
     actions:
       - name: "Lint Staged Files"
         command: "npm run lint"
         timeout: 60
-        
+
       - name: "Type Check"
         command: "npx tsc --noEmit"
         timeout: 120
-        
+
       - name: "Format Check"
         command: "npm run format:check"
         timeout: 60
-        on_failure: "block"  # Block commit if formatting fails
-    
+        on_failure: "block" # Block commit if formatting fails
+
     notifications:
       on_failure:
         - type: "log"
@@ -174,27 +174,27 @@ automations:
   post-deploy-verification:
     name: "Post-Deployment Verification"
     description: "Verify deployment was successful"
-    
+
     trigger:
       git:
         event: "push"
         branch: "main"
-    
+
     conditions:
       - environment: "production"
-    
+
     actions:
       - name: "Wait for Deployment"
-        command: "sleep 60"  # Wait for Netlify to deploy
+        command: "sleep 60" # Wait for Netlify to deploy
         timeout: 120
-        
+
       - name: "Health Check"
         command: |
           curl -f https://dobeu.net/api/health || exit 1
         timeout: 30
         retry: 3
         retry_delay: 10
-        
+
       - name: "Check Critical Pages"
         command: |
           for page in "/" "/services" "/contact"; do
@@ -202,13 +202,13 @@ automations:
             curl -f "https://dobeu.net$page" -o /dev/null || exit 1
           done
         timeout: 60
-        
+
       - name: "Verify Analytics"
         command: |
           # Check if analytics scripts are loading
           curl -s https://dobeu.net | grep -q "posthog" || echo "Warning: Analytics may not be loading"
         timeout: 30
-    
+
     notifications:
       on_success:
         - type: "log"
@@ -224,12 +224,12 @@ automations:
   performance-check:
     name: "Performance Monitoring"
     description: "Monitor application performance metrics"
-    
+
     trigger:
       schedule:
-        cron: "0 */6 * * *"  # Every 6 hours
+        cron: "0 */6 * * *" # Every 6 hours
         timezone: "UTC"
-    
+
     actions:
       - name: "Lighthouse Audit"
         command: |
@@ -239,7 +239,7 @@ automations:
             --chrome-flags="--headless" \
             --only-categories=performance,accessibility,best-practices,seo
         timeout: 300
-        
+
       - name: "Check Performance Score"
         command: |
           SCORE=$(cat lighthouse-report.json | jq '.categories.performance.score * 100')
@@ -249,12 +249,12 @@ automations:
             exit 1
           fi
         timeout: 30
-        
+
       - name: "Cleanup"
         command: "rm -f lighthouse-report.json"
         timeout: 10
         always_run: true
-    
+
     notifications:
       on_failure:
         - type: "log"
@@ -267,30 +267,30 @@ automations:
   database-cleanup:
     name: "Database Cleanup"
     description: "Clean up old data and optimize database"
-    
+
     trigger:
       schedule:
-        cron: "0 4 * * 0"  # 4 AM UTC every Sunday
+        cron: "0 4 * * 0" # 4 AM UTC every Sunday
         timezone: "UTC"
-    
+
     actions:
       - name: "Clean Old Audit Logs"
         command: |
           # Delete audit logs older than 90 days
           psql $DATABASE_URL -c "DELETE FROM audit_logs WHERE created_at < NOW() - INTERVAL '90 days';"
         timeout: 300
-        
+
       - name: "Clean Old Sessions"
         command: |
           # Clean expired sessions
           psql $DATABASE_URL -c "DELETE FROM auth.sessions WHERE expires_at < NOW();"
         timeout: 120
-        
+
       - name: "Vacuum Database"
         command: |
           psql $DATABASE_URL -c "VACUUM ANALYZE;"
         timeout: 600
-    
+
     notifications:
       on_success:
         - type: "log"
@@ -302,28 +302,28 @@ automations:
   security-scan:
     name: "Security Vulnerability Scan"
     description: "Scan for security vulnerabilities"
-    
+
     trigger:
       schedule:
-        cron: "0 10 * * *"  # 10 AM UTC daily
+        cron: "0 10 * * *" # 10 AM UTC daily
         timezone: "UTC"
-    
+
     actions:
       - name: "NPM Audit"
         command: "npm audit --audit-level=high"
         timeout: 120
         on_failure: "continue"
-        
+
       - name: "Check for Secrets"
         command: |
           # Simple check for common secret patterns
           git grep -E "(api[_-]?key|password|secret|token)" -- '*.ts' '*.tsx' '*.js' || true
         timeout: 60
-        
+
       - name: "Dependency License Check"
         command: "npx license-checker --summary"
         timeout: 120
-    
+
     notifications:
       on_failure:
         - type: "log"
@@ -336,19 +336,19 @@ automations:
   env-sync-check:
     name: "Environment Variables Sync Check"
     description: "Verify environment variables are in sync"
-    
+
     trigger:
       git:
         event: "push"
         files:
           - ".env.example"
           - "src/config/env.ts"
-    
+
     actions:
       - name: "Validate Environment Config"
         command: "npm run test:env"
         timeout: 60
-        
+
       - name: "Check for Missing Variables"
         command: |
           # Compare .env.example with actual .env
@@ -356,7 +356,7 @@ automations:
             comm -23 <(grep -v '^#' .env.example | cut -d= -f1 | sort) <(grep -v '^#' .env | cut -d= -f1 | sort)
           fi
         timeout: 30
-    
+
     notifications:
       on_failure:
         - type: "log"
@@ -369,19 +369,19 @@ automations:
 settings:
   # Default timeout for all actions (seconds)
   default_timeout: 300
-  
+
   # Maximum concurrent automations
   max_concurrent: 3
-  
+
   # Retry failed automations
   retry_on_failure: true
   max_retries: 2
   retry_delay: 60
-  
+
   # Logging
   log_level: "info"
   log_retention_days: 30
-  
+
   # Notifications
   notification_channels:
     - type: "log"
@@ -389,7 +389,7 @@ settings:
     - type: "email"
       enabled: false
       recipients: []
-  
+
   # Environment variables available to all automations
   environment:
     NODE_ENV: "production"

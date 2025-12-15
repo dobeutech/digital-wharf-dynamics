@@ -20,26 +20,33 @@ import { Shield, CheckCircle } from "lucide-react";
 import { useApi } from "@/lib/api";
 
 const ccpaFormSchema = z.object({
-  fullName: z.string()
+  fullName: z
+    .string()
     .trim()
     .min(2, "Name must be at least 2 characters")
     .max(100, "Name must be less than 100 characters"),
-  email: z.string()
+  email: z
+    .string()
     .trim()
     .email("Please enter a valid email address")
     .max(255, "Email must be less than 255 characters"),
-  phone: z.string()
+  phone: z
+    .string()
     .trim()
     .max(20, "Phone must be less than 20 characters")
     .optional()
     .or(z.literal("")),
-  address: z.string()
+  address: z
+    .string()
     .trim()
     .max(500, "Address must be less than 500 characters")
     .optional()
     .or(z.literal("")),
-  requestTypes: z.array(z.string()).min(1, "Please select at least one request type"),
-  additionalInfo: z.string()
+  requestTypes: z
+    .array(z.string())
+    .min(1, "Please select at least one request type"),
+  additionalInfo: z
+    .string()
     .trim()
     .max(1000, "Additional information must be less than 1000 characters")
     .optional()
@@ -81,9 +88,14 @@ export default function CCPAOptOut() {
 
   const onSubmit = async (data: CCPAFormValues) => {
     setIsSubmitting(true);
-    
+
     try {
-      const response = await api.post<{ success: boolean; referenceId?: string; responseDeadline?: string; error?: string }>('/ccpa-request', {
+      const response = await api.post<{
+        success: boolean;
+        referenceId?: string;
+        responseDeadline?: string;
+        error?: string;
+      }>("/ccpa-request", {
         fullName: data.fullName,
         email: data.email,
         phone: data.phone || null,
@@ -94,24 +106,26 @@ export default function CCPAOptOut() {
       });
 
       if (!response.success) {
-        throw new Error(response.error || 'Failed to submit request');
+        throw new Error(response.error || "Failed to submit request");
       }
 
       if (!response.referenceId || !response.responseDeadline) {
-        throw new Error('Invalid response from server');
+        throw new Error("Invalid response from server");
       }
 
       setReferenceId(response.referenceId);
       setResponseDeadline(response.responseDeadline);
-      
+
       toast({
         title: "Request Submitted",
-        description: "We will process your request within 45 days as required by law.",
+        description:
+          "We will process your request within 45 days as required by law.",
       });
-      
+
       setIsSubmitted(true);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'An unexpected error occurred';
+      const message =
+        error instanceof Error ? error.message : "An unexpected error occurred";
       toast({
         title: "Submission Failed",
         description: message,
@@ -127,19 +141,28 @@ export default function CCPAOptOut() {
       <div className="min-h-screen pt-24 pb-20 px-4">
         <div className="container mx-auto max-w-2xl text-center">
           <CheckCircle className="h-16 w-16 text-primary mx-auto mb-6" />
-          <h1 className="text-3xl font-bold mb-4">Request Submitted Successfully</h1>
+          <h1 className="text-3xl font-bold mb-4">
+            Request Submitted Successfully
+          </h1>
           <p className="text-muted-foreground mb-6">
-            Thank you for submitting your CCPA request. We will verify your identity and process
-            your request within 45 days as required by California law. You will receive a
-            confirmation email at the address you provided.
+            Thank you for submitting your CCPA request. We will verify your
+            identity and process your request within 45 days as required by
+            California law. You will receive a confirmation email at the address
+            you provided.
           </p>
           <div className="bg-card border border-border rounded-lg p-4 inline-block">
             <p className="text-sm text-muted-foreground mb-1">Reference ID</p>
-            <p className="font-mono text-lg font-semibold text-primary">{referenceId}</p>
+            <p className="font-mono text-lg font-semibold text-primary">
+              {referenceId}
+            </p>
             {responseDeadline && (
               <>
-                <p className="text-sm text-muted-foreground mt-3 mb-1">Response Deadline</p>
-                <p className="font-medium">{new Date(responseDeadline).toLocaleDateString()}</p>
+                <p className="text-sm text-muted-foreground mt-3 mb-1">
+                  Response Deadline
+                </p>
+                <p className="font-medium">
+                  {new Date(responseDeadline).toLocaleDateString()}
+                </p>
               </>
             )}
           </div>
@@ -153,22 +176,37 @@ export default function CCPAOptOut() {
       <div className="container mx-auto max-w-2xl">
         <div className="flex items-center gap-3 mb-6">
           <Shield className="h-8 w-8 text-primary" />
-          <h1 className="text-3xl font-bold">Do Not Sell My Personal Information</h1>
+          <h1 className="text-3xl font-bold">
+            Do Not Sell My Personal Information
+          </h1>
         </div>
-        
+
         <p className="text-muted-foreground mb-8">
-          Under the California Consumer Privacy Act (CCPA), California residents have the right
-          to opt-out of the sale of their personal information. Use this form to submit your
-          request. We will respond within 45 days as required by law.
+          Under the California Consumer Privacy Act (CCPA), California residents
+          have the right to opt-out of the sale of their personal information.
+          Use this form to submit your request. We will respond within 45 days
+          as required by law.
         </p>
 
         <div className="bg-card border border-border rounded-lg p-6 mb-8">
           <h2 className="text-lg font-semibold mb-4">Your Rights Under CCPA</h2>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li>• <strong>Right to Know:</strong> Request what personal information we collect about you</li>
-            <li>• <strong>Right to Delete:</strong> Request deletion of your personal information</li>
-            <li>• <strong>Right to Opt-Out:</strong> Opt-out of the sale of your personal information</li>
-            <li>• <strong>Right to Non-Discrimination:</strong> Not be discriminated against for exercising your rights</li>
+            <li>
+              • <strong>Right to Know:</strong> Request what personal
+              information we collect about you
+            </li>
+            <li>
+              • <strong>Right to Delete:</strong> Request deletion of your
+              personal information
+            </li>
+            <li>
+              • <strong>Right to Opt-Out:</strong> Opt-out of the sale of your
+              personal information
+            </li>
+            <li>
+              • <strong>Right to Non-Discrimination:</strong> Not be
+              discriminated against for exercising your rights
+            </li>
           </ul>
         </div>
 
@@ -195,7 +233,12 @@ export default function CCPAOptOut() {
                 <FormItem>
                   <FormLabel>Email Address *</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="john@example.com" maxLength={255} {...field} />
+                    <Input
+                      type="email"
+                      placeholder="john@example.com"
+                      maxLength={255}
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
                     We'll use this to verify your identity and send confirmation
@@ -212,7 +255,12 @@ export default function CCPAOptOut() {
                 <FormItem>
                   <FormLabel>Phone Number (Optional)</FormLabel>
                   <FormControl>
-                    <Input type="tel" placeholder="+1 (555) 123-4567" maxLength={20} {...field} />
+                    <Input
+                      type="tel"
+                      placeholder="+1 (555) 123-4567"
+                      maxLength={20}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -226,7 +274,11 @@ export default function CCPAOptOut() {
                 <FormItem>
                   <FormLabel>California Address (Optional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="123 Main St, Los Angeles, CA 90001" maxLength={500} {...field} />
+                    <Input
+                      placeholder="123 Main St, Los Angeles, CA 90001"
+                      maxLength={500}
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
                     Helps verify California residency
@@ -242,9 +294,7 @@ export default function CCPAOptOut() {
               render={() => (
                 <FormItem>
                   <FormLabel>Request Type *</FormLabel>
-                  <FormDescription>
-                    Select all that apply
-                  </FormDescription>
+                  <FormDescription>Select all that apply</FormDescription>
                   <div className="space-y-3 mt-2">
                     {requestTypes.map((type) => (
                       <FormField
@@ -259,7 +309,9 @@ export default function CCPAOptOut() {
                                 onCheckedChange={(checked) => {
                                   const updatedValue = checked
                                     ? [...field.value, type.id]
-                                    : field.value?.filter((val) => val !== type.id);
+                                    : field.value?.filter(
+                                        (val) => val !== type.id,
+                                      );
                                   field.onChange(updatedValue);
                                 }}
                               />
@@ -312,10 +364,12 @@ export default function CCPAOptOut() {
                   </FormControl>
                   <div className="space-y-1 leading-none">
                     <FormLabel className="cursor-pointer">
-                      I confirm that I am a California resident and the information provided is accurate *
+                      I confirm that I am a California resident and the
+                      information provided is accurate *
                     </FormLabel>
                     <FormDescription>
-                      We may need to verify your identity before processing your request
+                      We may need to verify your identity before processing your
+                      request
                     </FormDescription>
                   </div>
                 </FormItem>
@@ -330,7 +384,10 @@ export default function CCPAOptOut() {
 
         <p className="text-xs text-muted-foreground mt-8 text-center">
           For questions about this form, contact us at{" "}
-          <a href="mailto:privacy@dobeu.cloud" className="text-primary hover:underline">
+          <a
+            href="mailto:privacy@dobeu.cloud"
+            className="text-primary hover:underline"
+          >
             privacy@dobeu.cloud
           </a>
         </p>

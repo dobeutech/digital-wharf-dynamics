@@ -13,11 +13,7 @@ export const Navigation = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2">
-            <img 
-              src="/icon.svg" 
-              alt="DOBEU Logo" 
-              className="h-10 w-10"
-            />
+            <img src="/icon.svg" alt="DOBEU Logo" className="h-10 w-10" />
             <span className="text-2xl font-bold gradient-primary bg-clip-text text-transparent">
               DOBEU
             </span>
@@ -25,20 +21,36 @@ export const Navigation = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/" className="text-foreground hover:text-primary transition-material">
+            <Link
+              to="/"
+              className="text-foreground hover:text-primary transition-material"
+            >
               Home
             </Link>
-            <Link to="/services" className="text-foreground hover:text-primary transition-material">
+            <Link
+              to="/services"
+              className="text-foreground hover:text-primary transition-material"
+            >
               Services
             </Link>
-            <Link to="/pricing" className="text-foreground hover:text-primary transition-material">
+            <Link
+              to="/pricing"
+              className="text-foreground hover:text-primary transition-material"
+            >
               Pricing
             </Link>
-            <Link to="/about" className="text-foreground hover:text-primary transition-material">
+            <Link
+              to="/about"
+              className="text-foreground hover:text-primary transition-material"
+            >
               About
             </Link>
             {user ? (
-              <Button onClick={signOut} variant="outline" className="shadow-material">
+              <Button
+                onClick={signOut}
+                variant="outline"
+                className="shadow-material"
+              >
                 Logout
               </Button>
             ) : (
@@ -90,11 +102,22 @@ export const Navigation = () => {
               About
             </Link>
             {user ? (
-              <Button onClick={() => { signOut(); setIsOpen(false); }} variant="outline" className="w-full shadow-material">
+              <Button
+                onClick={() => {
+                  signOut();
+                  setIsOpen(false);
+                }}
+                variant="outline"
+                className="w-full shadow-material"
+              >
                 Logout
               </Button>
             ) : (
-              <Button asChild variant="default" className="w-full shadow-material">
+              <Button
+                asChild
+                variant="default"
+                className="w-full shadow-material"
+              >
                 <Link to="/auth" onClick={() => setIsOpen(false)}>
                   Sign In
                 </Link>
