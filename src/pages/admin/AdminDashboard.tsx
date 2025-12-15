@@ -54,7 +54,7 @@ export default function AdminDashboard() {
             .get<{ profiles: unknown[]; roles: unknown[] }>("/admin-users")
             .catch(() => ({ profiles: [], roles: [] })),
           api.get<unknown[]>("/newsletter").catch(() => []),
-          api.get<unknown[]>("/contact-submissions?status=all").catch(() => []),
+          api.get<unknown[]>("/ccpa-requests").catch(() => []),
           api.get<unknown[]>("/contact-submissions").catch(() => []),
           api.get<unknown[]>("/audit-logs").catch(() => []),
         ]);

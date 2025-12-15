@@ -21,10 +21,9 @@ interface RequestOptions extends RequestInit {
  */
 async function getAuthToken(): Promise<string | null> {
   try {
-    // Dynamically import to avoid circular dependency
-    const { useAuth } = await import("@/contexts/AuthContext");
-    // Note: This won't work directly in a non-React context
-    // We'll need to pass the token from components
+    // TODO: Fix authentication token retrieval in non-React context
+    // This function currently returns null, preventing authenticated requests outside of React components.
+    // Consider passing the token explicitly or using a global store if necessary.
     return null;
   } catch {
     return null;
