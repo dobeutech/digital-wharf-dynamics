@@ -1,13 +1,45 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/mixpanel";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface TypeformLightboxNewProps {
   isOpen: boolean;
   onClose: () => void;
   source?: string;
+}
+
+/**
+ * Build Typeform URL with query parameters and hash parameters for pre-filling
+ */
+function buildTypeformUrl(source: string, user?: { id?: string; email?: string; name?: string }): string {
+  const baseUrl = 'https://dobeu.typeform.com/customer-inq';
+  
+  // Query parameters for UTM tracking
+  const params = new URLSearchParams({
+    utm_source: 'dobeu_website',
+    utm_medium: 'website',
+    utm_campaign: source || 'lightbox',
+    utm_term: 'contact_form',
+    utm_content: 'learn_more_button',
+  });
+  
+  // Hash parameters for pre-filling form fields
+  const hashParams: string[] = [];
+  
+  if (user?.name) {
+    const nameParts = user.name.split(' ');
+    if (nameParts.length > 0) hashParams.push(`first_name=${encodeURIComponent(nameParts[0])}`);
+    if (nameParts.length > 1) hashParams.push(`last_name=${encodeURIComponent(nameParts.slice(1).join(' '))}`);
+  }
+  
+  if (user?.email) hashParams.push(`email=${encodeURIComponent(user.email)}`);
+  if (user?.id) hashParams.push(`user_id=${encodeURIComponent(user.id)}`);
+  
+  const url = `${baseUrl}?${params.toString()}`;
+  return hashParams.length > 0 ? `${url}#${hashParams.join('&')}` : url;
 }
 
 export function TypeformLightboxNew({
@@ -16,55 +48,65 @@ export function TypeformLightboxNew({
   source = "lightbox",
 }: TypeformLightboxNewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const [useIframe, setUseIframe] = useState(false);
+  const [embedFailed, setEmbedFailed] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       trackEvent("Typeform Lightbox Opened", { source });
+      setUseIframe(false);
+      setEmbedFailed(false);
       
-      // The Typeform script is already loaded in index.html
-      // Just need to initialize the embed when lightbox opens
       let initTimeout: NodeJS.Timeout | null = null;
-      let retryTimeout: NodeJS.Timeout | null = null;
+      let fallbackTimeout: NodeJS.Timeout | null = null;
+      let mounted = true;
       
       const initTypeform = () => {
-        if (containerRef.current) {
-          // Clear any existing content
-          containerRef.current.innerHTML = '';
-          
-          // Create the embed div with the exact structure from user's requirements
-          const embedDiv = document.createElement('div');
-          embedDiv.setAttribute('data-tf-live', '01KCBVEXYD88HBQQB22XQA49ZR');
-          containerRef.current.appendChild(embedDiv);
-          
-          // The script is already in index.html, so tf should be available
-          // Wait a bit for it to be ready, then load
-          const tryLoad = () => {
-            if (!containerRef.current) return; // Component unmounted
-            
-            if ((window as any).tf && (window as any).tf.load) {
-              try {
-                (window as any).tf.load();
-              } catch (error) {
-                console.error('Error loading Typeform:', error);
-              }
-            } else {
-              // Retry after a short delay, but only if component is still mounted
-              retryTimeout = setTimeout(tryLoad, 100);
-            }
-          };
-          
-          // Start trying to load
-          tryLoad();
+        if (!containerRef.current || !mounted) return;
+        
+        // Clear any existing content
+        containerRef.current.innerHTML = '';
+        
+        // Create the embed div with exact structure: <div data-tf-live="01KCBVEXYD88HBQQB22XQA49ZR"></div>
+        // The script in index.html will automatically initialize it
+        const embedDiv = document.createElement('div');
+        embedDiv.setAttribute('data-tf-live', '01KCBVEXYD88HBQQB22XQA49ZR');
+        containerRef.current.appendChild(embedDiv);
+        
+        // Trigger Typeform load if available
+        if ((window as any).tf && (window as any).tf.load) {
+          try {
+            (window as any).tf.load();
+          } catch (error) {
+            console.error('Error loading Typeform:', error);
+          }
         }
+        
+        // Check if embed loaded after a delay, fallback to iframe if not
+        fallbackTimeout = setTimeout(() => {
+          if (!mounted || !containerRef.current) return;
+          
+          const hasTypeformContent = containerRef.current.querySelector('iframe') || 
+                                   containerRef.current.querySelector('[class*="typeform"]') ||
+                                   containerRef.current.querySelector('[id*="typeform"]');
+          
+          if (!hasTypeformContent) {
+            // Embed didn't load, fallback to iframe
+            setEmbedFailed(true);
+            setUseIframe(true);
+          }
+        }, 3000);
       };
 
       // Small delay to ensure DOM is ready
       initTimeout = setTimeout(initTypeform, 100);
       
-      // Cleanup function to cancel pending timeouts
+      // Cleanup function
       return () => {
+        mounted = false;
         if (initTimeout) clearTimeout(initTimeout);
-        if (retryTimeout) clearTimeout(retryTimeout);
+        if (fallbackTimeout) clearTimeout(fallbackTimeout);
         // Clean up when closing
         if (containerRef.current) {
           containerRef.current.innerHTML = '';
@@ -72,11 +114,15 @@ export function TypeformLightboxNew({
       };
     } else {
       // Clean up when closing
+      setUseIframe(false);
+      setEmbedFailed(false);
       if (containerRef.current) {
         containerRef.current.innerHTML = '';
       }
     }
   }, [isOpen, source]);
+
+  const typeformUrl = buildTypeformUrl(source, user);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -92,11 +138,21 @@ export function TypeformLightboxNew({
             <X className="h-5 w-5" />
           </Button>
         </div>
-        <div 
-          ref={containerRef}
-          className="w-full h-full"
-          style={{ minHeight: '600px' }}
-        />
+        {useIframe || embedFailed ? (
+          <iframe
+            src={typeformUrl}
+            className="w-full h-full border-0"
+            title="Contact Form"
+            allow="camera; microphone; autoplay; encrypted-media;"
+            style={{ minHeight: '600px' }}
+          />
+        ) : (
+          <div 
+            ref={containerRef}
+            className="w-full h-full"
+            style={{ minHeight: '600px' }}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );
