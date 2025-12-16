@@ -1,26 +1,7 @@
-import { useEffect } from "react";
 import { PageMeta } from "@/components/seo/PageMeta";
-
-const TYPEFORM_ID = "01KCBVEXYD88HBQQB22XQA49ZR";
-const TYPEFORM_SCRIPT_SRC = "https://embed.typeform.com/next/embed.js";
-
-function ensureTypeformScriptLoaded() {
-  if (typeof document === "undefined") return;
-  const existing = document.querySelector(
-    `script[src="${TYPEFORM_SCRIPT_SRC}"]`,
-  );
-  if (existing) return;
-  const script = document.createElement("script");
-  script.src = TYPEFORM_SCRIPT_SRC;
-  script.async = true;
-  document.body.appendChild(script);
-}
+import { TYPEFORM_EMBED_ID } from "@/config/typeform";
 
 export default function Schedule() {
-  useEffect(() => {
-    ensureTypeformScriptLoaded();
-  }, []);
-
   return (
     <>
       <PageMeta
@@ -36,7 +17,7 @@ export default function Schedule() {
             goals and the best next steps.
           </p>
           <div className="rounded-xl overflow-hidden border shadow-material">
-            <div data-tf-live={TYPEFORM_ID} />
+            <div data-tf-live={TYPEFORM_EMBED_ID}></div>
           </div>
         </div>
       </div>

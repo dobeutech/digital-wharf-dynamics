@@ -1,6 +1,7 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
 import { ObjectId } from "mongodb";
 import { errorResponse, jsonResponse, readJson } from "./_http";
+import { requireAuth, requirePermission } from "./_auth0";
 import { getMongoDb } from "./_mongo";
 
 type CCPARequestDoc = {
@@ -14,6 +15,8 @@ type CCPARequestDoc = {
   additional_info: string | null;
   response_deadline: string;
   status: "pending" | "in_progress" | "completed" | "rejected";
+  notes: string | null;
+  processed_at: string | null;
   ip_address: string | null;
   user_agent: string | null;
   created_at: string;
@@ -157,6 +160,24 @@ function validateInput(data: unknown): {
   return { valid: true, errors: [], sanitized };
 }
 
+function toRequest(d: CCPARequestDoc) {
+  return {
+    id: d._id.toHexString(),
+    reference_id: d.reference_id,
+    full_name: d.full_name,
+    email: d.email,
+    phone: d.phone,
+    address: d.address,
+    request_types: d.request_types,
+    additional_info: d.additional_info,
+    status: d.status,
+    notes: d.notes,
+    response_deadline: d.response_deadline,
+    processed_at: d.processed_at,
+    submitted_at: d.created_at,
+  };
+}
+
 export const handler: Handler = async (event) => {
   try {
     if (event.httpMethod === "OPTIONS") {
@@ -170,63 +191,120 @@ export const handler: Handler = async (event) => {
       );
     }
 
-    if (event.httpMethod !== "POST") {
-      return errorResponse(405, "Method not allowed");
+    if (event.httpMethod === "POST") {
+      // Get client IP for rate limiting
+      const clientIP = getClientIp(event) || "unknown";
+
+      // Check rate limit
+      if (!checkRateLimit(clientIP)) {
+        return errorResponse(429, "Too many requests. Please try again later.");
+      }
+
+      // Parse and validate input
+      const body = await readJson(event);
+      const validation = validateInput(body);
+
+      if (!validation.valid) {
+        return errorResponse(400, validation.errors.join(", "));
+      }
+
+      const { sanitized } = validation;
+
+      // Generate reference ID and calculate response deadline (45 days per CCPA)
+      const referenceId = generateReferenceId();
+      const responseDeadline = new Date();
+      responseDeadline.setDate(responseDeadline.getDate() + 45);
+
+      const db = await getMongoDb();
+      const col = db.collection<CCPARequestDoc>("ccpa_requests");
+
+      const now = new Date().toISOString();
+      const doc: CCPARequestDoc = {
+        _id: new ObjectId(),
+        reference_id: referenceId,
+        full_name: sanitized!.fullName,
+        email: sanitized!.email,
+        phone: sanitized!.phone,
+        address: sanitized!.address,
+        request_types: sanitized!.requestTypes,
+        additional_info: sanitized!.additionalInfo,
+        response_deadline: responseDeadline.toISOString(),
+        status: "pending",
+        notes: null,
+        processed_at: null,
+        ip_address: clientIP,
+        user_agent:
+          event.headers?.["user-agent"] ||
+          event.headers?.["User-Agent"] ||
+          null,
+        created_at: now,
+        updated_at: now,
+      };
+
+      await col.insertOne(doc);
+
+      return jsonResponse(200, {
+        success: true,
+        referenceId,
+        message: "Your CCPA request has been submitted successfully.",
+        responseDeadline: responseDeadline.toISOString(),
+      });
     }
 
-    // Get client IP for rate limiting
-    const clientIP = getClientIp(event) || "unknown";
-
-    // Check rate limit
-    if (!checkRateLimit(clientIP)) {
-      return errorResponse(429, "Too many requests. Please try again later.");
-    }
-
-    // Parse and validate input
-    const body = await readJson(event);
-    const validation = validateInput(body);
-
-    if (!validation.valid) {
-      return errorResponse(400, validation.errors.join(", "));
-    }
-
-    const { sanitized } = validation;
-
-    // Generate reference ID and calculate response deadline (45 days per CCPA)
-    const referenceId = generateReferenceId();
-    const responseDeadline = new Date();
-    responseDeadline.setDate(responseDeadline.getDate() + 45);
+    // Admin endpoints
+    const claims = await requireAuth(event);
+    requirePermission(claims, "admin:access");
 
     const db = await getMongoDb();
     const col = db.collection<CCPARequestDoc>("ccpa_requests");
 
-    const now = new Date().toISOString();
-    const doc: CCPARequestDoc = {
-      _id: new ObjectId(),
-      reference_id: referenceId,
-      full_name: sanitized!.fullName,
-      email: sanitized!.email,
-      phone: sanitized!.phone,
-      address: sanitized!.address,
-      request_types: sanitized!.requestTypes,
-      additional_info: sanitized!.additionalInfo,
-      response_deadline: responseDeadline.toISOString(),
-      status: "pending",
-      ip_address: clientIP,
-      user_agent:
-        event.headers?.["user-agent"] || event.headers?.["User-Agent"] || null,
-      created_at: now,
-      updated_at: now,
-    };
+    if (event.httpMethod === "GET") {
+      const status = event.queryStringParameters?.status;
+      const q: Record<string, unknown> = {};
+      if (status && status !== "all") q.status = status;
+      
+      const docs = await col.find(q).sort({ created_at: -1 }).toArray();
+      return jsonResponse(200, docs.map(toRequest));
+    }
 
-    await col.insertOne(doc);
+    if (event.httpMethod === "PATCH") {
+      const id = event.queryStringParameters?.id?.trim();
+      if (!id) return errorResponse(400, "Missing id");
 
-    return jsonResponse(200, {
-      success: true,
-      referenceId,
-      message: "Your CCPA request has been submitted successfully.",
-      responseDeadline: responseDeadline.toISOString(),
-    });
+      const body = await readJson<
+        Partial<CCPARequestDoc> & { status?: string }
+      >(event);
+      const now = new Date().toISOString();
+      const update: Record<string, unknown> = { updated_at: now };
+
+      if (typeof body.notes === "string" || body.notes === null)
+        update.notes = body.notes;
+        
+      if (typeof body.status === "string") {
+        update.status = body.status;
+        if (body.status === "completed" || body.status === "rejected") {
+            update.processed_at = now;
+        }
+      }
+      
+      if (body.processed_at) {
+        update.processed_at = body.processed_at;
+      }
+
+      const res = await col.findOneAndUpdate(
+        { _id: new ObjectId(id) },
+        { $set: update },
+        { returnDocument: "after" },
+      );
+      
+      // @ts-expect-error driver response typing differs across versions
+      const doc = (res?.value ?? res) as CCPARequestDoc | undefined;
+      
+      if (!doc) return errorResponse(404, "Not found");
+      return jsonResponse(200, toRequest(doc));
+    }
+
+    return errorResponse(405, "Method not allowed");
   } catch (err) {
     return errorResponse(
       500,
