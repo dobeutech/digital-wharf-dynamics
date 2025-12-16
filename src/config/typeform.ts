@@ -18,6 +18,12 @@ declare global {
   }
 }
 
+/**
+ * Typeform embed form ID for schedule/consultation form
+ * This is the live embed form used across the site
+ */
+export const TYPEFORM_EMBED_ID = "01KCBVEXYD88HBQQB22XQA49ZR";
+
 export const typeformConfig = {
   // Replace with your Typeform form ID
   formId: import.meta.env.VITE_TYPEFORM_ID || "YOUR_TYPEFORM_ID",

@@ -1,4 +1,5 @@
 import { PageMeta } from "@/components/seo/PageMeta";
+import { TYPEFORM_EMBED_ID } from "@/config/typeform";
 
 export default function Schedule() {
   return (
@@ -16,7 +17,7 @@ export default function Schedule() {
             goals and the best next steps.
           </p>
           <div className="rounded-xl overflow-hidden border shadow-material">
-            <div data-tf-live="01KCBVEXYD88HBQQB22XQA49ZR"></div>
+            <div data-tf-live={TYPEFORM_EMBED_ID}></div>
           </div>
         </div>
       </div>

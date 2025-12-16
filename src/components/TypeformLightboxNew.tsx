@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/mixpanel";
 import { useAuth } from "@/contexts/AuthContext";
+import { TYPEFORM_EMBED_ID } from "@/config/typeform";
 
 // Type definition for Typeform embed library
 interface TypeformAPI {
@@ -90,10 +91,10 @@ export function TypeformLightboxNew({
         // Clear any existing content
         containerRef.current.innerHTML = "";
 
-        // Create the embed div with exact structure: <div data-tf-live="01KCBVEXYD88HBQQB22XQA49ZR"></div>
+        // Create the embed div with exact structure: <div data-tf-live="TYPEFORM_EMBED_ID"></div>
         // The script in index.html will automatically initialize it
         const embedDiv = document.createElement("div");
-        embedDiv.setAttribute("data-tf-live", "01KCBVEXYD88HBQQB22XQA49ZR");
+        embedDiv.setAttribute("data-tf-live", TYPEFORM_EMBED_ID);
         containerRef.current.appendChild(embedDiv);
 
         // Trigger Typeform load if available
