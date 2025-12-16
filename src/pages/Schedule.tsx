@@ -1,45 +1,9 @@
 import { PageMeta } from "@/components/seo/PageMeta";
 import { TYPEFORM_EMBED_ID } from "@/config/typeform";
-import { useEffect, useRef } from "react";
+import { useTypeformInit } from "@/hooks/useTypeformInit";
 
 export default function Schedule() {
-  const embedRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Ensure Typeform script is loaded and initialized
-    const initTypeform = () => {
-      if (window.tf?.load) {
-        try {
-          window.tf.load();
-        } catch (error) {
-          console.error("Error loading Typeform:", error);
-        }
-      }
-    };
-
-    // If script already loaded, initialize immediately
-    if (window.tf) {
-      initTypeform();
-    } else {
-      // Otherwise wait for script to load
-      const checkTypeform = setInterval(() => {
-        if (window.tf) {
-          initTypeform();
-          clearInterval(checkTypeform);
-        }
-      }, 100);
-
-      // Clean up interval after 10 seconds
-      const timeout = setTimeout(() => {
-        clearInterval(checkTypeform);
-      }, 10000);
-
-      return () => {
-        clearInterval(checkTypeform);
-        clearTimeout(timeout);
-      };
-    }
-  }, []);
+  useTypeformInit();
 
   return (
     <>
@@ -60,7 +24,6 @@ export default function Schedule() {
             style={{ minHeight: "600px" }}
           >
             <div
-              ref={embedRef}
               data-tf-live={TYPEFORM_EMBED_ID}
               style={{ height: "600px", width: "100%" }}
             ></div>
