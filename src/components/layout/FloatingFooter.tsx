@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Logo } from "./Logo";
-import { ExternalLink, ArrowUpRight } from "lucide-react";
+import { ExternalLink, ArrowRight } from "lucide-react";
 import { motion, useInView } from "motion/react";
 import { useRef } from "react";
 import { Button } from "@/components/ui/button";
@@ -9,266 +9,166 @@ import { WantToLearnMoreLink } from "@/components/WantToLearnMoreLink";
 export function FloatingFooter() {
   const currentYear = new Date().getFullYear();
   const footerRef = useRef(null);
-  const isInView = useInView(footerRef, { once: true, margin: "-100px" });
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        ease: [0.22, 1, 0.36, 1],
-      },
-    },
-  };
+  const isInView = useInView(footerRef, { once: true, margin: "-50px" });
 
   return (
-    <>
-      {/* Top gradient fade for floating effect */}
-      <div
-        className="relative h-32 pointer-events-none -mb-32"
-        style={{
-          background:
-            "linear-gradient(to top, hsl(var(--background)) 0%, transparent 100%)",
-        }}
-        aria-hidden="true"
-      />
-
-      <footer
-        ref={footerRef}
-        className="relative bg-card/50 backdrop-blur-sm border-t border-border/50"
-        role="contentinfo"
+    <footer
+      ref={footerRef}
+      className="border-t border-border bg-background"
+      role="contentinfo"
+    >
+      {/* CTA Section */}
+      <motion.div
+        className="container mx-auto px-4 py-16 md:py-20"
+        initial={{ opacity: 0, y: 20 }}
+        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.5 }}
       >
-        {/* Animated gradient border at top - full brand colors */}
-        <div
-          className="absolute top-0 left-0 right-0 h-[1px]"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent, #FACC15, #EC4899, #A855F7, #3B82F6, transparent)",
-            backgroundSize: "200% 100%",
-            animation: "gradient-x 5s ease infinite",
-          }}
-        />
+        <div className="max-w-2xl mx-auto text-center space-y-6 pb-16 border-b border-border">
+          <h2 className="text-2xl md:text-3xl font-bold">
+            Ready to start your project?
+          </h2>
+          <p className="text-muted-foreground">
+            Let's build something incredible together.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
+            <Button asChild size="lg" className="rounded-lg">
+              <Link to="/contact" className="flex items-center gap-2">
+                Get Started
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </Button>
+            <WantToLearnMoreLink source="footer-cta" variant="footer" />
+            <Button asChild size="lg" variant="outline" className="rounded-lg">
+              <Link to="/pricing">View Pricing</Link>
+            </Button>
+          </div>
+        </div>
+      </motion.div>
 
-        {/* CTA Section */}
-        <motion.div
-          className="container mx-auto px-4 py-16"
-          initial={{ opacity: 0, y: 40 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div className="max-w-4xl mx-auto text-center space-y-6 pb-16 border-b border-border/50">
-            <h2 className="text-3xl md:text-5xl font-bold">
-              Ready to{" "}
-              <span
-                className="text-transparent bg-clip-text"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(135deg, #FACC15, #EC4899, #A855F7)",
-                  backgroundSize: "200% 200%",
-                  animation: "gradient-x 5s ease infinite",
-                }}
-              >
-                get started
-              </span>
-              ?
-            </h2>
-            <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-              Let's build something incredible together. Start a conversation
-              today.
+      {/* Links Section */}
+      <div className="container mx-auto px-4 pb-12">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-8">
+          {/* Brand */}
+          <div className="col-span-2 sm:col-span-4 lg:col-span-1 space-y-4">
+            <Logo className="h-6" />
+            <p className="text-sm text-muted-foreground max-w-xs">
+              Building exceptional digital experiences that drive growth and
+              innovation.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Button
-                  asChild
-                  size="lg"
-                  className="relative overflow-hidden bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 text-white font-bold px-8 py-6 text-lg rounded-full shadow-lg hover:shadow-xl transition-shadow"
-                >
-                  <Link to="/contact" className="flex items-center gap-2">
-                    Start a Project
-                    <ArrowUpRight className="w-5 h-5" />
+          </div>
+
+          {/* Services */}
+          <div>
+            <h3 className="font-semibold text-sm mb-4">Services</h3>
+            <ul className="space-y-3">
+              {[
+                { label: "Web Development", href: "/services#website" },
+                { label: "Software Solutions", href: "/services#software" },
+                { label: "Consulting", href: "/services#consulting" },
+                { label: "Training", href: "/services#learning" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    to={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
                   </Link>
-                </Button>
-              </motion.div>
-              <WantToLearnMoreLink source="footer-cta" variant="footer" />
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <Button
-                  asChild
-                  size="lg"
-                  variant="outline"
-                  className="border-2 border-transparent font-semibold px-8 py-6 text-lg rounded-full relative overflow-hidden"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(hsl(var(--background)), hsl(var(--background))), linear-gradient(135deg, #FACC15, #EC4899, #A855F7)",
-                    backgroundOrigin: "border-box",
-                    backgroundClip: "padding-box, border-box",
-                  }}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company */}
+          <div>
+            <h3 className="font-semibold text-sm mb-4">Company</h3>
+            <ul className="space-y-3">
+              {[
+                { label: "About Us", href: "/about" },
+                { label: "Pricing", href: "/pricing" },
+                { label: "Contact", href: "/contact" },
+                { label: "Brand Kit", href: "/brand" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    to={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Connect */}
+          <div>
+            <h3 className="font-semibold text-sm mb-4">Connect</h3>
+            <ul className="space-y-3">
+              <li>
+                <a
+                  href="https://contra.com/jeremy_williams_fx413nca"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
                 >
-                  <Link to="/pricing">View Pricing</Link>
-                </Button>
-              </motion.div>
+                  Hire on Contra
+                  <ExternalLink className="w-3 h-3" aria-hidden="true" />
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.behance.net/jeremywilliams62"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
+                >
+                  Behance
+                  <ExternalLink className="w-3 h-3" aria-hidden="true" />
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h3 className="font-semibold text-sm mb-4">Legal</h3>
+            <ul className="space-y-3">
+              {[
+                { label: "Privacy Policy", href: "/privacy" },
+                { label: "SMS Policy", href: "/privacy/sms" },
+                { label: "Terms of Service", href: "/terms" },
+                { label: "Do Not Sell My Data", href: "/ccpa-optout" },
+              ].map((link) => (
+                <li key={link.href}>
+                  <Link
+                    to={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="border-t border-border">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground">
+              © {currentYear} Dobeu Tech Solutions. All rights reserved.
+            </p>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span className="w-2 h-2 rounded-full bg-green-500" />
+              <span>All systems operational</span>
             </div>
           </div>
-        </motion.div>
-
-        {/* Links Section */}
-        <motion.div
-          className="container mx-auto px-4 pb-12"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? "visible" : "hidden"}
-        >
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8">
-            <motion.div
-              className="col-span-2 sm:col-span-3 md:col-span-1 space-y-4"
-              variants={itemVariants}
-            >
-              <Logo className="h-8" />
-              <p className="text-sm text-muted-foreground">
-                Building exceptional digital experiences that drive growth and
-                innovation.
-              </p>
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <h3 className="font-semibold mb-4">Services</h3>
-              <ul className="space-y-3">
-                {[
-                  { label: "Website Development", href: "/services#website" },
-                  { label: "Software Solutions", href: "/services#software" },
-                  { label: "Consulting", href: "/services#consulting" },
-                  { label: "Learning & Training", href: "/services#learning" },
-                ].map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      to={link.href}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
-                    >
-                      {link.label}
-                      <ArrowUpRight className="w-3 h-3 opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <h3 className="font-semibold mb-4">Company</h3>
-              <ul className="space-y-3">
-                {[
-                  { label: "About Us", href: "/about" },
-                  { label: "Pricing", href: "/pricing" },
-                  { label: "Contact", href: "/contact" },
-                  { label: "Brand Kit", href: "/brand" },
-                ].map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      to={link.href}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
-                    >
-                      {link.label}
-                      <ArrowUpRight className="w-3 h-3 opacity-0 -translate-y-1 translate-x-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:translate-x-0 transition-all" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <h3 className="font-semibold mb-4">Connect</h3>
-              <ul className="space-y-3">
-                <li>
-                  <a
-                    href="https://contra.com/jeremy_williams_fx413nca?referralExperimentNid=DEFAULT_REFERRAL_PROGRAM&referrerUsername=jeremy_williams_fx413nca"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
-                  >
-                    Hire on Contra
-                    <ExternalLink
-                      className="w-3 h-3 opacity-70 group-hover:opacity-100 transition-opacity"
-                      aria-hidden="true"
-                    />
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href="https://www.behance.net/jeremywilliams62"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-1 group"
-                  >
-                    View on Behance
-                    <ExternalLink
-                      className="w-3 h-3 opacity-70 group-hover:opacity-100 transition-opacity"
-                      aria-hidden="true"
-                    />
-                  </a>
-                </li>
-              </ul>
-            </motion.div>
-
-            <motion.div variants={itemVariants}>
-              <h3 className="font-semibold mb-4">Legal</h3>
-              <ul className="space-y-3">
-                {[
-                  { label: "Privacy Policy", href: "/privacy" },
-                  { label: "SMS Policy", href: "/privacy/sms" },
-                  { label: "Terms of Service", href: "/terms" },
-                  { label: "Do Not Sell My Data", href: "/ccpa-optout" },
-                ].map((link) => (
-                  <li key={link.href}>
-                    <Link
-                      to={link.href}
-                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </motion.div>
-          </div>
-        </motion.div>
-
-        {/* Bottom bar */}
-        <motion.div
-          className="border-t border-border/50"
-          initial={{ opacity: 0 }}
-          animate={isInView ? { opacity: 1 } : { opacity: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-        >
-          <div className="container mx-auto px-4 py-6">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-sm text-muted-foreground">
-                © {currentYear} Dobeu Tech Solutions. All rights reserved.
-              </p>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span>All systems operational</span>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </footer>
-    </>
+        </div>
+      </div>
+    </footer>
   );
 }

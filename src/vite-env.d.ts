@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
 
 interface Window {
-  Intercom?: (command: string, ...args: any[]) => void;
+  Intercom?: (command: string, ...args: unknown[]) => void;
 }

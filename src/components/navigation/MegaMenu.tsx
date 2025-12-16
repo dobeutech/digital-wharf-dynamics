@@ -13,18 +13,18 @@ export function MegaMenu({ categories, isOpen, onClose }: MegaMenuProps) {
 
   return (
     <div
-      className="absolute left-0 right-0 top-full mt-2 animate-fade-in"
+      className="absolute left-0 right-0 top-full mt-1"
       onMouseLeave={onClose}
     >
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="bg-background/95 backdrop-blur-lg border rounded-lg shadow-xl p-6">
+        <div className="bg-background border border-border rounded-xl shadow-clean p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {categories.map((category) => (
               <div key={category.label}>
-                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+                <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
                   {category.label}
                 </h3>
-                <ul className="space-y-3">
+                <ul className="space-y-1">
                   {category.items.map((item) => {
                     const Icon = item.icon;
                     return (
@@ -33,18 +33,18 @@ export function MegaMenu({ categories, isOpen, onClose }: MegaMenuProps) {
                           to={item.href}
                           onClick={onClose}
                           className={cn(
-                            "group flex items-start gap-3 p-2 rounded-md transition-colors",
-                            "hover:bg-muted focus:bg-muted focus:outline-none",
+                            "group flex items-start gap-3 p-2 rounded-lg transition-colors",
+                            "hover:bg-muted",
                           )}
                         >
                           {Icon && (
-                            <Icon className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                            <Icon className="h-4 w-4 text-muted-foreground group-hover:text-primary mt-0.5 flex-shrink-0 transition-colors" />
                           )}
                           <div className="flex-1 min-w-0">
-                            <div className="text-sm font-medium group-hover:text-primary transition-colors">
+                            <div className="text-sm font-medium group-hover:text-primary transition-colors flex items-center gap-2">
                               {item.label}
                               {item.badge && (
-                                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-primary/10 text-primary">
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary">
                                   {item.badge}
                                 </span>
                               )}

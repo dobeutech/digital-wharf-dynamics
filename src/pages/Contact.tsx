@@ -7,13 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Form,
   FormControl,
   FormDescription,
@@ -31,11 +24,13 @@ import {
   AlertCircle,
   CheckCircle,
   Loader2,
+  ArrowRight,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useApi } from "@/lib/api";
 import { trackEvent, MIXPANEL_EVENTS } from "@/lib/mixpanel";
 import { PageMeta } from "@/components/seo/PageMeta";
+import { cn } from "@/lib/utils";
 
 const contactFormSchema = z
   .object({
@@ -65,7 +60,6 @@ const contactFormSchema = z
   })
   .refine(
     (data) => {
-      // If phone is provided, smsConsent must be true
       if (data.phone && data.phone.length > 0) {
         return data.smsConsent === true;
       }
@@ -154,7 +148,6 @@ export default function Contact() {
         throw new Error(response.error || "Failed to submit message");
       }
 
-      // Track successful contact form submission
       trackEvent(MIXPANEL_EVENTS.CONTACT_FORM_SUBMITTED, {
         has_phone: !!data.phone,
         marketing_consent: data.marketingConsent,
@@ -182,232 +175,176 @@ export default function Contact() {
         description="Get in touch with DOBEU for your next project. We respond within 24 hours. Call (215) 370-5332 or email devops@dobeu.cloud."
         keywords="contact dobeu, web development inquiry, software project, free consultation, get quote"
       />
-      <div className="min-h-screen pt-24 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="container mx-auto max-w-6xl">
-          <header className="text-center mb-12 md:mb-16">
-            <h1 className="text-4xl sm:text-5xl font-bold mb-4 sm:mb-6 gradient-primary bg-clip-text text-transparent">
+      <div className="min-h-screen pt-24 pb-20 px-4">
+        <div className="container mx-auto max-w-5xl">
+          {/* Header */}
+          <header className="text-center mb-12">
+            <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary mb-4">
+              Contact
+            </span>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Get In Touch
             </h1>
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
-              Have a project in mind? We typically respond within 24 hours
+            <p className="text-lg text-muted-foreground">
+              Have a project in mind? We typically respond within 24 hours.
             </p>
           </header>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-            <div>
-              <Card className="shadow-material-lg">
-                <CardHeader>
-                  <CardTitle className="text-xl sm:text-2xl">
-                    Send Us a Message
-                  </CardTitle>
-                  <CardDescription>
-                    Tell us about your project and we'll reach out soon
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {formStatus === "success" && (
-                    <div
-                      className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg flex items-start gap-3"
-                      role="alert"
-                    >
-                      <CheckCircle
-                        className="w-5 h-5 text-green-500 mt-0.5 shrink-0"
-                        aria-hidden="true"
-                      />
-                      <div>
-                        <p className="font-medium text-green-500">
-                          Message sent successfully!
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          We'll be in touch within 24 hours.
-                        </p>
-                      </div>
-                    </div>
-                  )}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            {/* Form */}
+            <div className="lg:col-span-3">
+              <div className="p-6 rounded-xl border border-border bg-card">
+                <h2 className="text-lg font-semibold mb-1">
+                  Send Us a Message
+                </h2>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Tell us about your project and we'll reach out soon.
+                </p>
 
-                  {formStatus === "error" && (
-                    <div
-                      className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg flex items-start gap-3"
-                      role="alert"
-                    >
-                      <AlertCircle
-                        className="w-5 h-5 text-destructive mt-0.5 shrink-0"
-                        aria-hidden="true"
-                      />
-                      <div>
-                        <p className="font-medium text-destructive">
-                          Something went wrong
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Please check the form and try again.
-                        </p>
-                      </div>
+                {formStatus === "success" && (
+                  <div
+                    className="mb-6 p-4 bg-green-500/10 border border-green-500/30 rounded-lg flex items-start gap-3"
+                    role="alert"
+                  >
+                    <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="font-medium text-green-600 dark:text-green-400">
+                        Message sent successfully!
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        We'll be in touch within 24 hours.
+                      </p>
                     </div>
-                  )}
+                  </div>
+                )}
 
-                  <Form {...form}>
-                    <form
-                      onSubmit={form.handleSubmit(onSubmit)}
-                      className="space-y-5 sm:space-y-6"
-                    >
+                {formStatus === "error" && (
+                  <div
+                    className="mb-6 p-4 bg-destructive/10 border border-destructive/30 rounded-lg flex items-start gap-3"
+                    role="alert"
+                  >
+                    <AlertCircle className="w-5 h-5 text-destructive mt-0.5 shrink-0" />
+                    <div>
+                      <p className="font-medium text-destructive">
+                        Something went wrong
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Please check the form and try again.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-5"
+                  >
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Name <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              autoComplete="name"
+                              maxLength={100}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Email <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type="email"
+                              autoComplete="email"
+                              maxLength={255}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {!showPhoneField && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setShowPhoneField(true)}
+                        className="text-primary hover:text-primary/80 -mt-2"
+                      >
+                        + Add phone number for faster response
+                      </Button>
+                    )}
+
+                    {showPhoneField && (
                       <FormField
                         control={form.control}
-                        name="name"
+                        name="phone"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>
-                              Name{" "}
-                              <span
-                                className="text-destructive"
-                                aria-hidden="true"
-                              >
-                                *
-                              </span>
-                            </FormLabel>
+                            <FormLabel>Phone Number (Optional)</FormLabel>
                             <FormControl>
                               <Input
                                 {...field}
-                                autoComplete="name"
-                                className="min-h-[44px]"
-                                maxLength={100}
+                                type="tel"
+                                autoComplete="tel"
+                                placeholder="(555) 123-4567"
+                                maxLength={20}
                               />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
+                    )}
 
+                    <FormField
+                      control={form.control}
+                      name="message"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>
+                            Message <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              rows={5}
+                              maxLength={2000}
+                              placeholder="Tell us about your project, timeline, and goals..."
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            {field.value?.length || 0}/2000 characters
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {watchPhone && watchPhone.length > 0 && (
                       <FormField
                         control={form.control}
-                        name="email"
+                        name="smsConsent"
                         render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              Email{" "}
-                              <span
-                                className="text-destructive"
-                                aria-hidden="true"
-                              >
-                                *
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                {...field}
-                                type="email"
-                                autoComplete="email"
-                                className="min-h-[44px]"
-                                maxLength={255}
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {!showPhoneField && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setShowPhoneField(true)}
-                          className="text-primary hover:text-primary/80"
-                        >
-                          + Add phone number for faster response
-                        </Button>
-                      )}
-
-                      {showPhoneField && (
-                        <FormField
-                          control={form.control}
-                          name="phone"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Phone Number (Optional)</FormLabel>
-                              <FormControl>
-                                <Input
-                                  {...field}
-                                  type="tel"
-                                  autoComplete="tel"
-                                  className="min-h-[44px]"
-                                  placeholder="(555) 123-4567"
-                                  maxLength={20}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      )}
-
-                      <FormField
-                        control={form.control}
-                        name="message"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>
-                              Message{" "}
-                              <span
-                                className="text-destructive"
-                                aria-hidden="true"
-                              >
-                                *
-                              </span>
-                            </FormLabel>
-                            <FormControl>
-                              <Textarea
-                                {...field}
-                                rows={5}
-                                maxLength={2000}
-                                placeholder="Tell us about your project, timeline, and goals..."
-                              />
-                            </FormControl>
-                            <FormDescription>
-                              {field.value?.length || 0}/2000 characters
-                              {field.value?.length > 0 &&
-                              field.value.length < 10 ? (
-                                <span className="text-muted-foreground">
-                                  {" "}
-                                  (minimum 10 characters)
-                                </span>
-                              ) : null}
-                            </FormDescription>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      {watchPhone && watchPhone.length > 0 && (
-                        <FormField
-                          control={form.control}
-                          name="smsConsent"
-                          render={({ field }) => (
-                            <FormItem className="flex items-start space-x-3 space-y-0 p-4 bg-muted rounded-lg">
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value}
-                                  onCheckedChange={field.onChange}
-                                  className="mt-0.5"
-                                />
-                              </FormControl>
-                              <div className="space-y-1 leading-none">
-                                <FormLabel className="cursor-pointer text-sm font-normal text-muted-foreground leading-relaxed">
-                                  I agree to receive SMS updates about my
-                                  project. Reply STOP to opt out.{" "}
-                                  <span className="text-destructive">*</span>
-                                </FormLabel>
-                                <FormMessage />
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-                      )}
-
-                      <FormField
-                        control={form.control}
-                        name="marketingConsent"
-                        render={({ field }) => (
-                          <FormItem className="flex items-start space-x-3 space-y-0">
+                          <FormItem className="flex items-start space-x-3 space-y-0 p-4 bg-muted rounded-lg">
                             <FormControl>
                               <Checkbox
                                 checked={field.value}
@@ -415,156 +352,153 @@ export default function Contact() {
                                 className="mt-0.5"
                               />
                             </FormControl>
-                            <FormLabel className="cursor-pointer text-sm font-normal text-muted-foreground leading-relaxed">
-                              Send me helpful tips and updates about web
-                              development.
-                            </FormLabel>
+                            <div className="space-y-1 leading-none">
+                              <FormLabel className="cursor-pointer text-sm font-normal text-muted-foreground leading-relaxed">
+                                I agree to receive SMS updates about my project.
+                                Reply STOP to opt out.{" "}
+                                <span className="text-destructive">*</span>
+                              </FormLabel>
+                              <FormMessage />
+                            </div>
                           </FormItem>
                         )}
                       />
+                    )}
 
-                      <Button
-                        type="submit"
-                        className="w-full shadow-material min-h-[44px]"
-                        size="lg"
-                        disabled={isSubmitting}
-                      >
-                        {isSubmitting ? (
-                          <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Sending...
-                          </>
-                        ) : (
-                          "Send Message"
-                        )}
-                      </Button>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
+                    <FormField
+                      control={form.control}
+                      name="marketingConsent"
+                      render={({ field }) => (
+                        <FormItem className="flex items-start space-x-3 space-y-0">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                              className="mt-0.5"
+                            />
+                          </FormControl>
+                          <FormLabel className="cursor-pointer text-sm font-normal text-muted-foreground leading-relaxed">
+                            Send me helpful tips and updates about web
+                            development.
+                          </FormLabel>
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      size="lg"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Sending...
+                        </>
+                      ) : (
+                        "Send Message"
+                      )}
+                    </Button>
+                  </form>
+                </Form>
+              </div>
             </div>
 
-            <div className="space-y-6 sm:space-y-8">
-              <Card className="shadow-material">
-                <CardContent className="p-5 sm:p-6">
-                  <div className="flex items-start space-x-4">
-                    <Mail
-                      className="w-6 h-6 text-primary mt-1 shrink-0"
-                      aria-hidden="true"
-                    />
-                    <div>
-                      <h2 className="font-semibold mb-1">Email</h2>
-                      <a
-                        href="mailto:devops@dobeu.cloud"
-                        className="text-muted-foreground hover:text-primary transition-colors"
-                      >
-                        devops@dobeu.cloud
-                      </a>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-material">
-                <CardContent className="p-5 sm:p-6">
-                  <div className="flex items-start space-x-4">
-                    <Phone
-                      className="w-6 h-6 text-primary mt-1 shrink-0"
-                      aria-hidden="true"
-                    />
-                    <div>
-                      <h2 className="font-semibold mb-1">Phone</h2>
-                      <a
-                        href="tel:+12153705332"
-                        className="text-muted-foreground hover:text-primary transition-colors"
-                      >
-                        (215) 370-5332
-                      </a>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-material">
-                <CardContent className="p-5 sm:p-6">
-                  <div className="flex items-start space-x-4">
-                    <MapPin
-                      className="w-6 h-6 text-primary mt-1 shrink-0"
-                      aria-hidden="true"
-                    />
-                    <div>
-                      <h2 className="font-semibold mb-1">Location</h2>
-                      <p className="text-muted-foreground">
-                        NJ, USA
-                        <br />
-                        Serving clients worldwide
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="shadow-material">
-                <CardContent className="p-5 sm:p-6">
-                  <h2 className="font-semibold mb-3">Work With Jeremy</h2>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Available for freelance projects and collaborations
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <Button
-                      asChild
-                      size="sm"
-                      className="shadow-material flex-1 min-h-[44px]"
+            {/* Contact Info */}
+            <div className="lg:col-span-2 space-y-4">
+              <div className="p-5 rounded-xl border border-border bg-card">
+                <div className="flex items-start gap-3">
+                  <Mail className="w-5 h-5 text-primary mt-0.5" />
+                  <div>
+                    <h3 className="font-medium text-sm mb-1">Email</h3>
+                    <a
+                      href="mailto:devops@dobeu.cloud"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
                     >
-                      <a
-                        href="https://contra.com/jeremy_williams_fx413nca?referralExperimentNid=DEFAULT_REFERRAL_PROGRAM&referrerUsername=jeremy_williams_fx413nca"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2"
-                      >
-                        Hire on Contra
-                        <ExternalLink className="w-4 h-4" aria-hidden="true" />
-                      </a>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="sm"
-                      className="shadow-material flex-1 min-h-[44px]"
-                    >
-                      <a
-                        href="https://www.behance.net/jeremywilliams62"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2"
-                      >
-                        View on Behance
-                        <ExternalLink className="w-4 h-4" aria-hidden="true" />
-                      </a>
-                    </Button>
+                      devops@dobeu.cloud
+                    </a>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
-              <Card className="shadow-material gradient-primary text-primary-foreground">
-                <CardContent className="p-6 sm:p-8">
-                  <h2 className="text-xl sm:text-2xl font-bold mb-4">
-                    Prefer to Schedule a Call?
-                  </h2>
-                  <p className="mb-6 opacity-90 text-sm sm:text-base">
-                    Book a free 30-minute consultation to discuss your project
-                    in detail.
-                  </p>
+              <div className="p-5 rounded-xl border border-border bg-card">
+                <div className="flex items-start gap-3">
+                  <Phone className="w-5 h-5 text-primary mt-0.5" />
+                  <div>
+                    <h3 className="font-medium text-sm mb-1">Phone</h3>
+                    <a
+                      href="tel:+12153705332"
+                      className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                    >
+                      (215) 370-5332
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-xl border border-border bg-card">
+                <div className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-primary mt-0.5" />
+                  <div>
+                    <h3 className="font-medium text-sm mb-1">Location</h3>
+                    <p className="text-sm text-muted-foreground">
+                      NJ, USA — Serving clients worldwide
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-xl border border-border bg-card">
+                <h3 className="font-medium text-sm mb-3">Work With Jeremy</h3>
+                <div className="flex flex-col gap-2">
+                  <Button asChild size="sm" className="w-full">
+                    <a
+                      href="https://contra.com/jeremy_williams_fx413nca"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2"
+                    >
+                      Hire on Contra
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </Button>
                   <Button
                     asChild
-                    variant="secondary"
-                    size="lg"
-                    className="shadow-material min-h-[44px]"
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
                   >
-                    <Link to="/schedule">Schedule Consultation</Link>
+                    <a
+                      href="https://www.behance.net/jeremywilliams62"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2"
+                    >
+                      View on Behance
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
                   </Button>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-xl border border-primary/30 bg-primary/5">
+                <h3 className="font-semibold mb-2">
+                  Prefer to Schedule a Call?
+                </h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Book a free 30-minute consultation.
+                </p>
+                <Button asChild variant="outline" className="w-full">
+                  <Link
+                    to="/schedule"
+                    className="flex items-center justify-center gap-2"
+                  >
+                    Schedule Consultation
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
