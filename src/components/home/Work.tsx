@@ -1,8 +1,8 @@
 import { useRef } from "react";
 import { motion, useInView } from "motion/react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Star, Quote } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 
 const testimonials = [
   {
@@ -36,73 +36,78 @@ export function Work() {
   const inView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section className="relative py-24 md:py-32 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-card/50 to-background" />
-
-      <div className="container relative z-10 px-4 mx-auto">
+    <section className="py-20 md:py-28">
+      <div className="container px-4 mx-auto">
+        {/* Section header */}
         <motion.div
           ref={ref}
-          initial={{ opacity: 0, y: 40 }}
-          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-          transition={{ duration: 0.6 }}
-          className="max-w-3xl mx-auto text-center mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-2xl mx-auto text-center mb-16"
         >
-          <h2 className="text-4xl md:text-6xl font-bold mb-6">
-            Client{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-yellow-400">
-              Success Stories
-            </span>
+          <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary mb-4">
+            Testimonials
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            What our clients say
           </h2>
-          <p className="text-lg md:text-xl text-muted-foreground font-light">
-            Trusted by businesses that demand excellence
+          <p className="text-muted-foreground">
+            Trusted by businesses that demand excellence.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        {/* Testimonials grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           {testimonials.map((testimonial, index) => (
             <motion.div
               key={testimonial.name}
-              initial={{ opacity: 0, y: 40 }}
-              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-              transition={{ duration: 0.5, delay: index * 0.15 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
             >
-              <Card className="h-full bg-card/50 backdrop-blur-sm border-border hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10">
-                <CardContent className="p-8 space-y-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex gap-1">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className="w-5 h-5 fill-primary text-primary"
-                        />
-                      ))}
-                    </div>
-                    <Quote className="w-8 h-8 text-primary/20" />
-                  </div>
+              <div
+                className={cn(
+                  "h-full p-6 rounded-xl",
+                  "border border-border bg-card",
+                  "transition-all duration-200",
+                  "hover:border-primary/30",
+                )}
+              >
+                {/* Rating */}
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className="w-4 h-4 fill-primary text-primary"
+                    />
+                  ))}
+                </div>
 
-                  <p className="text-foreground leading-relaxed">
-                    "{testimonial.content}"
-                  </p>
+                {/* Quote */}
+                <p className="text-foreground leading-relaxed mb-6">
+                  "{testimonial.content}"
+                </p>
 
-                  <div className="flex items-center gap-4 pt-4 border-t border-border">
-                    <Avatar className="w-12 h-12">
-                      <AvatarImage src={testimonial.avatar} />
-                      <AvatarFallback className="bg-primary/10 text-primary font-semibold">
-                        {testimonial.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="font-semibold">{testimonial.name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {testimonial.role}
-                      </p>
-                    </div>
+                {/* Author */}
+                <div className="flex items-center gap-3 pt-4 border-t border-border">
+                  <Avatar className="w-10 h-10">
+                    <AvatarImage src={testimonial.avatar} />
+                    <AvatarFallback className="bg-primary/10 text-primary text-sm font-medium">
+                      {testimonial.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium text-sm">{testimonial.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {testimonial.role}
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </motion.div>
           ))}
         </div>

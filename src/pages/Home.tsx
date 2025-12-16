@@ -1,4 +1,3 @@
-import { CustomCursor } from "@/components/layout/CustomCursor";
 import { EnhancedHero } from "@/components/home/EnhancedHero";
 import { Mission } from "@/components/home/Mission";
 import { Services } from "@/components/home/Services";
@@ -15,7 +14,6 @@ export default function Home() {
         description="Transform your business with custom web solutions. DOBEU builds fast, modern websites and software that help you grow and serve customers better."
         keywords="web development, custom websites, software development, business growth, modern web solutions, responsive design"
       />
-      <CustomCursor />
       <EnhancedHero />
       <Mission />
       <Services />
