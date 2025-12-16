@@ -256,10 +256,9 @@ export const perfMonitor = new PerformanceMonitor();
 /**
  * Decorator for measuring async function performance with error handling
  */
-export function measurePerformance<T extends (...args: any[]) => Promise<any>>(
-  fn: T,
-  name?: string,
-): T {
+export function measurePerformance<
+  T extends (...args: unknown[]) => Promise<unknown>,
+>(fn: T, name?: string): T {
   return (async (...args: Parameters<T>) => {
     // Defensive check: Ensure function is valid
     if (typeof fn !== "function") {
@@ -322,7 +321,7 @@ export function useRenderPerformance(componentName: string) {
 /**
  * Debounce function to prevent excessive calls
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   fn: T,
   delay: number,
 ): (...args: Parameters<T>) => void {
@@ -337,7 +336,7 @@ export function debounce<T extends (...args: any[]) => any>(
 /**
  * Throttle function to limit call frequency
  */
-export function throttle<T extends (...args: any[]) => any>(
+export function throttle<T extends (...args: unknown[]) => unknown>(
   fn: T,
   limit: number,
 ): (...args: Parameters<T>) => void {
@@ -355,7 +354,7 @@ export function throttle<T extends (...args: any[]) => any>(
 /**
  * Memoize expensive function calls
  */
-export function memoize<T extends (...args: any[]) => any>(
+export function memoize<T extends (...args: unknown[]) => unknown>(
   fn: T,
   keyFn?: (...args: Parameters<T>) => string,
 ): T {

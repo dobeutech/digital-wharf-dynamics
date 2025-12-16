@@ -51,6 +51,10 @@ const AdminServices = lazy(() => import("./pages/admin/AdminServices"));
 const AdminProjects = lazy(() => import("./pages/admin/AdminProjects"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const AdminNewsletter = lazy(() => import("./pages/admin/AdminNewsletter"));
+const AdminNewsletterEdit = lazy(
+  () => import("./pages/admin/AdminNewsletterEdit"),
+);
+const AdminServiceEdit = lazy(() => import("./pages/admin/AdminServiceEdit"));
 const AdminCCPA = lazy(() => import("./pages/admin/AdminCCPA"));
 const AdminContacts = lazy(() => import("./pages/admin/AdminContacts"));
 const AdminAuditLogs = lazy(() => import("./pages/admin/AdminAuditLogs"));
@@ -218,6 +222,26 @@ const App = () => (
                                   }
                                 />
                                 <Route
+                                  path="/admin/services/new"
+                                  element={
+                                    <AdminRoute>
+                                      <Suspense fallback={<PageLoader />}>
+                                        <AdminServiceEdit />
+                                      </Suspense>
+                                    </AdminRoute>
+                                  }
+                                />
+                                <Route
+                                  path="/admin/services/edit/:id"
+                                  element={
+                                    <AdminRoute>
+                                      <Suspense fallback={<PageLoader />}>
+                                        <AdminServiceEdit />
+                                      </Suspense>
+                                    </AdminRoute>
+                                  }
+                                />
+                                <Route
                                   path="/admin/projects"
                                   element={
                                     <AdminRoute>
@@ -243,6 +267,26 @@ const App = () => (
                                     <AdminRoute>
                                       <Suspense fallback={<PageLoader />}>
                                         <AdminNewsletter />
+                                      </Suspense>
+                                    </AdminRoute>
+                                  }
+                                />
+                                <Route
+                                  path="/admin/newsletter/new"
+                                  element={
+                                    <AdminRoute>
+                                      <Suspense fallback={<PageLoader />}>
+                                        <AdminNewsletterEdit />
+                                      </Suspense>
+                                    </AdminRoute>
+                                  }
+                                />
+                                <Route
+                                  path="/admin/newsletter/edit/:id"
+                                  element={
+                                    <AdminRoute>
+                                      <Suspense fallback={<PageLoader />}>
+                                        <AdminNewsletterEdit />
                                       </Suspense>
                                     </AdminRoute>
                                   }

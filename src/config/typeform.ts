@@ -3,6 +3,21 @@
  * Configure your Typeform embed settings here
  */
 
+// Type definition for Typeform embed library
+interface TypeformAPI {
+  load: () => void;
+  createPopup: (
+    formId: string,
+    options: Record<string, unknown>,
+  ) => { open: () => void };
+}
+
+declare global {
+  interface Window {
+    tf?: TypeformAPI;
+  }
+}
+
 export const typeformConfig = {
   // Replace with your Typeform form ID
   formId: import.meta.env.VITE_TYPEFORM_ID || "YOUR_TYPEFORM_ID",
@@ -51,9 +66,8 @@ export function openTypeformPopup(source?: string): void {
   const url = getTypeformPopupUrl(source);
 
   // Check if Typeform embed library is loaded
-  if (typeof window !== "undefined" && (window as any).tf) {
-    const { createPopup } = (window as any).tf;
-    const popup = createPopup(typeformConfig.formId, {
+  if (typeof window !== "undefined" && window.tf) {
+    const popup = window.tf.createPopup(typeformConfig.formId, {
       ...typeformConfig.popup,
       hidden: {
         ...typeformConfig.tracking,
