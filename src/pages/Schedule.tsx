@@ -16,8 +16,14 @@ export default function Schedule() {
             Pick a time that works for you. We’ll meet and walk through your
             goals and the best next steps.
           </p>
-          <div className="rounded-xl overflow-hidden border shadow-material">
-            <div data-tf-live={TYPEFORM_EMBED_ID}></div>
+          <div
+            className="rounded-xl overflow-hidden border shadow-material"
+            style={{ minHeight: "600px" }}
+          >
+            <div
+              data-tf-live={TYPEFORM_EMBED_ID}
+              style={{ height: "600px", width: "100%" }}
+            ></div>
           </div>
         </div>
       </div>
