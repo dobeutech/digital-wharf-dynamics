@@ -309,3 +309,47 @@ Potential improvements:
 - [ ] A/B test different form variants
 - [ ] Add conditional logic based on user type
 - [ ] Implement form analytics dashboard
+
+## Recent Fixes (December 2024)
+
+### Typeform Script Loading Fix
+
+**Problem**: Typeform embed was not loading on deployed site due to protocol-relative URL.
+
+**Root Cause**: The script tag was using `//embed.typeform.com/next/embed.js` (protocol-relative URL), which can fail in certain contexts, especially with modern browsers and CSP policies.
+
+**Solution Applied**:
+
+1. **Changed to HTTPS**: Updated script tag to use explicit HTTPS protocol:
+
+   ```html
+   <script src="https://embed.typeform.com/next/embed.js" async></script>
+   ```
+
+2. **Added async loading**: Script now loads asynchronously to prevent blocking page render.
+
+3. **Created initialization hook**: New `useTypeformInit` custom hook handles async script loading:
+   - Polls for `window.tf` availability when script is loading
+   - Calls `window.tf.load()` once available
+   - Has configurable timeout (10 seconds) to prevent infinite polling
+   - Provides warning log if script fails to load
+
+4. **Updated components**:
+   - `Schedule.tsx` - Uses the new hook
+   - `TypeformEmbed.tsx` - Uses the new hook
+   - Added explicit height/width styling for proper display
+
+**Files Changed**:
+
+- `index.html` - Script tag updated
+- `src/hooks/useTypeformInit.ts` - New custom hook
+- `src/pages/Schedule.tsx` - Updated to use hook
+- `src/components/TypeformEmbed.tsx` - Updated to use hook
+
+**Best Practices**:
+
+- Always use HTTPS (not protocol-relative URLs) for external scripts
+- Handle async script loading with polling or load event listeners
+- Use custom hooks to avoid code duplication
+- Extract magic numbers to named constants
+- Add proper error handling and logging
