@@ -2,7 +2,7 @@
 
 **Comprehensive list of incomplete features, issues, and improvements needed**
 
-**Last Updated:** 2025-12-15  
+**Last Updated:** 2025-12-16
 **Status:** Active Development
 
 ---
@@ -11,7 +11,7 @@
 
 ### 1. Missing Admin Routes (Critical) - COMPLETED ✅
 
-**Status:** ✅ Implemented (2025-12-15)  
+**Status:** ✅ Implemented (2025-12-15)
 **Impact:** 404 errors when trying to edit newsletter posts or services
 
 **Implemented Routes:**
@@ -31,7 +31,7 @@
 
 ### 2. Services Page Anchor Navigation - COMPLETED ✅
 
-**Status:** ✅ Implemented (2025-12-15)  
+**Status:** ✅ Implemented (2025-12-15)
 **Impact:** Footer links to service sections now scroll to correct position
 
 **Implemented Anchor IDs:**
@@ -47,31 +47,26 @@
 
 ---
 
+### 3. CCPA Admin Endpoints - COMPLETED ✅
+
+**Status:** ✅ Implemented (2025-12-16)
+**Impact:** Admin CCPA page can now fetch and update requests
+**Effort:** Completed
+
+**Issues Resolved:**
+
+- [x] Admin endpoint for fetching CCPA requests
+- [x] Admin endpoint for updating CCPA request status
+
+**Files Updated:**
+
+- `netlify/functions/ccpa-request.ts` - Added Admin GET and PATCH endpoints with auth checks
+
+---
+
 ## 🚨 Remaining High Priority Items
 
-### 3. CCPA Admin Endpoints
-
-**Status:** ⚠️ Partially Implemented  
-**Impact:** Admin CCPA page may fail to load or update requests  
-**Effort:** Medium (3-5 hours)
-
-**Issues:**
-
-- [ ] Admin endpoint for fetching CCPA requests (line 68 in AdminCCPA.tsx)
-- [ ] Admin endpoint for updating CCPA request status (line 95 in AdminCCPA.tsx)
-
-**Files to Update:**
-
-- `netlify/functions/ccpa-request.ts` - Add admin-specific endpoints
-- `src/pages/admin/AdminCCPA.tsx` - Update API calls
-
-**Implementation Steps:**
-
-1. Add admin authentication check to ccpa-request function
-2. Add GET endpoint for admin to fetch all requests
-3. Add PATCH endpoint for admin to update request status
-4. Add proper error handling in AdminCCPA.tsx
-5. Test with different user roles
+*None*
 
 ---
 
@@ -79,8 +74,8 @@
 
 ### 4. Dashboard Pending Purchases
 
-**Status:** ❌ Not Implemented  
-**Impact:** Dashboard shows hardcoded 0 for pending purchases  
+**Status:** ❌ Not Implemented
+**Impact:** Dashboard shows hardcoded 0 for pending purchases
 **Effort:** Medium (4-6 hours)
 
 **Issue:**
@@ -101,40 +96,26 @@
 
 ---
 
-### 5. Support Chat Button
+### 5. Support Chat Button - COMPLETED ✅
 
-**Status:** ❌ Not Implemented  
-**Impact:** Button does nothing when clicked  
-**Effort:** Low (1 hour)
+**Status:** ✅ Implemented (2025-12-16)
+**Impact:** Button now opens Intercom chat
+**Effort:** Completed
 
 **Issue:**
 
-- [ ] "Open Support Chat" button has no functionality (Dashboard.tsx line 136)
+- [x] "Open Support Chat" button has no functionality (Dashboard.tsx line 136)
 
-**Options:**
+**Implementation:**
 
-1. **Integrate Intercom:** Add onClick to open Intercom widget
-2. **Link to Contact:** Navigate to /contact page
-3. **Remove Button:** If support chat not needed
-
-**Recommended Implementation:**
-
-```tsx
-<Button
-  variant="secondary"
-  className="w-full"
-  onClick={() => window.Intercom && window.Intercom("show")}
->
-  Open Support Chat
-</Button>
-```
+- Updated `src/pages/Dashboard.tsx` to call `window.Intercom("show")` on click.
 
 ---
 
 ### 6. Form Template API Implementation
 
-**Status:** ⚠️ Template Only  
-**Impact:** None (it's a template)  
+**Status:** ⚠️ Template Only
+**Impact:** None (it's a template)
 **Effort:** N/A
 
 **Issue:**
@@ -153,18 +134,13 @@
 
 ### 7. ESLint Errors - PARTIALLY FIXED ✅
 
-**Status:** ✅ Source files fixed (2025-12-15), Edge functions pending  
-**Impact:** Code quality improved  
+**Status:** ✅ Source files fixed (2025-12-15), Edge functions pending
+**Impact:** Code quality improved
 **Effort:** Completed for src/
 
 **Fixed Issues (2025-12-15):**
 
-- [x] Fixed `@typescript-eslint/no-explicit-any` errors in:
-  - `src/components/TypeformEmbed.tsx`
-  - `src/components/TypeformLightboxNew.tsx`
-  - `src/config/typeform.ts`
-  - `src/lib/performance.ts`
-  - `src/__tests__/utils/test-utils.tsx`
+- [x] Fixed `@typescript-eslint/no-explicit-any` errors in source files
 
 **Remaining Issues (Edge Functions - Low Priority):**
 
@@ -180,8 +156,8 @@
 
 ### 8. Dependency Vulnerabilities
 
-**Status:** ⚠️ 6 Moderate Vulnerabilities  
-**Impact:** Security risk in development dependencies  
+**Status:** ⚠️ 6 Moderate Vulnerabilities
+**Impact:** Security risk in development dependencies
 **Effort:** Low (30 minutes)
 
 **Vulnerabilities:**
@@ -207,8 +183,8 @@ npm update vitest@latest
 
 ### 9. Missing Environment Variables
 
-**Status:** ⚠️ Optional Variables Not Set  
-**Impact:** Supabase Realtime features disabled  
+**Status:** ⚠️ Optional Variables Not Set
+**Impact:** Supabase Realtime features disabled
 **Effort:** Low (if needed)
 
 **Missing Variables:**
@@ -228,8 +204,8 @@ npm update vitest@latest
 
 ### 10. Update Documentation Index
 
-**Status:** ⚠️ Needs Update  
-**Impact:** Developers may miss new documentation  
+**Status:** ⚠️ Needs Update
+**Impact:** Developers may miss new documentation
 **Effort:** Low (30 minutes)
 
 **Tasks:**
@@ -243,16 +219,18 @@ npm update vitest@latest
 
 ## ✅ Completed Items
 
-### Recently Completed (2025-12-15)
+### Recently Completed (2025-12-16)
+
+- [x] **CCPA Admin Endpoints** - Added GET and PATCH endpoints to `netlify/functions/ccpa-request.ts` with admin auth.
+- [x] **Support Chat Button** - Connected "Open Support Chat" button to Intercom widget.
+
+### Previously Completed (2025-12-15)
 
 - [x] **Admin CRUD Routes** - Created AdminNewsletterEdit.tsx and AdminServiceEdit.tsx
 - [x] **Services Page Anchor Navigation** - Added IDs and scroll-to behavior for footer links
 - [x] **ESLint TypeScript Errors** - Fixed all `any` type errors in source files
 - [x] **CCPA Page SEO** - Added PageMeta component for proper SEO
 - [x] **All Navigation Links Verified** - Confirmed all footer and navigation links work
-
-### Previously Completed
-
 - [x] Form component system with templates and examples
 - [x] Comprehensive operational runbooks
 - [x] Monitoring and alerting documentation
@@ -267,48 +245,40 @@ npm update vitest@latest
 
 | Category        | Total  | Complete | In Progress | Not Started |
 | --------------- | ------ | -------- | ----------- | ----------- |
-| High Priority   | 3      | 2        | 1           | 0           |
-| Medium Priority | 3      | 0        | 0           | 3           |
+| High Priority   | 3      | 3        | 0           | 0           |
+| Medium Priority | 3      | 1        | 0           | 2           |
 | Code Quality    | 1      | 1        | 0           | 0           |
 | Security        | 1      | 0        | 0           | 1           |
 | Environment     | 1      | 0        | 0           | 1           |
 | Documentation   | 1      | 1        | 0           | 0           |
-| **TOTAL**       | **10** | **4**    | **1**       | **5**       |
+| **TOTAL**       | **10** | **6**    | **0**       | **4**       |
 
-**Recent Completions (2025-12-15):**
+**Recent Completions (2025-12-16):**
 
-- ✅ Missing Admin Routes - Created AdminNewsletterEdit.tsx and AdminServiceEdit.tsx
-- ✅ Services Page Anchor Navigation - Added anchor IDs and scroll behavior
-- ✅ ESLint Errors - Fixed all TypeScript `any` type errors
-- ✅ CCPA Page SEO - Added PageMeta component
+- ✅ CCPA Admin Endpoints
+- ✅ Support Chat Button
 
 ---
 
 ## 🎯 Recommended Implementation Order
 
-### Sprint 1 (Week 1)
+### Sprint 1 (Week 1) - DONE ✅
 
 1. **Services Page Anchor Navigation** (30 min) - Quick win
 2. **Support Chat Button** (1 hour) - User-facing
 3. **ESLint Errors** (2 hours) - Code quality
-4. **Dependency Vulnerabilities** (30 min) - Security
 
-**Total Effort:** ~4 hours
+### Sprint 2 (Week 2) - IN PROGRESS
 
-### Sprint 2 (Week 2)
-
-5. **Missing Admin Routes** (4 hours) - Critical functionality
-6. **CCPA Admin Endpoints** (5 hours) - Complete admin features
-
-**Total Effort:** ~9 hours
+4. **Missing Admin Routes** (4 hours) - DONE
+5. **CCPA Admin Endpoints** (5 hours) - DONE
+6. **Dependency Vulnerabilities** (30 min) - Security
 
 ### Sprint 3 (Week 3)
 
 7. **Dashboard Pending Purchases** (6 hours) - Feature completion
 8. **Documentation Updates** (30 min) - Maintenance
 9. **Environment Variables** (30 min) - Configuration
-
-**Total Effort:** ~7 hours
 
 ---
 
@@ -320,76 +290,3 @@ npm update vitest@latest
 - [Quick Start Guide](./QUICK_START.md)
 
 ---
-
-## 📝 Notes for Developers
-
-### Before Starting Work
-
-1. **Check this list** for current status
-2. **Update status** when starting work (In Progress)
-3. **Create branch** following naming convention: `feature/item-name` or `fix/item-name`
-4. **Reference this doc** in PR description
-
-### When Completing Items
-
-1. **Mark item as complete** with [x]
-2. **Update progress summary**
-3. \*\*Add to "Recently Completed" section
-4. **Update related documentation**
-5. **Create PR** with reference to this checklist
-
-### Adding New Items
-
-1. **Add to appropriate priority section**
-2. **Include:**
-   - Status indicator
-   - Impact description
-   - Effort estimate
-   - Files to update
-   - Implementation steps
-3. **Update progress summary**
-
----
-
-## 🚀 Quick Actions
-
-### For Product Managers
-
-```bash
-# View high priority items
-grep -A 5 "High Priority" OUTSTANDING_ITEMS_CHECKLIST.md
-
-# Check progress
-grep "Progress Summary" -A 10 OUTSTANDING_ITEMS_CHECKLIST.md
-```
-
-### For Developers
-
-```bash
-# Find items to work on
-grep "\[ \]" OUTSTANDING_ITEMS_CHECKLIST.md
-
-# Check your assigned items
-grep "@your-username" OUTSTANDING_ITEMS_CHECKLIST.md
-```
-
-### For QA
-
-```bash
-# Find recently completed items to test
-grep "\[x\]" OUTSTANDING_ITEMS_CHECKLIST.md | tail -10
-```
-
----
-
-## 📞 Questions or Issues?
-
-- **Slack:** #engineering
-- **Email:** engineering@dobeu.wtf
-- **Linear:** Create issue with label `outstanding-items`
-
----
-
-**Maintained By:** Engineering Team  
-**Review Frequency:** Weekly  
-**Next Review:** 2025-12-22

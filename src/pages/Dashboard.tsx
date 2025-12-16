@@ -162,7 +162,11 @@ export default function Dashboard() {
               Have questions about your project or need technical support? Use
               the chat icon in the bottom right to contact our team directly.
             </p>
-            <Button variant="secondary" className="w-full">
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={() => window.Intercom && window.Intercom("show")}
+            >
               Open Support Chat
             </Button>
           </CardContent>
