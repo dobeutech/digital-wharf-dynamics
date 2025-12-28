@@ -1,39 +1,29 @@
 /**
- * Netlify Functions API client with Auth0 token support
+ * Netlify Functions API client
  * Use this in React components via useApi hook
  */
 
-import { useAuth } from "@/contexts/AuthContext";
 import { useMemo } from "react";
 import { apiRequest, RequestOptions } from "./api-client";
 
 class ApiClient {
   private baseUrl: string;
-  private getToken: () => Promise<string | null>;
 
-  constructor(getToken: () => Promise<string | null>) {
+  constructor() {
     // Use Netlify Functions URL in production, localhost in development
     this.baseUrl = import.meta.env.PROD
       ? "/.netlify/functions"
       : "http://localhost:8888/.netlify/functions";
-    this.getToken = getToken;
   }
 
-  private async getHeaders(): Promise<HeadersInit> {
-    const headers: HeadersInit = {
+  private getHeaders(): HeadersInit {
+    return {
       "Content-Type": "application/json",
     };
-
-    const token = await this.getToken();
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
-    }
-
-    return headers;
   }
 
   async get<T>(endpoint: string, options?: RequestOptions): Promise<T> {
-    const headers = await this.getHeaders();
+    const headers = this.getHeaders();
     return apiRequest<T>(`${this.baseUrl}${endpoint}`, {
       ...options,
       method: "GET",
@@ -46,7 +36,7 @@ class ApiClient {
     data?: unknown,
     options?: RequestOptions,
   ): Promise<T> {
-    const headers = await this.getHeaders();
+    const headers = this.getHeaders();
     return apiRequest<T>(`${this.baseUrl}${endpoint}`, {
       ...options,
       method: "POST",
@@ -60,7 +50,7 @@ class ApiClient {
     data?: unknown,
     options?: RequestOptions,
   ): Promise<T> {
-    const headers = await this.getHeaders();
+    const headers = this.getHeaders();
     return apiRequest<T>(`${this.baseUrl}${endpoint}`, {
       ...options,
       method: "PUT",
@@ -70,7 +60,7 @@ class ApiClient {
   }
 
   async delete<T>(endpoint: string, options?: RequestOptions): Promise<T> {
-    const headers = await this.getHeaders();
+    const headers = this.getHeaders();
     return apiRequest<T>(`${this.baseUrl}${endpoint}`, {
       ...options,
       method: "DELETE",
@@ -80,12 +70,10 @@ class ApiClient {
 }
 
 /**
- * React hook to get API client with Auth0 token support
+ * React hook to get API client
  */
 export function useApi() {
-  const { getAccessToken } = useAuth();
-
   return useMemo(() => {
-    return new ApiClient(getAccessToken);
-  }, [getAccessToken]);
+    return new ApiClient();
+  }, []);
 }
