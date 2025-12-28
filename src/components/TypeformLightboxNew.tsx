@@ -34,7 +34,8 @@ function buildTypeformUrl(
   source: string,
   user?: { id?: string; email?: string; name?: string },
 ): string {
-  const baseUrl = "https://dobeu.typeform.com/customer-inq";
+  // Use the standard Typeform URL format with the embed ID
+  const baseUrl = `https://form.typeform.com/to/${TYPEFORM_EMBED_ID}`;
 
   // Query parameters for UTM tracking
   const params = new URLSearchParams({

@@ -24,6 +24,8 @@ export const Analytics = () => {
     try {
       Intercom({
         app_id: "xu0gfiqb",
+        api_base: "https://api-iam.intercom.io",
+        hide_default_launcher: false, // Ensure launcher is always visible
       });
 
       if (import.meta.env.DEV) {
