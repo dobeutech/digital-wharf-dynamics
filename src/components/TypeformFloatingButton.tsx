@@ -24,10 +24,10 @@ export function TypeformFloatingButton({
     utm_campaign: source,
   });
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     trackEvent("Typeform Opened", { source, text: title });
-    window.open(typeformUrl, "_blank");
-  };
+    window.open(typeformUrl, "_blank", "noopener,noreferrer");
+  }, [typeformUrl, source, title]);
 
   const positionClasses = {
     "bottom-right": "bottom-6 right-6",
