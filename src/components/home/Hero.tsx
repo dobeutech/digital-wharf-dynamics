@@ -2,8 +2,24 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { RippleGrid } from "@/components/layout/RippleGrid";
+import { getTypeformDirectUrl } from "@/config/typeform";
+import { trackEvent } from "@/lib/mixpanel";
 
 export function Hero() {
+  const typeformUrl = getTypeformDirectUrl({
+    utm_source: "dobeu_website",
+    utm_medium: "website",
+    utm_campaign: "hero",
+  });
+
+  const handleStartProject = () => {
+    trackEvent("Typeform Opened", {
+      source: "hero",
+      text: "Start Your Project",
+    });
+    window.open(typeformUrl, "_blank");
+  };
+
   return (
     <section
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
@@ -50,11 +66,11 @@ export function Hero() {
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4 sm:pt-8 px-4">
             <Button
-              asChild
               size="lg"
+              onClick={handleStartProject}
               className="w-full sm:w-auto bg-primary hover:bg-primary-hover text-primary-foreground font-bold px-8 sm:px-10 py-6 sm:py-7 text-base sm:text-lg shadow-lg shadow-primary/20 transition-all hover:scale-105 hover:shadow-xl hover:shadow-primary/30 min-h-[48px]"
             >
-              <Link to="/contact">Start Your Project</Link>
+              Start Your Project
             </Button>
             <Button
               asChild
