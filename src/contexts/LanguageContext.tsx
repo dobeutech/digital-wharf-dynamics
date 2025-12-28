@@ -53,7 +53,7 @@ const translations: Record<Language, Record<string, string>> = {
     "hero.cta.secondary": "Explore Services",
     "hero.available": "Available for new projects",
     "hero.projects": "Projects delivered",
-    "hero.satisfaction": "Client satisfaction",
+    "hero.satisfaction": "Technology offerings",
 
     // Services
     "services.badge": "Our Services",
