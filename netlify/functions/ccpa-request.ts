@@ -1,11 +1,10 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
-import { ObjectId } from "mongodb";
 import { errorResponse, jsonResponse, readJson } from "./_http";
 import { requireAuth, requirePermission } from "./_auth0";
-import { getMongoDb } from "./_mongo";
+import { getSupabaseClient } from "./_supabase";
 
-type CCPARequestDoc = {
-  _id: ObjectId;
+type CCPARequest = {
+  id: string;
   reference_id: string;
   full_name: string;
   email: string;
@@ -160,9 +159,9 @@ function validateInput(data: unknown): {
   return { valid: true, errors: [], sanitized };
 }
 
-function toRequest(d: CCPARequestDoc) {
+function toResponse(d: CCPARequest) {
   return {
-    id: d._id.toHexString(),
+    id: d.id,
     reference_id: d.reference_id,
     full_name: d.full_name,
     email: d.email,
@@ -191,6 +190,8 @@ export const handler: Handler = async (event) => {
       );
     }
 
+    const supabase = getSupabaseClient();
+
     if (event.httpMethod === "POST") {
       // Get client IP for rate limiting
       const clientIP = getClientIp(event) || "unknown";
@@ -215,33 +216,28 @@ export const handler: Handler = async (event) => {
       const responseDeadline = new Date();
       responseDeadline.setDate(responseDeadline.getDate() + 45);
 
-      const db = await getMongoDb();
-      const col = db.collection<CCPARequestDoc>("ccpa_requests");
+      const { error: insertError } = await supabase
+        .from("ccpa_requests")
+        .insert({
+          reference_id: referenceId,
+          full_name: sanitized!.fullName,
+          email: sanitized!.email,
+          phone: sanitized!.phone,
+          address: sanitized!.address,
+          request_types: sanitized!.requestTypes,
+          additional_info: sanitized!.additionalInfo,
+          response_deadline: responseDeadline.toISOString(),
+          ip_address: clientIP,
+          user_agent:
+            event.headers?.["user-agent"] ||
+            event.headers?.["User-Agent"] ||
+            null,
+        });
 
-      const now = new Date().toISOString();
-      const doc: CCPARequestDoc = {
-        _id: new ObjectId(),
-        reference_id: referenceId,
-        full_name: sanitized!.fullName,
-        email: sanitized!.email,
-        phone: sanitized!.phone,
-        address: sanitized!.address,
-        request_types: sanitized!.requestTypes,
-        additional_info: sanitized!.additionalInfo,
-        response_deadline: responseDeadline.toISOString(),
-        status: "pending",
-        notes: null,
-        processed_at: null,
-        ip_address: clientIP,
-        user_agent:
-          event.headers?.["user-agent"] ||
-          event.headers?.["User-Agent"] ||
-          null,
-        created_at: now,
-        updated_at: now,
-      };
-
-      await col.insertOne(doc);
+      if (insertError) {
+        console.error("Database insert error:", insertError.message);
+        return errorResponse(500, "Failed to submit request. Please try again.");
+      }
 
       return jsonResponse(200, {
         success: true,
@@ -255,16 +251,26 @@ export const handler: Handler = async (event) => {
     const claims = await requireAuth(event);
     requirePermission(claims, "admin:access");
 
-    const db = await getMongoDb();
-    const col = db.collection<CCPARequestDoc>("ccpa_requests");
-
     if (event.httpMethod === "GET") {
       const status = event.queryStringParameters?.status;
-      const q: Record<string, unknown> = {};
-      if (status && status !== "all") q.status = status;
-      
-      const docs = await col.find(q).sort({ created_at: -1 }).toArray();
-      return jsonResponse(200, docs.map(toRequest));
+
+      let query = supabase
+        .from("ccpa_requests")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (status && status !== "all") {
+        query = query.eq("status", status);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        console.error("Database query error:", error.message);
+        return errorResponse(500, "Failed to fetch requests");
+      }
+
+      return jsonResponse(200, (data || []).map(toResponse));
     }
 
     if (event.httpMethod === "PATCH") {
@@ -272,36 +278,39 @@ export const handler: Handler = async (event) => {
       if (!id) return errorResponse(400, "Missing id");
 
       const body = await readJson<
-        Partial<CCPARequestDoc> & { status?: string }
+        Partial<CCPARequest> & { status?: string }
       >(event);
+
       const now = new Date().toISOString();
       const update: Record<string, unknown> = { updated_at: now };
 
       if (typeof body.notes === "string" || body.notes === null)
         update.notes = body.notes;
-        
+
       if (typeof body.status === "string") {
         update.status = body.status;
         if (body.status === "completed" || body.status === "rejected") {
-            update.processed_at = now;
+          update.processed_at = now;
         }
       }
-      
+
       if (body.processed_at) {
         update.processed_at = body.processed_at;
       }
 
-      const res = await col.findOneAndUpdate(
-        { _id: new ObjectId(id) },
-        { $set: update },
-        { returnDocument: "after" },
-      );
-      
-      // @ts-expect-error driver response typing differs across versions
-      const doc = (res?.value ?? res) as CCPARequestDoc | undefined;
-      
-      if (!doc) return errorResponse(404, "Not found");
-      return jsonResponse(200, toRequest(doc));
+      const { data, error } = await supabase
+        .from("ccpa_requests")
+        .update(update)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Database update error:", error.message);
+        return errorResponse(404, "Not found");
+      }
+
+      return jsonResponse(200, toResponse(data as CCPARequest));
     }
 
     return errorResponse(405, "Method not allowed");

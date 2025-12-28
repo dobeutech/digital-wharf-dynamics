@@ -25,8 +25,8 @@ declare global {
 export const TYPEFORM_EMBED_ID = "01KCBVEXYD88HBQQB22XQA49ZR";
 
 export const typeformConfig = {
-  // Replace with your Typeform form ID
-  formId: import.meta.env.VITE_TYPEFORM_ID || "YOUR_TYPEFORM_ID",
+  // Use TYPEFORM_EMBED_ID as the default form ID
+  formId: import.meta.env.VITE_TYPEFORM_ID || TYPEFORM_EMBED_ID,
 
   // Popup/lightbox configuration
   popup: {

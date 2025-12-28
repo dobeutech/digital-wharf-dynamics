@@ -6,7 +6,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { typeformConfig } from "@/config/typeform";
+import { typeformConfig, TYPEFORM_EMBED_ID } from "@/config/typeform";
 import { trackEvent } from "@/lib/mixpanel";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ export function TypeformLightbox({
     }
   }, [isOpen, source]);
 
-  const typeformUrl = `https://form.typeform.com/to/${typeformConfig.formId}?utm_source=${typeformConfig.tracking.utm_source}&utm_medium=${typeformConfig.tracking.utm_medium}&utm_campaign=${source}`;
+  const typeformUrl = `https://form.typeform.com/to/${TYPEFORM_EMBED_ID}?utm_source=${typeformConfig.tracking.utm_source}&utm_medium=${typeformConfig.tracking.utm_medium}&utm_campaign=${source}`;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
