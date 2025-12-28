@@ -105,6 +105,7 @@ export function TypeformLightboxNew({
       return;
     }
 
+    let pollInterval: NodeJS.Timeout | null = null;
     let initTimeout: NodeJS.Timeout | null = null;
     let fallbackTimeout: NodeJS.Timeout | null = null;
     let mounted = true;
@@ -118,43 +119,92 @@ export function TypeformLightboxNew({
       container.innerHTML = "";
 
       // Create the embed div with exact structure: <div data-tf-live="TYPEFORM_EMBED_ID"></div>
-      // The script in index.html will automatically initialize it
       const embedDiv = document.createElement("div");
       embedDiv.setAttribute("data-tf-live", TYPEFORM_EMBED_ID);
+      embedDiv.style.width = "100%";
+      embedDiv.style.height = "100%";
       container.appendChild(embedDiv);
 
-      // Trigger Typeform load if available
+      // Trigger Typeform load
       if (window.tf?.load) {
         try {
           window.tf.load();
         } catch (error) {
           console.error("Error loading Typeform:", error);
+          // Fall back to iframe on error
+          if (mounted) {
+            setEmbedFailed(true);
+            setUseIframe(true);
+          }
         }
       }
+    };
 
-      // Check if embed loaded after a delay, fallback to iframe if not
-      fallbackTimeout = setTimeout(() => {
-        if (!mounted || !container) return;
+    // Wait for Typeform script to be ready
+    const waitForTypeform = () => {
+      if (!mounted) return;
 
-        const hasTypeformContent =
-          container.querySelector("iframe") ||
-          container.querySelector('[class*="typeform"]') ||
-          container.querySelector('[id*="typeform"]');
+      if (window.tf?.load) {
+        // Typeform is ready, initialize
+        initTypeform();
 
-        if (!hasTypeformContent) {
-          // Embed didn't load, fallback to iframe
-          setEmbedFailed(true);
-          setUseIframe(true);
-        }
-      }, 3000);
+        // Check if embed loaded after a delay, fallback to iframe if not
+        fallbackTimeout = setTimeout(() => {
+          if (!mounted || !container) return;
+
+          const hasTypeformContent =
+            container.querySelector("iframe") ||
+            container.querySelector('[class*="tf-"]') ||
+            container.querySelector('[data-tf-loaded]');
+
+          if (!hasTypeformContent) {
+            // Embed didn't load, fallback to iframe
+            setEmbedFailed(true);
+            setUseIframe(true);
+          }
+        }, 4000);
+      } else {
+        // Typeform not ready yet, poll every 100ms for up to 5 seconds
+        let attempts = 0;
+        pollInterval = setInterval(() => {
+          attempts++;
+          if (window.tf?.load) {
+            if (pollInterval) clearInterval(pollInterval);
+            initTypeform();
+
+            // Check if embed loaded after a delay
+            fallbackTimeout = setTimeout(() => {
+              if (!mounted || !container) return;
+
+              const hasTypeformContent =
+                container.querySelector("iframe") ||
+                container.querySelector('[class*="tf-"]') ||
+                container.querySelector('[data-tf-loaded]');
+
+              if (!hasTypeformContent) {
+                setEmbedFailed(true);
+                setUseIframe(true);
+              }
+            }, 4000);
+          } else if (attempts >= 50) {
+            // After 5 seconds, fall back to iframe
+            if (pollInterval) clearInterval(pollInterval);
+            if (mounted) {
+              setEmbedFailed(true);
+              setUseIframe(true);
+            }
+          }
+        }, 100);
+      }
     };
 
     // Small delay to ensure DOM is ready
-    initTimeout = setTimeout(initTypeform, 100);
+    initTimeout = setTimeout(waitForTypeform, 50);
 
     // Cleanup function
     return () => {
       mounted = false;
+      if (pollInterval) clearInterval(pollInterval);
       if (initTimeout) clearTimeout(initTimeout);
       if (fallbackTimeout) clearTimeout(fallbackTimeout);
       // Clean up when closing
