@@ -19,11 +19,41 @@ declare global {
 }
 
 /**
- * Typeform embed ID for schedule/consultation form
- * This is the live embed ID used across the site
- * Using data-tf-live for automatic embed setting updates
+ * Typeform form slug for customer inquiry form
+ * This is the form ID used with @typeform/embed-react Widget
  */
-export const TYPEFORM_EMBED_ID = "01KDJSFTXPSJ25X28416P9DYVP";
+export const TYPEFORM_EMBED_ID = "customer-inq";
+
+/**
+ * Typeform workspace domain
+ */
+export const TYPEFORM_WORKSPACE = "dobeu";
+
+/**
+ * Get the full Typeform URL for direct redirect
+ */
+export function getTypeformDirectUrl(params?: {
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_term?: string;
+  utm_content?: string;
+}): string {
+  const baseUrl = `https://${TYPEFORM_WORKSPACE}.typeform.com/${TYPEFORM_EMBED_ID}`;
+
+  if (!params) return baseUrl;
+
+  const searchParams = new URLSearchParams();
+  if (params.utm_source) searchParams.set("utm_source", params.utm_source);
+  if (params.utm_medium) searchParams.set("utm_medium", params.utm_medium);
+  if (params.utm_campaign)
+    searchParams.set("utm_campaign", params.utm_campaign);
+  if (params.utm_term) searchParams.set("utm_term", params.utm_term);
+  if (params.utm_content) searchParams.set("utm_content", params.utm_content);
+
+  const queryString = searchParams.toString();
+  return queryString ? `${baseUrl}?${queryString}` : baseUrl;
+}
 
 export const typeformConfig = {
   // Use TYPEFORM_EMBED_ID as the default form ID
