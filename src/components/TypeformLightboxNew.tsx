@@ -23,12 +23,14 @@ export const TypeformLightboxNew = ({
 }: TypeformLightboxNewProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const embedContainerRef = useRef<HTMLDivElement>(null);
+  const initAttemptedRef = useRef(false);
 
   // Handle dialog close
   const handleOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
         setIsLoading(true);
+        initAttemptedRef.current = false;
         onClose();
       }
     },
@@ -42,29 +44,76 @@ export const TypeformLightboxNew = ({
     }
   }, [isOpen, source]);
 
-  // Initialize Typeform embed when dialog opens
+  // Initialize Typeform embed when dialog opens and element is in DOM
   useEffect(() => {
-    if (!isOpen || !embedContainerRef.current) return;
+    if (!isOpen) {
+      initAttemptedRef.current = false;
+      setIsLoading(true);
+      return;
+    }
 
-    // Wait for Typeform script to be available
+    // Reset when dialog opens
+    initAttemptedRef.current = false;
+    setIsLoading(true);
+
+    // Wait for both the script and the DOM element to be ready
     const initTypeform = () => {
-      if (typeof window !== "undefined" && window.tf) {
-        try {
-          // Load the Typeform embed
-          window.tf.load();
-          setIsLoading(false);
-        } catch (error) {
-          console.error("Error loading Typeform:", error);
-          setIsLoading(false);
-        }
-      } else {
+      // Check if script is loaded
+      if (typeof window === "undefined" || !window.tf) {
         // Retry after a short delay if script not loaded yet
         setTimeout(initTypeform, 100);
+        return;
+      }
+
+      // Check if element is in DOM
+      if (!embedContainerRef.current) {
+        // Retry after a short delay if element not in DOM yet
+        setTimeout(initTypeform, 100);
+        return;
+      }
+
+      // Prevent multiple initialization attempts
+      if (initAttemptedRef.current) {
+        return;
+      }
+
+      initAttemptedRef.current = true;
+
+      try {
+        // Call load() to initialize all data-tf-live elements
+        window.tf.load();
+
+        // Wait a bit for Typeform to render, then check if it loaded
+        // Typeform SDK will automatically initialize elements with data-tf-live
+        const checkLoaded = setInterval(() => {
+          const container = embedContainerRef.current;
+          if (container) {
+            // Check if Typeform has rendered content (look for iframe or Typeform elements)
+            const hasContent =
+              container.querySelector("iframe") ||
+              container.querySelector('[class*="tf-"]') ||
+              container.children.length > 0;
+
+            if (hasContent) {
+              setIsLoading(false);
+              clearInterval(checkLoaded);
+            }
+          }
+        }, 200);
+
+        // Timeout after 10 seconds
+        setTimeout(() => {
+          clearInterval(checkLoaded);
+          setIsLoading(false);
+        }, 10000);
+      } catch (error) {
+        console.error("Error loading Typeform:", error);
+        setIsLoading(false);
       }
     };
 
-    // Small delay to ensure DOM is ready
-    const timer = setTimeout(initTypeform, 50);
+    // Small delay to ensure DOM is ready and dialog is fully rendered
+    const timer = setTimeout(initTypeform, 100);
 
     return () => {
       clearTimeout(timer);
