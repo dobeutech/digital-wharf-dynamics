@@ -13,7 +13,8 @@ interface TypeformLightboxNewProps {
 
 /**
  * Typeform Lightbox Component
- * Uses Typeform embed SDK with data-tf-live attribute for proper embedding
+ * Uses Typeform embed SDK with data-tf-live attribute for live embedding
+ * data-tf-live allows embed settings to update automatically without re-embedding
  * The script is loaded in index.html: https://embed.typeform.com/next/embed.js
  */
 export const TypeformLightboxNew = ({
@@ -24,22 +25,26 @@ export const TypeformLightboxNew = ({
   const [isLoading, setIsLoading] = useState(true);
   const embedContainerRef = useRef<HTMLDivElement>(null);
   const initAttemptedRef = useRef(false);
+  const retryCountRef = useRef(0);
 
-  // Handle dialog close
+  // Handle dialog close - reset loading state for next open
   const handleOpenChange = useCallback(
     (open: boolean) => {
       if (!open) {
-        setIsLoading(true);
         initAttemptedRef.current = false;
+        retryCountRef.current = 0;
         onClose();
       }
     },
     [onClose],
   );
 
-  // Track when lightbox opens
+  // Reset loading state when dialog opens
   useEffect(() => {
     if (isOpen) {
+      setIsLoading(true);
+      initAttemptedRef.current = false;
+      retryCountRef.current = 0;
       trackEvent("Typeform Lightbox Opened", { source });
     }
   }, [isOpen, source]);
@@ -47,27 +52,21 @@ export const TypeformLightboxNew = ({
   // Initialize Typeform embed when dialog opens and element is in DOM
   useEffect(() => {
     if (!isOpen) {
-      initAttemptedRef.current = false;
-      setIsLoading(true);
       return;
     }
 
-    // Reset when dialog opens
-    initAttemptedRef.current = false;
-    setIsLoading(true);
-
     let checkInterval: NodeJS.Timeout | null = null;
     let timeoutId: NodeJS.Timeout | null = null;
+    let retryTimeout: NodeJS.Timeout | null = null;
 
     // Wait for both the script and the DOM element to be ready
     const initTypeform = () => {
       // Check if script is loaded
       if (typeof window === "undefined" || !window.tf) {
         // Retry after a short delay if script not loaded yet (max 10 seconds)
-        const retryCount = (initTypeform as any).retryCount || 0;
-        if (retryCount < 100) {
-          (initTypeform as any).retryCount = retryCount + 1;
-          setTimeout(initTypeform, 100);
+        if (retryCountRef.current < 100) {
+          retryCountRef.current += 1;
+          retryTimeout = setTimeout(initTypeform, 100);
         } else {
           console.error("Typeform script failed to load");
           setIsLoading(false);
@@ -79,7 +78,7 @@ export const TypeformLightboxNew = ({
       const container = embedContainerRef.current;
       if (!container) {
         // Retry after a short delay if element not in DOM yet
-        setTimeout(initTypeform, 100);
+        retryTimeout = setTimeout(initTypeform, 100);
         return;
       }
 
@@ -137,9 +136,10 @@ export const TypeformLightboxNew = ({
 
     return () => {
       clearTimeout(timer);
+      if (retryTimeout) clearTimeout(retryTimeout);
       if (checkInterval) clearInterval(checkInterval);
       if (timeoutId) clearTimeout(timeoutId);
-      (initTypeform as any).retryCount = 0;
+      retryCountRef.current = 0;
     };
   }, [isOpen]);
 
@@ -171,9 +171,6 @@ export const TypeformLightboxNew = ({
           <div
             ref={embedContainerRef}
             data-tf-live={TYPEFORM_EMBED_ID}
-            data-tf-opacity="100"
-            data-tf-hide-headers="false"
-            data-tf-hide-footer="false"
             style={{ width: "100%", height: "100%", minHeight: "600px" }}
             className="w-full h-full"
           />

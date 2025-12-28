@@ -19,10 +19,11 @@ declare global {
 }
 
 /**
- * Typeform embed form ID for schedule/consultation form
- * This is the live embed form used across the site
+ * Typeform embed ID for schedule/consultation form
+ * This is the live embed ID used across the site
+ * Using data-tf-live for automatic embed setting updates
  */
-export const TYPEFORM_EMBED_ID = "01KCBVEXYD88HBQQB22XQA49ZR";
+export const TYPEFORM_EMBED_ID = "01KDJSFTXPSJ25X28416P9DYVP";
 
 export const typeformConfig = {
   // Use TYPEFORM_EMBED_ID as the default form ID
