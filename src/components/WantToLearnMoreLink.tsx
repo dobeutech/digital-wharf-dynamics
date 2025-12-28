@@ -15,6 +15,12 @@ export const WantToLearnMoreLink = memo(function WantToLearnMoreLink({
   className,
   variant = "header",
 }: WantToLearnMoreLinkProps) {
+  const typeformUrl = getTypeformDirectUrl({
+    utm_source: "dobeu_website",
+    utm_medium: "website",
+    utm_campaign: source,
+  });
+
   const handleOpen = useCallback(() => {
     trackEvent("Typeform Opened", { source, text: "Want to learn more?" });
     window.open(typeformUrl, "_blank", "noopener,noreferrer");
