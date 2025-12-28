@@ -130,7 +130,15 @@ export const handler: Handler = async (event) => {
       message: "Subscribed successfully",
     });
   } catch (err) {
-    // Do not expose internal error details to clients
-    return errorResponse(500, "Internal error");
+    // Log the error for debugging
+    console.error("Newsletter subscription error:", err);
+
+    // Check if it's a configuration error
+    if (err instanceof Error && err.message.includes("environment variable")) {
+      console.error("Supabase configuration error - check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY env vars");
+      return errorResponse(503, "Service temporarily unavailable. Please try again later.");
+    }
+
+    return errorResponse(500, "Failed to process subscription. Please try again later.");
   }
 };
