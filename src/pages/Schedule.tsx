@@ -1,9 +1,16 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { PageMeta } from "@/components/seo/PageMeta";
-import { TYPEFORM_EMBED_ID } from "@/config/typeform";
-import { useTypeformInit } from "@/hooks/useTypeformInit";
+
+const APOLLO_MEETING_URL = "https://app.apollo.io/#/meet/jeremyw";
 
 export default function Schedule() {
-  useTypeformInit();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Redirect to Apollo.io meeting scheduler
+    window.location.href = APOLLO_MEETING_URL;
+  }, []);
 
   return (
     <>
@@ -14,19 +21,23 @@ export default function Schedule() {
       />
       <div className="min-h-screen pt-24 pb-20 px-4">
         <div className="container mx-auto max-w-5xl">
-          <h1 className="text-4xl font-bold mb-4">Schedule a Consultation</h1>
-          <p className="text-lg text-muted-foreground mb-8">
-            Pick a time that works for you. We'll meet and walk through your
-            goals and the best next steps.
-          </p>
-          <div
-            className="rounded-xl overflow-hidden border shadow-material"
-            style={{ minHeight: "600px" }}
-          >
-            <div
-              data-tf-live={TYPEFORM_EMBED_ID}
-              style={{ height: "600px", width: "100%" }}
-            ></div>
+          <div className="flex flex-col items-center justify-center min-h-[60vh]">
+            <h1 className="text-4xl font-bold mb-4">Redirecting...</h1>
+            <p className="text-lg text-muted-foreground mb-8">
+              Taking you to the scheduling page.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              If you are not redirected automatically,{" "}
+              <a
+                href={APOLLO_MEETING_URL}
+                className="text-primary hover:underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                click here
+              </a>
+              .
+            </p>
           </div>
         </div>
       </div>
