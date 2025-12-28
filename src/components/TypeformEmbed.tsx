@@ -1,4 +1,5 @@
 import { TYPEFORM_EMBED_ID } from "@/config/typeform";
+import { useTypeformInit } from "@/hooks/useTypeformInit";
 
 /**
  * Typeform Embed Component
@@ -6,5 +7,7 @@ import { TYPEFORM_EMBED_ID } from "@/config/typeform";
  * The script automatically initializes all elements with data-tf-live attribute
  */
 export const TypeformEmbed = () => {
+  useTypeformInit();
+
   return <div data-tf-live={TYPEFORM_EMBED_ID}></div>;
 };
