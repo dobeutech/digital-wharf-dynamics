@@ -10,21 +10,11 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Button } from "@/components/ui/button";
-import {
-  publicNavigation,
-  authenticatedNavigationCategories,
-  adminNavigationCategories,
-  NavigationItem,
-  NavigationCategory,
-} from "@/config/navigation";
-import { useAuth } from "@/contexts/AuthContext";
-import { useAdmin } from "@/hooks/useAdmin";
+import { publicNavigation } from "@/config/navigation";
 
 export function NavigationSearch() {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { isAdmin } = useAdmin();
   const isMac =
     typeof navigator !== "undefined" &&
     (navigator.userAgent.indexOf("Mac") !== -1 ||
@@ -43,32 +33,12 @@ export function NavigationSearch() {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  const flattenCategories = (
-    categories: NavigationCategory[],
-  ): NavigationItem[] => {
-    return categories.flatMap((cat) => cat.items);
-  };
-
-  const getNavigationItems = (): NavigationItem[] => {
-    if (!user) {
-      return publicNavigation;
-    }
-
-    const items = flattenCategories(authenticatedNavigationCategories);
-
-    if (isAdmin) {
-      items.push(...flattenCategories(adminNavigationCategories));
-    }
-
-    return items;
-  };
-
   const handleSelect = (href: string) => {
     setOpen(false);
     navigate(href);
   };
 
-  const items = getNavigationItems();
+  const items = publicNavigation;
 
   return (
     <>
@@ -88,62 +58,25 @@ export function NavigationSearch() {
         <CommandInput placeholder="Search pages..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          {!user ? (
-            <CommandGroup heading="Pages">
-              {items.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <CommandItem
-                    key={item.href}
-                    onSelect={() => handleSelect(item.href)}
-                  >
-                    {Icon && <Icon className="mr-2 h-4 w-4" />}
-                    <span>{item.label}</span>
-                    {item.description && (
-                      <span className="ml-auto text-xs text-muted-foreground">
-                        {item.description}
-                      </span>
-                    )}
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
-          ) : (
-            <>
-              <CommandGroup heading="Dashboard">
-                {flattenCategories(authenticatedNavigationCategories).map(
-                  (item) => {
-                    const Icon = item.icon;
-                    return (
-                      <CommandItem
-                        key={item.href}
-                        onSelect={() => handleSelect(item.href)}
-                      >
-                        {Icon && <Icon className="mr-2 h-4 w-4" />}
-                        <span>{item.label}</span>
-                      </CommandItem>
-                    );
-                  },
-                )}
-              </CommandGroup>
-              {isAdmin && (
-                <CommandGroup heading="Admin">
-                  {flattenCategories(adminNavigationCategories).map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <CommandItem
-                        key={item.href}
-                        onSelect={() => handleSelect(item.href)}
-                      >
-                        {Icon && <Icon className="mr-2 h-4 w-4" />}
-                        <span>{item.label}</span>
-                      </CommandItem>
-                    );
-                  })}
-                </CommandGroup>
-              )}
-            </>
-          )}
+          <CommandGroup heading="Pages">
+            {items.map((item) => {
+              const Icon = item.icon;
+              return (
+                <CommandItem
+                  key={item.href}
+                  onSelect={() => handleSelect(item.href)}
+                >
+                  {Icon && <Icon className="mr-2 h-4 w-4" />}
+                  <span>{item.label}</span>
+                  {item.description && (
+                    <span className="ml-auto text-xs text-muted-foreground">
+                      {item.description}
+                    </span>
+                  )}
+                </CommandItem>
+              );
+            })}
+          </CommandGroup>
         </CommandList>
       </CommandDialog>
     </>

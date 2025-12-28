@@ -1,10 +1,9 @@
 import { useEffect } from "react";
 import posthog from "posthog-js";
 import Intercom from "@intercom/messenger-js-sdk";
-import { useAuth } from "@/contexts/AuthContext";
 
 export const Analytics = () => {
-  const { user } = useAuth();
+  // Auth removed - analytics work without user context
 
   useEffect(() => {
     // Initialize PostHog
@@ -35,30 +34,6 @@ export const Analytics = () => {
       console.error("Failed to initialize Intercom:", error);
     }
   }, []);
-
-  // Update Intercom when user data changes
-  useEffect(() => {
-    if (!user) return;
-
-    try {
-      // Use the 'update' method to modify user attributes after boot
-      Intercom("update", {
-        user_id: user.id,
-        ...(user.name && { name: user.name }),
-        ...(user.email && { email: user.email }),
-      });
-
-      if (import.meta.env.DEV) {
-        console.log("Intercom updated with user data:", {
-          user_id: user.id,
-          email: user.email,
-          name: user.name,
-        });
-      }
-    } catch (error) {
-      console.error("Failed to update Intercom:", error);
-    }
-  }, [user]);
 
   return null;
 };

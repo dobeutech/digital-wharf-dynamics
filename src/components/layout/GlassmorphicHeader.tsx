@@ -45,9 +45,11 @@ export function GlassmorphicHeader() {
       className={cn(
         "fixed top-0 left-0 right-0 z-50",
         "transition-all duration-200",
-        isScrolled
-          ? "bg-background/95 backdrop-blur-sm border-b border-border shadow-subtle"
-          : "bg-transparent",
+        isMobileMenuOpen
+          ? "bg-background border-b border-border"
+          : isScrolled
+            ? "bg-background/95 backdrop-blur-sm border-b border-border shadow-subtle"
+            : "bg-transparent",
       )}
       role="navigation"
       aria-label="Main navigation"

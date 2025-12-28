@@ -3,8 +3,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { X, Loader2, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/mixpanel";
-import { Widget } from "@typeform/embed-react";
-import { TYPEFORM_EMBED_ID, getTypeformDirectUrl } from "@/config/typeform";
+import { getTypeformDirectUrl } from "@/config/typeform";
 
 interface TypeformLightboxNewProps {
   isOpen: boolean;
@@ -12,13 +11,13 @@ interface TypeformLightboxNewProps {
   source?: string;
 }
 
-// Timeout before auto-redirect (5 seconds)
-const LOAD_TIMEOUT_MS = 5000;
+// Timeout before showing manual redirect option (10 seconds)
+const LOAD_TIMEOUT_MS = 10000;
 
 /**
  * Typeform Lightbox Component
- * Uses the official @typeform/embed-react Widget component
- * Auto-redirects to Typeform if the form fails to load within timeout
+ * Uses iframe embed for reliable loading across all environments
+ * Falls back to direct link if iframe fails to load
  */
 export const TypeformLightboxNew = ({
   isOpen,
@@ -26,12 +25,12 @@ export const TypeformLightboxNew = ({
   source = "lightbox",
 }: TypeformLightboxNewProps) => {
   const [isLoading, setIsLoading] = useState(true);
-  const [loadFailed, setLoadFailed] = useState(false);
+  const [showFallback, setShowFallback] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const hasRedirected = useRef(false);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  // Get the direct Typeform URL for fallback
-  const typeformDirectUrl = getTypeformDirectUrl({
+  // Get the direct Typeform URL for embedding
+  const typeformUrl = getTypeformDirectUrl({
     utm_source: "dobeu_website",
     utm_medium: "website",
     utm_campaign: source,
@@ -41,21 +40,15 @@ export const TypeformLightboxNew = ({
   useEffect(() => {
     if (isOpen) {
       setIsLoading(true);
-      setLoadFailed(false);
-      hasRedirected.current = false;
+      setShowFallback(false);
 
-      // Set timeout to auto-redirect if form doesn't load
+      // Set timeout to show fallback option if form doesn't load
       timeoutRef.current = setTimeout(() => {
-        if (!hasRedirected.current) {
-          setLoadFailed(true);
-          setIsLoading(false);
-          // Auto-redirect to Typeform
-          hasRedirected.current = true;
-          trackEvent("Typeform Load Failed - Redirecting", { source });
-          window.open(typeformDirectUrl, "_blank");
-          onClose();
-        }
+        setShowFallback(true);
+        setIsLoading(false);
       }, LOAD_TIMEOUT_MS);
+
+      trackEvent("Typeform Lightbox Opened", { source });
     } else {
       // Cleanup timeout when dialog closes
       if (timeoutRef.current) {
@@ -70,7 +63,18 @@ export const TypeformLightboxNew = ({
         timeoutRef.current = null;
       }
     };
-  }, [isOpen, typeformDirectUrl, source, onClose]);
+  }, [isOpen, source]);
+
+  // Handle iframe load event
+  const handleIframeLoad = useCallback(() => {
+    // Cancel the timeout since form loaded successfully
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    setIsLoading(false);
+    setShowFallback(false);
+  }, []);
 
   // Handle dialog close
   const handleOpenChange = useCallback(
@@ -82,30 +86,12 @@ export const TypeformLightboxNew = ({
     [onClose],
   );
 
-  // Track when form is ready (loaded successfully)
-  const handleReady = useCallback(() => {
-    // Cancel the timeout since form loaded successfully
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
-    }
-    setIsLoading(false);
-    setLoadFailed(false);
-    trackEvent("Typeform Lightbox Opened", { source });
-  }, [source]);
-
-  // Track form submission
-  const handleSubmit = useCallback(() => {
-    trackEvent("Typeform Submitted", { source });
-  }, [source]);
-
   // Manual redirect button handler
   const handleManualRedirect = useCallback(() => {
-    hasRedirected.current = true;
     trackEvent("Typeform Manual Redirect", { source });
-    window.open(typeformDirectUrl, "_blank");
+    window.open(typeformUrl, "_blank");
     onClose();
-  }, [typeformDirectUrl, source, onClose]);
+  }, [typeformUrl, source, onClose]);
 
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
@@ -122,7 +108,7 @@ export const TypeformLightboxNew = ({
           </Button>
         </div>
 
-        {/* Loading overlay with manual redirect option */}
+        {/* Loading overlay */}
         {isOpen && isLoading && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/95 z-40">
             <Loader2 className="h-10 w-10 animate-spin text-primary mb-4" />
@@ -138,12 +124,32 @@ export const TypeformLightboxNew = ({
           </div>
         )}
 
+        {/* Fallback message if loading takes too long */}
+        {isOpen && showFallback && !isLoading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-background z-40">
+            <p className="text-muted-foreground mb-4 text-center px-4">
+              The form is taking longer than expected to load.
+            </p>
+            <Button onClick={handleManualRedirect} className="gap-2">
+              <ExternalLink className="h-4 w-4" />
+              Open form in new tab
+            </Button>
+          </div>
+        )}
+
+        {/* Typeform iframe embed */}
         {isOpen && (
-          <Widget
-            id={TYPEFORM_EMBED_ID}
-            style={{ width: "100%", height: "100%" }}
-            onReady={handleReady}
-            onSubmit={handleSubmit}
+          <iframe
+            ref={iframeRef}
+            src={typeformUrl}
+            onLoad={handleIframeLoad}
+            style={{
+              width: "100%",
+              height: "100%",
+              border: "none",
+            }}
+            title="Contact Form"
+            allow="camera; microphone; autoplay; encrypted-media;"
           />
         )}
       </DialogContent>
