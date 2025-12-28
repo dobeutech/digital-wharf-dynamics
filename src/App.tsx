@@ -12,7 +12,6 @@ import { GlassmorphicHeader } from "@/components/layout/GlassmorphicHeader";
 import { FloatingFooter } from "@/components/layout/FloatingFooter";
 import { AnimatedBackground } from "@/components/layout/AnimatedBackground";
 import { Analytics } from "@/components/Analytics";
-import { TypeformEmbed } from "@/components/TypeformEmbed";
 import { CookieConsentBanner } from "@/components/CookieConsent";
 import { NewsletterPopup } from "@/components/NewsletterPopup";
 import { PageTracker } from "@/components/PageTracker";
