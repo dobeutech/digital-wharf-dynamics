@@ -9,7 +9,7 @@ export const Navigation = () => {
   const { user, signOut } = useAuth();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
+    <nav className={`fixed top-0 left-0 right-0 z-50 border-b border-border ${isOpen ? 'bg-background' : 'bg-background/80 backdrop-blur-lg'}`}>
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2">
@@ -45,17 +45,13 @@ export const Navigation = () => {
             >
               About
             </Link>
-            {user ? (
+            {user && (
               <Button
                 onClick={signOut}
                 variant="outline"
                 className="shadow-material"
               >
                 Logout
-              </Button>
-            ) : (
-              <Button asChild variant="default" className="shadow-material">
-                <Link to="/auth">Sign In</Link>
               </Button>
             )}
           </div>
@@ -101,7 +97,7 @@ export const Navigation = () => {
             >
               About
             </Link>
-            {user ? (
+            {user && (
               <Button
                 onClick={() => {
                   signOut();
@@ -111,16 +107,6 @@ export const Navigation = () => {
                 className="w-full shadow-material"
               >
                 Logout
-              </Button>
-            ) : (
-              <Button
-                asChild
-                variant="default"
-                className="w-full shadow-material"
-              >
-                <Link to="/auth" onClick={() => setIsOpen(false)}>
-                  Sign In
-                </Link>
               </Button>
             )}
           </div>

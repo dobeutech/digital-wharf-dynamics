@@ -54,9 +54,11 @@ export function Navbar() {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-background/80 backdrop-blur-lg shadow-sm"
-          : "bg-transparent"
+        isMobileMenuOpen
+          ? "bg-background"
+          : isScrolled
+            ? "bg-background/80 backdrop-blur-lg shadow-sm"
+            : "bg-transparent"
       }`}
       role="navigation"
       aria-label="Main navigation"
@@ -155,7 +157,7 @@ export function Navbar() {
           {/* Auth Buttons & Theme Toggle */}
           <div className="hidden md:flex items-center gap-2">
             <ThemeToggle />
-            {user ? (
+            {user && (
               <Button
                 onClick={handleLogout}
                 variant="outline"
@@ -163,10 +165,6 @@ export function Navbar() {
                 className="min-h-[44px] min-w-[44px]"
               >
                 Logout
-              </Button>
-            ) : (
-              <Button asChild size="sm" className="min-h-[44px]">
-                <Link to="/auth">Sign In</Link>
               </Button>
             )}
           </div>
@@ -302,8 +300,8 @@ export function Navbar() {
                 </NavLink>
               </>
             )}
-            <div className="pt-4 mt-4 border-t">
-              {user ? (
+            {user && (
+              <div className="pt-4 mt-4 border-t">
                 <Button
                   onClick={handleLogout}
                   variant="outline"
@@ -312,12 +310,8 @@ export function Navbar() {
                 >
                   Logout
                 </Button>
-              ) : (
-                <Button asChild size="sm" className="w-full min-h-[44px]">
-                  <Link to="/auth">Sign In</Link>
-                </Button>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         )}
       </div>

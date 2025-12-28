@@ -80,9 +80,11 @@ export function EnhancedNavbar() {
     <nav
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        isScrolled
-          ? "bg-background/80 backdrop-blur-lg shadow-sm"
-          : "bg-transparent",
+        isMobileMenuOpen
+          ? "bg-background"
+          : isScrolled
+            ? "bg-background/80 backdrop-blur-lg shadow-sm"
+            : "bg-transparent",
       )}
       role="navigation"
       aria-label="Main navigation"
@@ -179,7 +181,7 @@ export function EnhancedNavbar() {
             <NavigationSearch />
             <AccessibilitySettings />
             <ThemeToggle />
-            {user ? (
+            {user && (
               <Button
                 onClick={handleLogout}
                 variant="outline"
@@ -187,10 +189,6 @@ export function EnhancedNavbar() {
                 className="min-h-[44px] min-w-[44px]"
               >
                 Logout
-              </Button>
-            ) : (
-              <Button asChild size="sm" className="min-h-[44px]">
-                <Link to="/auth">Sign In</Link>
               </Button>
             )}
           </div>
