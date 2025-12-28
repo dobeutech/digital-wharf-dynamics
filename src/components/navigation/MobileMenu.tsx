@@ -115,27 +115,6 @@ export function MobileMenu({
           })}
         </>
       )}
-
-      <div className="pt-4 mt-4 border-t border-border px-3">
-        {isAuthenticated ? (
-          <Button
-            onClick={() => {
-              onLogout?.();
-              onClose();
-            }}
-            variant="outline"
-            className="w-full"
-          >
-            Logout
-          </Button>
-        ) : (
-          <Button asChild className="w-full">
-            <Link to="/auth" onClick={onClose}>
-              Sign In
-            </Link>
-          </Button>
-        )}
-      </div>
     </div>
   );
 }

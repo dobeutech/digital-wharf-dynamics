@@ -1,35 +1,21 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/layout/Logo";
-import { Menu, X, ChevronDown } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
-import { useAdmin } from "@/hooks/useAdmin";
-import { useToast } from "@/hooks/use-toast";
+import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { CursorToggle } from "@/components/CursorToggle";
 import { AccessibilitySettings } from "@/components/AccessibilitySettings";
 import { LanguageSelector } from "@/components/LanguageSelector";
-import { MegaMenu } from "@/components/navigation/MegaMenu";
 import { MobileMenu } from "@/components/navigation/MobileMenu";
 import { NavigationSearch } from "@/components/navigation/NavigationSearch";
 import { useNavigation } from "@/contexts/NavigationContext";
-import {
-  publicNavigation,
-  authenticatedNavigationCategories,
-  adminNavigationCategories,
-} from "@/config/navigation";
+import { publicNavigation } from "@/config/navigation";
 import { cn } from "@/lib/utils";
 import { trackEvent } from "@/lib/mixpanel";
 import { WantToLearnMoreLink } from "@/components/WantToLearnMoreLink";
 
 export function GlassmorphicHeader() {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [showMegaMenu, setShowMegaMenu] = useState(false);
-  const [showAdminMenu, setShowAdminMenu] = useState(false);
-  const { user, signOut } = useAuth();
-  const { isAdmin } = useAdmin();
-  const { toast } = useToast();
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useNavigation();
 
   useEffect(() => {
@@ -44,30 +30,11 @@ export function GlassmorphicHeader() {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         if (isMobileMenuOpen) setIsMobileMenuOpen(false);
-        if (showMegaMenu) setShowMegaMenu(false);
-        if (showAdminMenu) setShowAdminMenu(false);
       }
     };
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
-  }, [isMobileMenuOpen, showMegaMenu, showAdminMenu, setIsMobileMenuOpen]);
-
-  const handleLogout = async () => {
-    trackEvent("Navigation", { action: "logout" });
-    try {
-      await signOut();
-      toast({
-        title: "Logged out",
-        description: "You have been successfully logged out.",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to log out. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
+  }, [isMobileMenuOpen, setIsMobileMenuOpen]);
 
   const handleNavClick = (label: string, href: string) => {
     trackEvent("Navigation Click", { label, href });
@@ -99,86 +66,20 @@ export function GlassmorphicHeader() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1">
-            {!user ? (
-              <>
-                {publicNavigation.slice(0, 5).map((item) => (
-                  <Link
-                    key={item.href}
-                    to={item.href}
-                    onClick={() => handleNavClick(item.label, item.href)}
-                    className={cn(
-                      "px-4 py-2 text-sm font-medium rounded-lg",
-                      "text-muted-foreground hover:text-foreground",
-                      "hover:bg-muted transition-colors duration-150",
-                    )}
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </>
-            ) : (
-              <>
-                <div className="relative">
-                  <button
-                    onMouseEnter={() => setShowMegaMenu(true)}
-                    onClick={() => setShowMegaMenu(!showMegaMenu)}
-                    className={cn(
-                      "px-4 py-2 text-sm font-medium rounded-lg",
-                      "flex items-center gap-1 transition-colors duration-150",
-                      showMegaMenu
-                        ? "text-foreground bg-muted"
-                        : "text-muted-foreground hover:text-foreground hover:bg-muted",
-                    )}
-                    aria-expanded={showMegaMenu}
-                    aria-haspopup="true"
-                  >
-                    Dashboard
-                    <ChevronDown
-                      className={cn(
-                        "h-4 w-4 transition-transform duration-150",
-                        showMegaMenu && "rotate-180",
-                      )}
-                    />
-                  </button>
-                  <MegaMenu
-                    categories={authenticatedNavigationCategories}
-                    isOpen={showMegaMenu}
-                    onClose={() => setShowMegaMenu(false)}
-                  />
-                </div>
-
-                {isAdmin && (
-                  <div className="relative">
-                    <button
-                      onMouseEnter={() => setShowAdminMenu(true)}
-                      onClick={() => setShowAdminMenu(!showAdminMenu)}
-                      className={cn(
-                        "px-4 py-2 text-sm font-medium rounded-lg",
-                        "flex items-center gap-1 transition-colors duration-150",
-                        showAdminMenu
-                          ? "text-foreground bg-muted"
-                          : "text-muted-foreground hover:text-foreground hover:bg-muted",
-                      )}
-                      aria-expanded={showAdminMenu}
-                      aria-haspopup="true"
-                    >
-                      Admin
-                      <ChevronDown
-                        className={cn(
-                          "h-4 w-4 transition-transform duration-150",
-                          showAdminMenu && "rotate-180",
-                        )}
-                      />
-                    </button>
-                    <MegaMenu
-                      categories={adminNavigationCategories}
-                      isOpen={showAdminMenu}
-                      onClose={() => setShowAdminMenu(false)}
-                    />
-                  </div>
+            {publicNavigation.slice(0, 5).map((item) => (
+              <Link
+                key={item.href}
+                to={item.href}
+                onClick={() => handleNavClick(item.label, item.href)}
+                className={cn(
+                  "px-4 py-2 text-sm font-medium rounded-lg",
+                  "text-muted-foreground hover:text-foreground",
+                  "hover:bg-muted transition-colors duration-150",
                 )}
-              </>
-            )}
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
 
           {/* Right side actions */}
@@ -192,21 +93,7 @@ export function GlassmorphicHeader() {
             {/* Divider */}
             <div className="w-px h-6 bg-border mx-2" />
 
-            {!user && <WantToLearnMoreLink source="header" variant="header" />}
-            {user ? (
-              <Button
-                onClick={handleLogout}
-                variant="ghost"
-                size="sm"
-                className="text-muted-foreground hover:text-foreground"
-              >
-                Logout
-              </Button>
-            ) : (
-              <Button asChild size="sm">
-                <Link to="/auth">Sign In</Link>
-              </Button>
-            )}
+            <WantToLearnMoreLink source="header" variant="header" />
           </div>
 
           {/* Mobile Menu Button */}
@@ -244,20 +131,10 @@ export function GlassmorphicHeader() {
           >
             <MobileMenu
               publicItems={publicNavigation}
-              categories={
-                user
-                  ? isAdmin
-                    ? [
-                        ...authenticatedNavigationCategories,
-                        ...adminNavigationCategories,
-                      ]
-                    : authenticatedNavigationCategories
-                  : []
-              }
-              isAuthenticated={!!user}
-              isAdmin={isAdmin}
+              categories={[]}
+              isAuthenticated={false}
+              isAdmin={false}
               onClose={() => setIsMobileMenuOpen(false)}
-              onLogout={handleLogout}
             />
           </div>
         )}

@@ -113,8 +113,10 @@ export function EnhancedHero() {
             </div>
             <div className="hidden sm:block w-px h-8 bg-border" />
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-foreground">100%</span>
-              <span className="text-muted-foreground">Client satisfaction</span>
+              <span className="text-2xl font-bold text-foreground">25+</span>
+              <span className="text-muted-foreground">
+                Technology offerings
+              </span>
             </div>
             <div className="hidden sm:block w-px h-8 bg-border" />
             <div className="flex items-center gap-2">
