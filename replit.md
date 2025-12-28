@@ -38,6 +38,11 @@ public/            # Static assets
 - Output directory: `dist`
 
 ## Recent Changes
+- December 28, 2025: Fixed CSP for third-party analytics
+  - Updated Content Security Policy to allow Intercom (js.intercomcdn.com, widget.intercom.io, api-iam.intercom.io, intercomassets.com)
+  - Added Google Analytics and Mixpanel API domains to CSP
+  - Fixed protocol-relative URLs in index.html for Mixpanel and Typeform to use HTTPS
+  - Added ws/wss protocols for WebSocket connections in development mode
 - December 28, 2025: Configured for Replit environment
   - Updated Vite to run on port 5000 with allowed hosts for proxy
   - Set up static deployment configuration
