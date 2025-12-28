@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useApi } from "@/lib/api";
 import { Loader2 } from "lucide-react";
@@ -25,11 +25,7 @@ export default function AdminUsers() {
   const [loading, setLoading] = useState(true);
   const { logAction } = useAuditLog();
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       const usersData = await api.get<{
         profiles: Profile[];
@@ -54,7 +50,11 @@ export default function AdminUsers() {
       console.error("Error fetching users:", error);
       setLoading(false);
     }
-  };
+  }, [api]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const toggleRole = async (
     userId: string,

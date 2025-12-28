@@ -22,19 +22,19 @@ export default function AdminProjects() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchProjects();
-  }, []);
+    const fetchProjects = async () => {
+      try {
+        const data = await api.get<Project[]>("/projects?all=true");
+        setProjects(data || []);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+        setLoading(false);
+      }
+    };
 
-  const fetchProjects = async () => {
-    try {
-      const data = await api.get<Project[]>("/projects?all=true");
-      setProjects(data || []);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-      setLoading(false);
-    }
-  };
+    fetchProjects();
+  }, [api]);
 
   const getStatusColor = (status: string) => {
     switch (status) {

@@ -39,19 +39,17 @@ const defaultPreferences: AccessibilityPreferences = {
   screenReaderOptimized: false,
 };
 
-export function AccessibilitySettings() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [preferences, setPreferences] =
-    useState<AccessibilityPreferences>(defaultPreferences);
-  const { t } = useLanguage();
+// Initialize preferences from localStorage and system preferences
+function getInitialPreferences(): AccessibilityPreferences {
+  let prefs = { ...defaultPreferences };
 
-  // Load preferences from localStorage on mount
-  useEffect(() => {
+  // Load from localStorage
+  if (typeof window !== "undefined") {
     const saved = localStorage.getItem("accessibility-preferences");
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setPreferences({ ...defaultPreferences, ...parsed });
+        prefs = { ...prefs, ...parsed };
       } catch (e) {
         console.error("Failed to parse accessibility preferences", e);
       }
@@ -59,12 +57,21 @@ export function AccessibilitySettings() {
 
     // Check system preferences
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setPreferences((prev) => ({ ...prev, reducedMotion: true }));
+      prefs.reducedMotion = true;
     }
     if (window.matchMedia("(prefers-contrast: more)").matches) {
-      setPreferences((prev) => ({ ...prev, highContrast: true }));
+      prefs.highContrast = true;
     }
-  }, []);
+  }
+
+  return prefs;
+}
+
+export function AccessibilitySettings() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [preferences, setPreferences] =
+    useState<AccessibilityPreferences>(getInitialPreferences);
+  const { t } = useLanguage();
 
   // Apply preferences to document
   useEffect(() => {
