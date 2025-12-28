@@ -6,17 +6,22 @@
 interface EnvConfig {
   VITE_SUPABASE_URL?: string;
   VITE_SUPABASE_PUBLISHABLE_KEY?: string;
-  // Add other environment variables as needed
+  VITE_AUTH0_DOMAIN?: string;
+  VITE_AUTH0_CLIENT_ID?: string;
+  VITE_AUTH0_AUDIENCE?: string;
 }
 
 const optionalEnvVars = [
   "VITE_SUPABASE_URL",
   "VITE_SUPABASE_PUBLISHABLE_KEY",
+  "VITE_AUTH0_DOMAIN",
+  "VITE_AUTH0_CLIENT_ID",
+  "VITE_AUTH0_AUDIENCE",
 ] as const;
 
 /**
- * Validates environment variables (optional for Supabase if using MongoDB)
- * @returns EnvConfig with optional Supabase variables
+ * Validates environment variables
+ * @returns EnvConfig with Supabase variables
  */
 export function validateEnv(): EnvConfig {
   const config: Partial<EnvConfig> = {};
@@ -29,14 +34,26 @@ export function validateEnv(): EnvConfig {
   }
 
   // Warn if Supabase variables are missing (but don't throw)
-  const hasUrl = !!config.VITE_SUPABASE_URL;
-  const hasKey = !!config.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const hasSupabaseUrl = !!config.VITE_SUPABASE_URL;
+  const hasSupabaseKey = !!config.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-  if (!hasUrl || !hasKey) {
+  if (!hasSupabaseUrl || !hasSupabaseKey) {
     console.warn(
       "Supabase environment variables are not set. " +
         "Some features may be disabled. " +
         "Note: This application uses Supabase for data storage and Auth0 for authentication.",
+    );
+  }
+
+  // Warn if Auth0 variables are missing (but don't throw)
+  const hasAuth0Domain = !!config.VITE_AUTH0_DOMAIN;
+  const hasAuth0ClientId = !!config.VITE_AUTH0_CLIENT_ID;
+
+  if (!hasAuth0Domain || !hasAuth0ClientId) {
+    console.warn(
+      "Auth0 environment variables are not set. " +
+        "Authentication features will be disabled. " +
+        "Set VITE_AUTH0_DOMAIN and VITE_AUTH0_CLIENT_ID to enable authentication.",
     );
   }
 

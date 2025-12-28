@@ -179,7 +179,7 @@ npm update vitest@latest
 - ⚠️ `VITE_SUPABASE_URL` - Not set (optional)
 - ⚠️ `VITE_SUPABASE_PUBLISHABLE_KEY` - Not set (optional)
 
-**Note:** These are optional as the app uses MongoDB + Auth0 instead of Supabase.
+**Note:** The app uses Supabase for data storage and Auth0 for authentication.
 
 **Recommendation:**
 

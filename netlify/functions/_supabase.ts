@@ -13,8 +13,8 @@ function requireEnv(name: string): string {
 export function getSupabaseClient(): SupabaseClient {
   if (supabaseClient) return supabaseClient;
 
-  const supabaseUrl = requireEnv("SUPABASE_URL");
-  const supabaseServiceKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY");
+  const supabaseUrl = requireEnv("SUPABASE_URL").trim();
+  const supabaseServiceKey = requireEnv("SUPABASE_SERVICE_ROLE_KEY").trim();
 
   supabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
     auth: {

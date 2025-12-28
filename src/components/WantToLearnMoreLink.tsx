@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, memo } from "react";
 import { TypeformLightboxNew } from "./TypeformLightboxNew";
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
@@ -9,12 +9,20 @@ interface WantToLearnMoreLinkProps {
   variant?: "header" | "footer";
 }
 
-export function WantToLearnMoreLink({
+export const WantToLearnMoreLink = memo(function WantToLearnMoreLink({
   source = "learn-more",
   className,
   variant = "header",
 }: WantToLearnMoreLinkProps) {
   const [isOpen, setIsOpen] = useState(false);
+
+  const handleOpen = useCallback(() => {
+    setIsOpen(true);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsOpen(false);
+  }, []);
 
   const baseStyles =
     variant === "header"
@@ -27,7 +35,7 @@ export function WantToLearnMoreLink({
   return (
     <>
       <motion.button
-        onClick={() => setIsOpen(true)}
+        onClick={handleOpen}
         className={cn(baseStyles, gradientStyles, className)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.98 }}
@@ -37,9 +45,9 @@ export function WantToLearnMoreLink({
       </motion.button>
       <TypeformLightboxNew
         isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
+        onClose={handleClose}
         source={source}
       />
     </>
   );
-}
+});

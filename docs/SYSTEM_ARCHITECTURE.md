@@ -30,8 +30,7 @@ graph TB
 
     subgraph "Serverless Functions"
         AuthFn[_auth0.ts]
-        MongoFn[_mongo.ts]
-        GridFn[_gridfs.ts]
+        SupabaseFn[_supabase.ts]
         ContactFn[contact-submissions.ts]
         ProjectsFn[projects.ts]
         ServicesFn[services.ts]
@@ -51,8 +50,8 @@ graph TB
     end
 
     subgraph "Database"
-        MongoDB[(MongoDB Atlas)]
-        GridFS[GridFS Storage]
+        Supabase[(Supabase PostgreSQL)]
+        SupabaseStorage[Supabase Storage]
     end
 
     subgraph "External Services"
@@ -77,24 +76,23 @@ graph TB
     Auth0Client --> Auth0
     Auth0 --> JWT
     RQ --> AuthFn
-    RQ --> MongoFn
+    RQ --> SupabaseFn
     RQ --> ContactFn
     RQ --> ProjectsFn
     RQ --> ServicesFn
     AuthFn --> Auth0
-    MongoFn --> MongoDB
-    GridFn --> GridFS
-    ContactFn --> MongoDB
-    ProjectsFn --> MongoDB
-    ServicesFn --> MongoDB
-    NewsFn --> MongoDB
-    NewsletterFn --> MongoDB
-    UsersFn --> MongoDB
-    AuditFn --> MongoDB
-    CCPAFn --> MongoDB
-    FilesFn --> GridFS
+    SupabaseFn --> Supabase
+    ContactFn --> Supabase
+    ProjectsFn --> Supabase
+    ServicesFn --> Supabase
+    NewsFn --> Supabase
+    NewsletterFn --> Supabase
+    UsersFn --> Supabase
+    AuditFn --> Supabase
+    CCPAFn --> Supabase
+    FilesFn --> SupabaseStorage
     CheckoutFn --> Stripe
-    TasksFn --> MongoDB
+    TasksFn --> Supabase
     React --> PostHog
     React --> Mixpanel
     React --> GTM
@@ -114,7 +112,7 @@ sequenceDiagram
     participant App as React App
     participant Auth as Auth0
     participant Fn as Netlify Functions
-    participant DB as MongoDB Atlas
+    participant DB as Supabase
     participant Ext as External APIs
 
     User->>CDN: Request Page
@@ -166,10 +164,10 @@ graph LR
     end
 
     subgraph "Data Store"
-        Mongo[(MongoDB)]
-        Collections[Collections]
+        Supabase[(Supabase PostgreSQL)]
+        Tables[Tables]
         Indexes[Indexes]
-        GridFS[GridFS Files]
+        Storage[Supabase Storage]
     end
 
     UI --> Forms
@@ -181,10 +179,10 @@ graph LR
     Error --> Functions
     Functions --> Validation
     Validation --> Business
-    Business --> Mongo
-    Mongo --> Collections
-    Mongo --> Indexes
-    Mongo --> GridFS
+    Business --> Supabase
+    Supabase --> Tables
+    Supabase --> Indexes
+    Supabase --> Storage
 ```
 
 ---
@@ -198,7 +196,7 @@ sequenceDiagram
     participant Auth0SDK as Auth0 SDK
     participant Auth0 as Auth0 Service
     participant Fn as Netlify Function
-    participant DB as MongoDB
+    participant DB as Supabase
 
     User->>App: Click Login
     App->>Auth0SDK: loginWithRedirect()
@@ -806,7 +804,7 @@ sequenceDiagram
     participant Zod as Zod Validator
     participant API as API Client
     participant Fn as Netlify Function
-    participant DB as MongoDB
+    participant DB as Supabase
 
     User->>Form: Fill Form
     User->>Form: Submit

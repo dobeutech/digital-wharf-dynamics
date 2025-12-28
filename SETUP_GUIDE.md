@@ -27,15 +27,15 @@ VITE_AUTH0_AUDIENCE=https://api.dobeu.netlify.app
 # Backend (Netlify Functions) - Auth0 verification (required)
 AUTH0_DOMAIN=your-tenant.us.auth0.com
 AUTH0_AUDIENCE=https://api.dobeu.netlify.app
+AUTH0_CLIENT_SECRET=your_auth0_client_secret
 
-# Backend (Netlify Functions) - MongoDB (required)
-MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<db>?retryWrites=true&w=majority
-MONGODB_DB_NAME=app
-GRIDFS_BUCKET=files
+# Backend (Netlify Functions) - Supabase (required)
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
-# Optional: Supabase Realtime (optional integration only)
-VITE_SUPABASE_URL=
-VITE_SUPABASE_PUBLISHABLE_KEY=
+# Frontend (Vite) - Supabase (required)
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your_anon_key
 
 # Optional: Sentry (for error tracking)
 # VITE_SENTRY_DSN=your-sentry-dsn-here

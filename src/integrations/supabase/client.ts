@@ -7,9 +7,8 @@ import { env } from "@/config/env";
 // import { supabase } from "@/integrations/supabase/client";
 
 // Create Supabase client with retry and error handling
-// Use placeholder values if env vars are not set (for MongoDB users)
-const supabaseUrl = env.VITE_SUPABASE_URL || "https://placeholder.supabase.co";
-const supabaseKey = env.VITE_SUPABASE_PUBLISHABLE_KEY || "placeholder-key";
+const supabaseUrl = (env.VITE_SUPABASE_URL || "https://placeholder.supabase.co").trim();
+const supabaseKey = (env.VITE_SUPABASE_PUBLISHABLE_KEY || "placeholder-key").trim();
 
 export const supabase = createClient<Database>(supabaseUrl, supabaseKey, {
   auth: {

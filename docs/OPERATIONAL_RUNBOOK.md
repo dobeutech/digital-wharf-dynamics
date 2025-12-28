@@ -1,7 +1,7 @@
 # Operational Runbook - Digital Wharf Dynamics (dobeu.net)
 
 **Service:** Digital Wharf Dynamics Web Application  
-**Stack:** React + Vite + Netlify + MongoDB Atlas + Auth0  
+**Stack:** React + Vite + Netlify + Supabase + Auth0  
 **Production URL:** https://dobeu.net  
 **Last Updated:** 2025-12-14
 
@@ -28,7 +28,7 @@
 | -------------- | ---------------------- | --------------------------------------- |
 | Frontend       | React 18 + Vite 7      | SPA serving static assets               |
 | CDN/Hosting    | Netlify                | Edge distribution, serverless functions |
-| Database       | MongoDB Atlas          | Primary data store                      |
+| Database       | Supabase PostgreSQL    | Primary data store                      |
 | Authentication | Auth0                  | User authentication/authorization       |
 | Analytics      | PostHog, Mixpanel, GTM | User behavior tracking                  |
 | Support        | Intercom               | Customer support widget                 |
@@ -38,7 +38,7 @@
 
 - **Netlify Functions:** 17 serverless functions
 - **Edge Functions:** 4 edge functions (CSP, prerender, UA blocker)
-- **External APIs:** Auth0, MongoDB Atlas, Stripe, Intercom, PostHog
+- **External APIs:** Auth0, Supabase, Stripe, Intercom, PostHog
 
 ---
 
@@ -47,7 +47,7 @@
 ```
 User → Cloudflare/Netlify CDN → Static Assets (React SPA)
                                 ↓
-                         Netlify Functions → MongoDB Atlas
+                         Netlify Functions → Supabase
                                 ↓
                             Auth0 (JWT)
 ```

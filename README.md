@@ -204,7 +204,7 @@ Twilio SMS verification is integrated to verify phone numbers for new OAuth user
    - `/.netlify/functions/check-phone-verification` - Checks verification status
 
 3. **Database Schema:**
-   The `profiles` collection in MongoDB includes:
+   The `profiles` table in Supabase includes:
 
    ```typescript
    {
