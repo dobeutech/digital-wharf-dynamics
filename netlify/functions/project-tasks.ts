@@ -1,74 +1,75 @@
 import type { Handler } from "@netlify/functions";
-import { ObjectId } from "mongodb";
 import { errorResponse, jsonResponse, readJson } from "./_http";
 import { requireAuth, requirePermission } from "./_auth0";
-import { getMongoDb } from "./_mongo";
-
-type TaskDoc = {
-  _id: ObjectId;
-  project_id: string; // projects._id hex string
-  title: string;
-  description: string | null;
-  is_completed: boolean;
-  completed_at: string | null;
-  order_index: number;
-  created_at: string;
-  updated_at: string;
-};
-
-function toTask(d: TaskDoc) {
-  return {
-    id: d._id.toHexString(),
-    project_id: d.project_id,
-    title: d.title,
-    description: d.description,
-    is_completed: d.is_completed,
-    completed_at: d.completed_at,
-    order_index: d.order_index,
-    created_at: d.created_at,
-    updated_at: d.updated_at,
-  };
-}
+import { getSupabaseClient } from "./_supabase";
 
 export const handler: Handler = async (event) => {
   try {
-    const db = await getMongoDb();
-    const tasks = db.collection<TaskDoc>("project_tasks");
-    const projects = db.collection<{ _id: ObjectId; user_id: string }>(
-      "projects",
-    );
-
+    const supabase = getSupabaseClient();
     const claims = await requireAuth(event);
+
     const id = event.queryStringParameters?.id?.trim();
     const projectId = event.queryStringParameters?.project_id?.trim();
 
     if (event.httpMethod === "GET") {
       if (!projectId) return errorResponse(400, "Missing project_id");
-      const proj = await projects.findOne({ _id: new ObjectId(projectId) });
-      if (!proj) return errorResponse(404, "Project not found");
+
+      // Check project ownership
+      const { data: proj, error: projError } = await supabase
+        .from("projects")
+        .select("id, user_id")
+        .eq("id", projectId)
+        .single();
+
+      if (projError) {
+        if (projError.code === "PGRST116") {
+          return errorResponse(404, "Project not found");
+        }
+        return errorResponse(500, "Failed to fetch project", projError.message);
+      }
+
       const isOwner = proj.user_id === claims.sub;
       const isAdmin = (claims.permissions || []).includes("admin:access");
       if (!isOwner && !isAdmin) return errorResponse(403, "Forbidden");
 
-      const docs = await tasks
-        .find({ project_id: projectId })
-        .sort({ order_index: 1 })
-        .toArray();
-      return jsonResponse(200, docs.map(toTask));
+      const { data, error } = await supabase
+        .from("project_tasks")
+        .select("*")
+        .eq("project_id", projectId)
+        .order("order_index", { ascending: true });
+
+      if (error) {
+        return errorResponse(500, "Failed to fetch tasks", error.message);
+      }
+
+      return jsonResponse(200, data);
     }
 
     if (event.httpMethod === "PATCH") {
       if (!id) return errorResponse(400, "Missing id");
-      const body = await readJson<Partial<TaskDoc>>(event);
 
-      // User can toggle completion for tasks on their own project; admin can do anything.
-      const existing = await tasks.findOne({ _id: new ObjectId(id) });
-      if (!existing) return errorResponse(404, "Not found");
-      const proj = await projects.findOne({
-        _id: new ObjectId(existing.project_id),
-      });
-      if (!proj) return errorResponse(404, "Project not found");
-      const isOwner = proj.user_id === claims.sub;
+      const body = await readJson<{
+        is_completed?: boolean;
+        title?: string;
+        description?: string | null;
+        order_index?: number;
+      }>(event);
+
+      // Get existing task and check ownership
+      const { data: existing, error: existingError } = await supabase
+        .from("project_tasks")
+        .select("*, projects!inner(user_id)")
+        .eq("id", id)
+        .single();
+
+      if (existingError) {
+        if (existingError.code === "PGRST116") {
+          return errorResponse(404, "Not found");
+        }
+        return errorResponse(500, "Failed to fetch task", existingError.message);
+      }
+
+      const isOwner = existing.projects.user_id === claims.sub;
       const isAdmin = (claims.permissions || []).includes("admin:access");
       if (!isOwner && !isAdmin) return errorResponse(403, "Forbidden");
 
@@ -88,47 +89,72 @@ export const handler: Handler = async (event) => {
           update.order_index = body.order_index;
       }
 
-      const res = await tasks.findOneAndUpdate(
-        { _id: new ObjectId(id) },
-        { $set: update },
-        { returnDocument: "after" },
-      );
-      // @ts-expect-error driver response typing differs across versions
-      const doc = (res?.value ?? res) as TaskDoc | undefined;
-      if (!doc) return errorResponse(404, "Not found");
-      return jsonResponse(200, toTask(doc));
+      const { data, error } = await supabase
+        .from("project_tasks")
+        .update(update)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) {
+        return errorResponse(500, "Failed to update task", error.message);
+      }
+
+      return jsonResponse(200, data);
     }
 
     // Admin-only for create/delete
     requirePermission(claims, "admin:access");
 
     if (event.httpMethod === "POST") {
-      const body = await readJson<
-        Partial<TaskDoc> & { project_id?: string; title?: string }
-      >(event);
+      const body = await readJson<{
+        project_id?: string;
+        title?: string;
+        description?: string | null;
+        is_completed?: boolean;
+        order_index?: number;
+      }>(event);
+
       if (!body.project_id || !body.title)
         return errorResponse(400, "Missing required fields: project_id, title");
+
       const now = new Date().toISOString();
-      const doc: TaskDoc = {
-        _id: new ObjectId(),
-        project_id: body.project_id,
-        title: body.title,
-        description: body.description ?? null,
-        is_completed: body.is_completed ?? false,
-        completed_at: null,
-        order_index:
-          typeof body.order_index === "number" ? body.order_index : 0,
-        created_at: now,
-        updated_at: now,
-      };
-      await tasks.insertOne(doc);
-      return jsonResponse(201, toTask(doc));
+      const { data, error } = await supabase
+        .from("project_tasks")
+        .insert({
+          project_id: body.project_id,
+          title: body.title,
+          description: body.description ?? null,
+          is_completed: body.is_completed ?? false,
+          completed_at: null,
+          order_index:
+            typeof body.order_index === "number" ? body.order_index : 0,
+          created_at: now,
+          updated_at: now,
+        })
+        .select()
+        .single();
+
+      if (error) {
+        return errorResponse(500, "Failed to create task", error.message);
+      }
+
+      return jsonResponse(201, data);
     }
 
     if (event.httpMethod === "DELETE") {
       if (!id) return errorResponse(400, "Missing id");
-      const res = await tasks.deleteOne({ _id: new ObjectId(id) });
-      return jsonResponse(200, { deleted: res.deletedCount === 1 });
+
+      const { error } = await supabase
+        .from("project_tasks")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        return errorResponse(500, "Failed to delete task", error.message);
+      }
+
+      return jsonResponse(200, { deleted: true });
     }
 
     return errorResponse(405, "Method not allowed");

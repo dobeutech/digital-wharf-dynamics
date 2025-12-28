@@ -1,48 +1,14 @@
 import type { Handler } from "@netlify/functions";
-import { ObjectId } from "mongodb";
 import { errorResponse, jsonResponse } from "./_http";
 import { requireAuth, requirePermission } from "./_auth0";
-import { getMongoDb } from "./_mongo";
-import { getGridFsBucket } from "./_gridfs";
+import { getSupabaseClient } from "./_supabase";
 
-type ClientFileDoc = {
-  _id: ObjectId;
-  user_id: string; // Auth0 subject
-  file_name: string;
-  file_type: string;
-  file_size: number;
-  created_at: string;
-  expires_at: string;
-  project_id: string | null;
-  gridfs_id: ObjectId;
-};
-
-function toClientFile(d: ClientFileDoc) {
-  return {
-    id: d._id.toHexString(),
-    user_id: d.user_id,
-    file_name: d.file_name,
-    file_type: d.file_type,
-    file_size: d.file_size,
-    created_at: d.created_at,
-    expires_at: d.expires_at,
-    project_id: d.project_id,
-  };
-}
-
-async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
-  const chunks: Buffer[] = [];
-  for await (const chunk of stream) {
-    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-  }
-  return Buffer.concat(chunks);
-}
+const STORAGE_BUCKET = "client-files";
 
 export const handler: Handler = async (event) => {
   try {
     const claims = await requireAuth(event);
-    const db = await getMongoDb();
-    const col = db.collection<ClientFileDoc>("client_files");
+    const supabase = getSupabaseClient();
 
     const id = event.queryStringParameters?.id?.trim();
     const download = event.queryStringParameters?.download === "true";
@@ -59,34 +25,63 @@ export const handler: Handler = async (event) => {
         userId = userIdParam;
       }
 
-      const docs = await col
-        .find({ user_id: userId })
-        .sort({ created_at: -1 })
-        .toArray();
-      return jsonResponse(200, docs.map(toClientFile));
+      const { data, error } = await supabase
+        .from("client_files")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        return errorResponse(500, "Failed to fetch files", error.message);
+      }
+
+      return jsonResponse(200, data);
     }
 
-    const doc = await col.findOne({ _id: new ObjectId(id) });
-    if (!doc) return errorResponse(404, "Not found");
-    const isOwner = doc.user_id === claims.sub;
+    // Get single file
+    const { data: file, error: fileError } = await supabase
+      .from("client_files")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (fileError) {
+      if (fileError.code === "PGRST116") {
+        return errorResponse(404, "Not found");
+      }
+      return errorResponse(500, "Failed to fetch file", fileError.message);
+    }
+
+    const isOwner = file.user_id === claims.sub;
     const isAdmin = (claims.permissions || []).includes("admin:access");
     if (!isOwner && !isAdmin) return errorResponse(403, "Forbidden");
 
     if (!download) {
-      return jsonResponse(200, toClientFile(doc));
+      return jsonResponse(200, file);
     }
 
-    // Download file bytes from GridFS.
-    const bucket = await getGridFsBucket();
-    const stream = bucket.openDownloadStream(doc.gridfs_id);
-    const buf = await streamToBuffer(stream);
+    // Download file bytes from Supabase Storage
+    const { data: fileData, error: downloadError } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .download(file.file_path);
+
+    if (downloadError) {
+      return errorResponse(
+        500,
+        "Failed to download file",
+        downloadError.message,
+      );
+    }
+
+    const arrayBuffer = await fileData.arrayBuffer();
+    const buf = Buffer.from(arrayBuffer);
 
     return {
       statusCode: 200,
       isBase64Encoded: true,
       headers: {
-        "Content-Type": doc.file_type || "application/octet-stream",
-        "Content-Disposition": `attachment; filename="${encodeURIComponent(doc.file_name)}"`,
+        "Content-Type": file.file_type || "application/octet-stream",
+        "Content-Disposition": `attachment; filename="${encodeURIComponent(file.file_name)}"`,
         "Cache-Control": "private, max-age=0, must-revalidate",
       },
       body: buf.toString("base64"),

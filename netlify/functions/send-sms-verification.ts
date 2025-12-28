@@ -1,8 +1,7 @@
 import type { Handler } from "@netlify/functions";
 import { errorResponse, jsonResponse, readJson } from "./_http";
 import { requireAuth } from "./_auth0";
-import { getMongoDb } from "./_mongo";
-import { ObjectId } from "mongodb";
+import { getSupabaseClient } from "./_supabase";
 
 // Twilio client setup
 function getTwilioClient() {
@@ -19,19 +18,7 @@ function getTwilioClient() {
   });
 }
 
-type VerificationCodeDoc = {
-  _id: ObjectId;
-  user_id: string;
-  phone: string;
-  code: string;
-  expires_at: string;
-  verified: boolean;
-  attempts: number;
-  created_at: string;
-};
-
 const CODE_EXPIRY_MINUTES = 10;
-const MAX_ATTEMPTS = 5;
 
 function generateVerificationCode(): string {
   // Generate 6-digit code
@@ -79,11 +66,7 @@ export const handler: Handler = async (event) => {
     }
 
     const claims = await requireAuth(event);
-    const db = await getMongoDb();
-    const verificationCodes = db.collection<VerificationCodeDoc>(
-      "sms_verification_codes",
-    );
-    const profiles = db.collection("profiles");
+    const supabase = getSupabaseClient();
 
     const body = await readJson<{ phone?: string }>(event);
     const phone = body.phone?.trim();
@@ -104,9 +87,12 @@ export const handler: Handler = async (event) => {
     }
 
     // Check if user already has verified phone
-    const existingProfile = await profiles.findOne({
-      auth_user_id: claims.sub,
-    });
+    const { data: existingProfile } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("auth_user_id", claims.sub)
+      .maybeSingle();
+
     if (
       existingProfile?.phone_verified &&
       existingProfile?.phone === normalizedPhone
@@ -114,26 +100,35 @@ export const handler: Handler = async (event) => {
       return errorResponse(400, "This phone number is already verified");
     }
 
-    // Check for recent code (rate limiting)
-    const recentCode = await verificationCodes.findOne({
-      user_id: claims.sub,
-      phone: normalizedPhone,
-      verified: false,
-      expires_at: { $gt: new Date().toISOString() },
-    });
+    // Check for recent code (rate limiting) - using KV store
+    const codeKey = `sms_code:${claims.sub}:${normalizedPhone}`;
+    const { data: recentCode } = await supabase
+      .from("kv_store_050eebdd")
+      .select("*")
+      .eq("key", codeKey)
+      .maybeSingle();
 
     if (recentCode) {
-      const expiresAt = new Date(recentCode.expires_at);
+      const codeData = recentCode.value as {
+        code: string;
+        expires_at: string;
+        verified: boolean;
+        attempts: number;
+      };
+      const expiresAt = new Date(codeData.expires_at);
       const now = new Date();
-      const minutesRemaining = Math.ceil(
-        (expiresAt.getTime() - now.getTime()) / (1000 * 60),
-      );
 
-      if (minutesRemaining > 0) {
-        return errorResponse(
-          429,
-          `Please wait ${minutesRemaining} minute(s) before requesting a new code`,
+      if (!codeData.verified && expiresAt > now) {
+        const minutesRemaining = Math.ceil(
+          (expiresAt.getTime() - now.getTime()) / (1000 * 60),
         );
+
+        if (minutesRemaining > 0) {
+          return errorResponse(
+            429,
+            `Please wait ${minutesRemaining} minute(s) before requesting a new code`,
+          );
+        }
       }
     }
 
@@ -142,19 +137,23 @@ export const handler: Handler = async (event) => {
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + CODE_EXPIRY_MINUTES);
 
-    // Store code in database
-    const codeDoc: VerificationCodeDoc = {
-      _id: new ObjectId(),
-      user_id: claims.sub,
-      phone: normalizedPhone,
+    // Store code in KV store
+    const codeData = {
       code,
+      phone: normalizedPhone,
       expires_at: expiresAt.toISOString(),
       verified: false,
       attempts: 0,
       created_at: new Date().toISOString(),
     };
 
-    await verificationCodes.insertOne(codeDoc);
+    const { error: upsertError } = await supabase
+      .from("kv_store_050eebdd")
+      .upsert({ key: codeKey, value: codeData }, { onConflict: "key" });
+
+    if (upsertError) {
+      return errorResponse(500, "Failed to store verification code");
+    }
 
     // Send SMS via Twilio
     try {
@@ -175,22 +174,16 @@ export const handler: Handler = async (event) => {
       });
 
       // Update profile with phone (not verified yet)
-      await profiles.updateOne(
-        { auth_user_id: claims.sub },
+      const now = new Date().toISOString();
+      await supabase.from("profiles").upsert(
         {
-          $set: {
-            phone: normalizedPhone,
-            phone_verified: false,
-            updated_at: new Date().toISOString(),
-          },
-          $setOnInsert: {
-            _id: new ObjectId(),
-            auth_user_id: claims.sub,
-            username: claims.sub.split("|")[1] || "user",
-            created_at: new Date().toISOString(),
-          },
+          auth_user_id: claims.sub,
+          phone: normalizedPhone,
+          phone_verified: false,
+          username: claims.sub.split("|")[1] || "user",
+          created_at: now,
         },
-        { upsert: true },
+        { onConflict: "auth_user_id" },
       );
 
       return jsonResponse(200, {
@@ -200,8 +193,8 @@ export const handler: Handler = async (event) => {
       });
     } catch (twilioError) {
       console.error("Twilio error:", twilioError);
-      // Remove the code doc if SMS failed
-      await verificationCodes.deleteOne({ _id: codeDoc._id });
+      // Remove the code if SMS failed
+      await supabase.from("kv_store_050eebdd").delete().eq("key", codeKey);
 
       return errorResponse(
         500,

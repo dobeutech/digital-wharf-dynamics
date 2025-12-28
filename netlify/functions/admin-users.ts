@@ -1,50 +1,43 @@
 import type { Handler } from "@netlify/functions";
-import { ObjectId } from "mongodb";
 import { errorResponse, jsonResponse, readJson } from "./_http";
 import { requireAuth, requirePermission } from "./_auth0";
-import { getMongoDb } from "./_mongo";
-
-type ProfileDoc = {
-  _id: ObjectId;
-  auth_user_id: string; // Auth0 subject
-  username: string;
-  created_at: string;
-};
-
-type UserRoleDoc = {
-  _id: ObjectId;
-  user_id: string; // Auth0 subject
-  role: "admin" | "moderator" | "user";
-  created_at: string;
-};
-
-function toProfile(d: ProfileDoc) {
-  return {
-    id: d._id.toHexString(),
-    auth_user_id: d.auth_user_id,
-    username: d.username,
-    created_at: d.created_at,
-  };
-}
+import { getSupabaseClient } from "./_supabase";
 
 export const handler: Handler = async (event) => {
   try {
     const claims = await requireAuth(event);
     requirePermission(claims, "admin:access");
 
-    const db = await getMongoDb();
-    const profiles = db.collection<ProfileDoc>("profiles");
-    const roles = db.collection<UserRoleDoc>("user_roles");
+    const supabase = getSupabaseClient();
 
     if (event.httpMethod === "GET") {
-      const [profilesDocs, rolesDocs] = await Promise.all([
-        profiles.find({}).sort({ created_at: -1 }).toArray(),
-        roles.find({}).toArray(),
+      const [profilesResult, rolesResult] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("*")
+          .order("created_at", { ascending: false }),
+        supabase.from("user_roles").select("user_id, role"),
       ]);
 
+      if (profilesResult.error) {
+        return errorResponse(
+          500,
+          "Failed to fetch profiles",
+          profilesResult.error.message,
+        );
+      }
+
+      if (rolesResult.error) {
+        return errorResponse(
+          500,
+          "Failed to fetch roles",
+          rolesResult.error.message,
+        );
+      }
+
       return jsonResponse(200, {
-        profiles: profilesDocs.map(toProfile),
-        roles: rolesDocs.map((r) => ({ user_id: r.user_id, role: r.role })),
+        profiles: profilesResult.data,
+        roles: rolesResult.data,
       });
     }
 
@@ -62,10 +55,18 @@ export const handler: Handler = async (event) => {
       if (!body.user_id || !body.role)
         return errorResponse(400, "Missing user_id or role");
       const enabled = body.enabled !== false;
-      const now = new Date().toISOString();
 
       if (!enabled) {
-        await roles.deleteOne({ user_id: body.user_id, role: body.role });
+        const { error } = await supabase
+          .from("user_roles")
+          .delete()
+          .eq("user_id", body.user_id)
+          .eq("role", body.role);
+
+        if (error) {
+          return errorResponse(500, "Failed to remove role", error.message);
+        }
+
         return jsonResponse(200, {
           user_id: body.user_id,
           role: body.role,
@@ -73,18 +74,24 @@ export const handler: Handler = async (event) => {
         });
       }
 
-      await roles.updateOne(
-        { user_id: body.user_id, role: body.role },
+      // Upsert role
+      const now = new Date().toISOString();
+      const { error } = await supabase.from("user_roles").upsert(
         {
-          $setOnInsert: {
-            _id: new ObjectId(),
-            user_id: body.user_id,
-            role: body.role,
-            created_at: now,
-          },
+          user_id: body.user_id,
+          role: body.role,
+          created_at: now,
         },
-        { upsert: true },
+        {
+          onConflict: "user_id,role",
+          ignoreDuplicates: true,
+        },
       );
+
+      if (error) {
+        return errorResponse(500, "Failed to add role", error.message);
+      }
+
       return jsonResponse(200, {
         user_id: body.user_id,
         role: body.role,

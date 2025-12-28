@@ -1,19 +1,7 @@
 import type { Handler } from "@netlify/functions";
 import { errorResponse, jsonResponse, readJson } from "./_http";
 import { requireAuth } from "./_auth0";
-import { getMongoDb } from "./_mongo";
-import { ObjectId } from "mongodb";
-
-type VerificationCodeDoc = {
-  _id: ObjectId;
-  user_id: string;
-  phone: string;
-  code: string;
-  expires_at: string;
-  verified: boolean;
-  attempts: number;
-  created_at: string;
-};
+import { getSupabaseClient } from "./_supabase";
 
 export const handler: Handler = async (event) => {
   try {
@@ -34,11 +22,7 @@ export const handler: Handler = async (event) => {
     }
 
     const claims = await requireAuth(event);
-    const db = await getMongoDb();
-    const verificationCodes = db.collection<VerificationCodeDoc>(
-      "sms_verification_codes",
-    );
-    const profiles = db.collection("profiles");
+    const supabase = getSupabaseClient();
 
     const body = await readJson<{ code?: string }>(event);
     const code = body.code?.trim();
@@ -47,27 +31,53 @@ export const handler: Handler = async (event) => {
       return errorResponse(400, "Invalid verification code format");
     }
 
-    // Find the most recent unverified code for this user
-    const codeDoc = await verificationCodes.findOne(
-      {
-        user_id: claims.sub,
-        verified: false,
-        expires_at: { $gt: new Date().toISOString() },
-      },
-      {
-        sort: { created_at: -1 },
-      },
-    );
+    // Get user's profile to find the phone number
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("phone")
+      .eq("auth_user_id", claims.sub)
+      .maybeSingle();
 
-    if (!codeDoc) {
+    if (!profile?.phone) {
+      return errorResponse(
+        400,
+        "No phone number found. Please request a new code.",
+      );
+    }
+
+    // Find the verification code in KV store
+    const codeKey = `sms_code:${claims.sub}:${profile.phone}`;
+    const { data: storedCode, error: fetchError } = await supabase
+      .from("kv_store_050eebdd")
+      .select("*")
+      .eq("key", codeKey)
+      .maybeSingle();
+
+    if (fetchError || !storedCode) {
       return errorResponse(
         400,
         "No valid verification code found. Please request a new code.",
       );
     }
 
+    const codeData = storedCode.value as {
+      code: string;
+      phone: string;
+      expires_at: string;
+      verified: boolean;
+      attempts: number;
+    };
+
+    // Check if code has been verified already
+    if (codeData.verified) {
+      return errorResponse(
+        400,
+        "Code has already been used. Please request a new code.",
+      );
+    }
+
     // Check if code has expired
-    if (new Date(codeDoc.expires_at) < new Date()) {
+    if (new Date(codeData.expires_at) < new Date()) {
       return errorResponse(
         400,
         "Verification code has expired. Please request a new code.",
@@ -75,7 +85,7 @@ export const handler: Handler = async (event) => {
     }
 
     // Check attempts
-    if (codeDoc.attempts >= 5) {
+    if (codeData.attempts >= 5) {
       return errorResponse(
         429,
         "Too many verification attempts. Please request a new code.",
@@ -83,14 +93,15 @@ export const handler: Handler = async (event) => {
     }
 
     // Verify code
-    if (codeDoc.code !== code) {
+    if (codeData.code !== code) {
       // Increment attempts
-      await verificationCodes.updateOne(
-        { _id: codeDoc._id },
-        { $inc: { attempts: 1 } },
-      );
+      const updatedData = { ...codeData, attempts: codeData.attempts + 1 };
+      await supabase
+        .from("kv_store_050eebdd")
+        .update({ value: updatedData })
+        .eq("key", codeKey);
 
-      const remainingAttempts = 5 - (codeDoc.attempts + 1);
+      const remainingAttempts = 5 - (codeData.attempts + 1);
       return errorResponse(
         400,
         `Invalid verification code. ${remainingAttempts} attempt(s) remaining.`,
@@ -98,35 +109,22 @@ export const handler: Handler = async (event) => {
     }
 
     // Code is correct - mark as verified
-    await verificationCodes.updateOne(
-      { _id: codeDoc._id },
-      { $set: { verified: true } },
-    );
+    const verifiedData = { ...codeData, verified: true };
+    await supabase
+      .from("kv_store_050eebdd")
+      .update({ value: verifiedData })
+      .eq("key", codeKey);
 
     // Update profile to mark phone as verified
-    await profiles.updateOne(
-      { auth_user_id: claims.sub },
-      {
-        $set: {
-          phone: codeDoc.phone,
-          phone_verified: true,
-          phone_verified_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      },
-    );
-
-    // Invalidate other unverified codes for this user
-    await verificationCodes.updateMany(
-      {
-        user_id: claims.sub,
-        verified: false,
-        _id: { $ne: codeDoc._id },
-      },
-      {
-        $set: { verified: true }, // Mark as "used" to prevent reuse
-      },
-    );
+    const now = new Date().toISOString();
+    await supabase
+      .from("profiles")
+      .update({
+        phone: codeData.phone,
+        phone_verified: true,
+        phone_verified_at: now,
+      })
+      .eq("auth_user_id", claims.sub);
 
     return jsonResponse(200, {
       success: true,

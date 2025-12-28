@@ -35,8 +35,8 @@ export function validateEnv(): EnvConfig {
   if (!hasUrl || !hasKey) {
     console.warn(
       "Supabase environment variables are not set. " +
-        "Supabase Realtime features will be disabled. " +
-        "Note: This application uses MongoDB + Auth0 for data/auth. Supabase is optional for Realtime only.",
+        "Some features may be disabled. " +
+        "Note: This application uses Supabase for data storage and Auth0 for authentication.",
     );
   }
 

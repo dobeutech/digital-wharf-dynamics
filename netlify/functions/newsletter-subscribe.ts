@@ -1,17 +1,6 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
 import { errorResponse, jsonResponse, readJson } from "./_http";
-import { getMongoDb } from "./_mongo";
-
-type NewsletterSubscriberDoc = {
-  _id: string;
-  email: string;
-  opted_in_marketing: boolean;
-  is_active: boolean;
-  subscribed_at: string;
-  unsubscribed_at: string | null;
-  created_at: string;
-  updated_at: string;
-};
+import { getSupabaseClient } from "./_supabase";
 
 // Simple in-memory rate limiting (resets on function restart)
 const rateLimitMap = new Map<string, { count: number; timestamp: number }>();
@@ -81,13 +70,18 @@ export const handler: Handler = async (event) => {
       return errorResponse(400, "Marketing consent is required");
     }
 
-    const db = await getMongoDb();
-    const col = db.collection<NewsletterSubscriberDoc>(
-      "newsletter_subscribers",
-    );
+    const supabase = getSupabaseClient();
 
     // Check if email already exists
-    const existing = await col.findOne({ email: trimmedEmail });
+    const { data: existing, error: fetchError } = await supabase
+      .from("newsletter_subscribers")
+      .select("*")
+      .eq("email", trimmedEmail)
+      .maybeSingle();
+
+    if (fetchError) {
+      return errorResponse(500, "Failed to check subscription");
+    }
 
     if (existing) {
       if (existing.is_active) {
@@ -96,17 +90,18 @@ export const handler: Handler = async (event) => {
 
       // Reactivate existing subscription
       const now = new Date().toISOString();
-      await col.updateOne(
-        { _id: existing._id },
-        {
-          $set: {
-            is_active: true,
-            opted_in_marketing: true,
-            unsubscribed_at: null,
-            updated_at: now,
-          },
-        },
-      );
+      const { error: updateError } = await supabase
+        .from("newsletter_subscribers")
+        .update({
+          is_active: true,
+          opted_in_marketing: true,
+          unsubscribed_at: null,
+        })
+        .eq("id", existing.id);
+
+      if (updateError) {
+        return errorResponse(500, "Failed to reactivate subscription");
+      }
 
       return jsonResponse(200, {
         success: true,
@@ -116,18 +111,19 @@ export const handler: Handler = async (event) => {
 
     // Insert new subscription
     const now = new Date().toISOString();
-    const doc: NewsletterSubscriberDoc = {
-      _id: trimmedEmail, // Use email as ID for simplicity
-      email: trimmedEmail,
-      opted_in_marketing: true,
-      is_active: true,
-      subscribed_at: now,
-      unsubscribed_at: null,
-      created_at: now,
-      updated_at: now,
-    };
+    const { error: insertError } = await supabase
+      .from("newsletter_subscribers")
+      .insert({
+        email: trimmedEmail,
+        opted_in_marketing: true,
+        is_active: true,
+        subscribed_at: now,
+        unsubscribed_at: null,
+      });
 
-    await col.insertOne(doc);
+    if (insertError) {
+      return errorResponse(500, "Failed to subscribe");
+    }
 
     return jsonResponse(200, {
       success: true,
