@@ -6,7 +6,7 @@
 ![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6?style=flat-square&logo=typescript)
 ![Auth0](https://img.shields.io/badge/Auth0-Auth-EB5424?style=flat-square&logo=auth0)
-![MongoDB](https://img.shields.io/badge/MongoDB-Database-47A248?style=flat-square&logo=mongodb)
+![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E?style=flat-square&logo=supabase)
 ![Netlify](https://img.shields.io/badge/Netlify-Hosted-00C7B7?style=flat-square&logo=netlify)
 
 **Transform Your Digital Vision**
@@ -41,8 +41,8 @@ DOBEU Tech Solutions is a premium digital services platform offering web develop
 | **Animation** | Framer Motion                   |
 | **Backend**   | Netlify Functions (Node)        |
 | **Auth**      | Auth0 (SPA + JWT)               |
-| **Database**  | MongoDB Atlas                   |
-| **Files**     | MongoDB GridFS                  |
+| **Database**  | Supabase (PostgreSQL)           |
+| **Files**     | Supabase Storage                |
 | **Hosting**   | Netlify (Edge, CDN, Functions)  |
 | **Testing**   | Vitest (Unit), Playwright (E2E) |
 | **Analytics** | Google Analytics, Mixpanel      |
@@ -83,18 +83,17 @@ VITE_AUTH0_AUDIENCE=https://api.dobeu.netlify.app
 # Backend (Netlify Functions)
 AUTH0_DOMAIN=your-tenant.us.auth0.com
 AUTH0_AUDIENCE=https://api.dobeu.netlify.app
-MONGODB_URI=mongodb+srv://<user>:<password>@<cluster>/<db>?retryWrites=true&w=majority
-MONGODB_DB_NAME=app
-GRIDFS_BUCKET=files
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
 # Twilio SMS Verification
 TWILIO_ACCOUNT_SID=your_twilio_account_sid
 TWILIO_AUTH_TOKEN=your_twilio_auth_token
 TWILIO_PHONE_NUMBER=+1234567890
 
-# Optional: Supabase Realtime (optional integration only)
-VITE_SUPABASE_URL=
-VITE_SUPABASE_PUBLISHABLE_KEY=
+# Frontend Supabase (optional for realtime features)
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_key
 ```
 
 ## Third-Party Integrations

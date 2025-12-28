@@ -1,7 +1,7 @@
 import type { Handler } from "@netlify/functions";
 import { errorResponse, jsonResponse } from "./_http";
 import { requireAuth } from "./_auth0";
-import { getMongoDb } from "./_mongo";
+import { getSupabaseClient } from "./_supabase";
 
 export const handler: Handler = async (event) => {
   try {
@@ -22,10 +22,13 @@ export const handler: Handler = async (event) => {
     }
 
     const claims = await requireAuth(event);
-    const db = await getMongoDb();
-    const profiles = db.collection("profiles");
+    const supabase = getSupabaseClient();
 
-    const profile = await profiles.findOne({ auth_user_id: claims.sub });
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("phone, phone_verified")
+      .eq("auth_user_id", claims.sub)
+      .maybeSingle();
 
     if (!profile) {
       // New user - needs phone verification

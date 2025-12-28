@@ -1,44 +1,7 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
-import { ObjectId } from "mongodb";
 import { errorResponse, jsonResponse, readJson } from "./_http";
 import { requireAuth, requirePermission } from "./_auth0";
-import { getMongoDb } from "./_mongo";
-
-type ContactSubmissionDoc = {
-  _id: ObjectId;
-  name: string;
-  email: string;
-  phone: string | null;
-  message: string;
-  sms_consent: boolean;
-  marketing_consent: boolean;
-  status: "new" | "read" | "responded" | "archived";
-  notes: string | null;
-  ip_address: string | null;
-  user_agent: string | null;
-  submitted_at: string;
-  responded_at: string | null;
-  created_at: string;
-  updated_at: string;
-};
-
-function toSubmission(d: ContactSubmissionDoc) {
-  return {
-    id: d._id.toHexString(),
-    name: d.name,
-    email: d.email,
-    phone: d.phone,
-    message: d.message,
-    sms_consent: d.sms_consent,
-    marketing_consent: d.marketing_consent,
-    status: d.status,
-    notes: d.notes,
-    ip_address: d.ip_address,
-    user_agent: d.user_agent,
-    submitted_at: d.submitted_at,
-    responded_at: d.responded_at,
-  };
-}
+import { getSupabaseClient } from "./_supabase";
 
 function getClientIp(event: HandlerEvent): string | null {
   const raw =
@@ -49,9 +12,7 @@ function getClientIp(event: HandlerEvent): string | null {
 
 export const handler: Handler = async (event) => {
   try {
-    const db = await getMongoDb();
-    const col = db.collection<ContactSubmissionDoc>("contact_submissions");
-
+    const supabase = getSupabaseClient();
     const id = event.queryStringParameters?.id?.trim();
 
     if (event.httpMethod === "POST") {
@@ -87,31 +48,36 @@ export const handler: Handler = async (event) => {
         );
 
       const now = new Date().toISOString();
-      const doc: ContactSubmissionDoc = {
-        _id: new ObjectId(),
-        name,
-        email,
-        phone,
-        message,
-        sms_consent: smsConsent,
-        marketing_consent: Boolean(body.marketingConsent),
-        status: "new",
-        notes: null,
-        ip_address: getClientIp(event),
-        user_agent:
-          event.headers?.["user-agent"] ||
-          event.headers?.["User-Agent"] ||
-          null,
-        submitted_at: now,
-        responded_at: null,
-        created_at: now,
-        updated_at: now,
-      };
+      const { data, error } = await supabase
+        .from("contact_submissions")
+        .insert({
+          name,
+          email,
+          phone,
+          message,
+          sms_consent: smsConsent,
+          marketing_consent: Boolean(body.marketingConsent),
+          status: "new",
+          notes: null,
+          ip_address: getClientIp(event),
+          user_agent:
+            event.headers?.["user-agent"] ||
+            event.headers?.["User-Agent"] ||
+            null,
+          submitted_at: now,
+          responded_at: null,
+          created_at: now,
+        })
+        .select()
+        .single();
 
-      await col.insertOne(doc);
+      if (error) {
+        return errorResponse(500, "Failed to save submission", error.message);
+      }
+
       return jsonResponse(200, {
         success: true,
-        submission: toSubmission(doc),
+        submission: data,
       });
     }
 
@@ -121,17 +87,33 @@ export const handler: Handler = async (event) => {
 
     if (event.httpMethod === "GET") {
       const status = event.queryStringParameters?.status;
-      const q: Record<string, unknown> = {};
-      if (status && status !== "all") q.status = status;
-      const docs = await col.find(q).sort({ submitted_at: -1 }).toArray();
-      return jsonResponse(200, docs.map(toSubmission));
+
+      let query = supabase
+        .from("contact_submissions")
+        .select("*")
+        .order("submitted_at", { ascending: false });
+
+      if (status && status !== "all") {
+        query = query.eq("status", status);
+      }
+
+      const { data, error } = await query;
+
+      if (error) {
+        return errorResponse(500, "Failed to fetch submissions", error.message);
+      }
+
+      return jsonResponse(200, data);
     }
 
     if (event.httpMethod === "PATCH") {
       if (!id) return errorResponse(400, "Missing id");
-      const body = await readJson<
-        Partial<ContactSubmissionDoc> & { status?: string }
-      >(event);
+
+      const body = await readJson<{
+        notes?: string | null;
+        status?: string;
+      }>(event);
+
       const now = new Date().toISOString();
       const update: Record<string, unknown> = { updated_at: now };
 
@@ -142,15 +124,21 @@ export const handler: Handler = async (event) => {
         if (body.status === "responded") update.responded_at = now;
       }
 
-      const res = await col.findOneAndUpdate(
-        { _id: new ObjectId(id) },
-        { $set: update },
-        { returnDocument: "after" },
-      );
-      // @ts-expect-error driver response typing differs across versions
-      const doc = (res?.value ?? res) as ContactSubmissionDoc | undefined;
-      if (!doc) return errorResponse(404, "Not found");
-      return jsonResponse(200, toSubmission(doc));
+      const { data, error } = await supabase
+        .from("contact_submissions")
+        .update(update)
+        .eq("id", id)
+        .select()
+        .single();
+
+      if (error) {
+        if (error.code === "PGRST116") {
+          return errorResponse(404, "Not found");
+        }
+        return errorResponse(500, "Failed to update submission", error.message);
+      }
+
+      return jsonResponse(200, data);
     }
 
     return errorResponse(405, "Method not allowed");
