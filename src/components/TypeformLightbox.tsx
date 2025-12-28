@@ -26,12 +26,10 @@ export function TypeformLightbox({
   title = "Get in Touch",
   description = "Fill out the form below and we'll get back to you shortly.",
 }: TypeformLightboxProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
-
+  // Track when lightbox opens
   useEffect(() => {
     if (isOpen) {
       trackEvent("Typeform Lightbox Opened", { source });
-      setIsLoaded(true);
     }
   }, [isOpen, source]);
 
@@ -60,7 +58,7 @@ export function TypeformLightbox({
           </div>
         </DialogHeader>
         <div className="flex-1 overflow-hidden">
-          {isLoaded && (
+          {isOpen && (
             <iframe
               src={typeformUrl}
               className="w-full h-full border-0"

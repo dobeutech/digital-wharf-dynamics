@@ -23,19 +23,19 @@ export default function AdminNewsletter() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    const fetchPosts = async () => {
+      try {
+        const data = await api.get<NewsletterPost[]>("/newsletter");
+        setPosts(data || []);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching newsletter posts:", error);
+        setLoading(false);
+      }
+    };
 
-  const fetchPosts = async () => {
-    try {
-      const data = await api.get<NewsletterPost[]>("/newsletter");
-      setPosts(data || []);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching newsletter posts:", error);
-      setLoading(false);
-    }
-  };
+    fetchPosts();
+  }, [api]);
 
   if (loading) {
     return (

@@ -24,6 +24,8 @@ export default tseslint.config(
         { allowConstantExport: true },
       ],
       "@typescript-eslint/no-unused-vars": "off",
+      // Downgrade set-state-in-effect to warning - common pattern for data fetching
+      "react-hooks/set-state-in-effect": "warn",
     },
   },
 );

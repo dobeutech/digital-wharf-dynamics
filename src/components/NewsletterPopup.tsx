@@ -72,7 +72,23 @@ export const NewsletterPopup = () => {
       setOpen(false);
     } catch (error) {
       console.error("Subscription error:", error);
-      toast.error("Failed to subscribe. Please try again later.");
+      // Try to extract error message from the API response
+      let errorMessage = "Failed to subscribe. Please try again later.";
+      if (error instanceof Error) {
+        // Error format is "HTTP {status}: {jsonBody}"
+        const match = error.message.match(/^HTTP \d+: (.+)$/);
+        if (match) {
+          try {
+            const parsed = JSON.parse(match[1]);
+            if (parsed.error) {
+              errorMessage = parsed.error;
+            }
+          } catch {
+            // Keep default message if JSON parsing fails
+          }
+        }
+      }
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

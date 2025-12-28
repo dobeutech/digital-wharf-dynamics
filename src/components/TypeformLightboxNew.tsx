@@ -76,87 +76,154 @@ export function TypeformLightboxNew({
   const [useIframe, setUseIframe] = useState(false);
   const [embedFailed, setEmbedFailed] = useState(false);
 
+  // Handle dialog close and reset state
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      // Reset states when closing
+      setUseIframe(false);
+      setEmbedFailed(false);
+      onClose();
+    }
+  };
+
+  // Track when lightbox opens
   useEffect(() => {
     if (isOpen) {
       trackEvent("Typeform Lightbox Opened", { source });
-      setUseIframe(false);
-      setEmbedFailed(false);
+    }
+  }, [isOpen, source]);
 
-      let initTimeout: NodeJS.Timeout | null = null;
-      let fallbackTimeout: NodeJS.Timeout | null = null;
-      let mounted = true;
+  // Handle Typeform initialization when dialog opens
+  useEffect(() => {
+    // Only run initialization logic when isOpen becomes true
+    if (!isOpen) {
+      // Store ref value for cleanup
+      const container = containerRef.current;
+      if (container) {
+        container.innerHTML = "";
+      }
+      return;
+    }
 
-      const initTypeform = () => {
-        if (!containerRef.current || !mounted) return;
+    let pollInterval: NodeJS.Timeout | null = null;
+    let initTimeout: NodeJS.Timeout | null = null;
+    let fallbackTimeout: NodeJS.Timeout | null = null;
+    let mounted = true;
+    // Store ref value to avoid stale closure
+    const container = containerRef.current;
 
-        // Clear any existing content
-        containerRef.current.innerHTML = "";
+    const initTypeform = () => {
+      if (!container || !mounted) return;
 
-        // Create the embed div with exact structure: <div data-tf-live="TYPEFORM_EMBED_ID"></div>
-        // The script in index.html will automatically initialize it
-        const embedDiv = document.createElement("div");
-        embedDiv.setAttribute("data-tf-live", TYPEFORM_EMBED_ID);
-        containerRef.current.appendChild(embedDiv);
+      // Clear any existing content
+      container.innerHTML = "";
 
-        // Trigger Typeform load if available
-        if (window.tf?.load) {
-          try {
-            window.tf.load();
-          } catch (error) {
-            console.error("Error loading Typeform:", error);
+      // Create the embed div with exact structure: <div data-tf-live="TYPEFORM_EMBED_ID"></div>
+      const embedDiv = document.createElement("div");
+      embedDiv.setAttribute("data-tf-live", TYPEFORM_EMBED_ID);
+      embedDiv.style.width = "100%";
+      embedDiv.style.height = "100%";
+      container.appendChild(embedDiv);
+
+      // Trigger Typeform load
+      if (window.tf?.load) {
+        try {
+          window.tf.load();
+        } catch (error) {
+          console.error("Error loading Typeform:", error);
+          // Fall back to iframe on error
+          if (mounted) {
+            setEmbedFailed(true);
+            setUseIframe(true);
           }
         }
+      }
+    };
+
+    // Wait for Typeform script to be ready
+    const waitForTypeform = () => {
+      if (!mounted) return;
+
+      if (window.tf?.load) {
+        // Typeform is ready, initialize
+        initTypeform();
 
         // Check if embed loaded after a delay, fallback to iframe if not
         fallbackTimeout = setTimeout(() => {
-          if (!mounted || !containerRef.current) return;
+          if (!mounted || !container) return;
 
           const hasTypeformContent =
-            containerRef.current.querySelector("iframe") ||
-            containerRef.current.querySelector('[class*="typeform"]') ||
-            containerRef.current.querySelector('[id*="typeform"]');
+            container.querySelector("iframe") ||
+            container.querySelector('[class*="tf-"]') ||
+            container.querySelector('[data-tf-loaded]');
 
           if (!hasTypeformContent) {
             // Embed didn't load, fallback to iframe
             setEmbedFailed(true);
             setUseIframe(true);
           }
-        }, 3000);
-      };
+        }, 4000);
+      } else {
+        // Typeform not ready yet, poll every 100ms for up to 5 seconds
+        let attempts = 0;
+        pollInterval = setInterval(() => {
+          attempts++;
+          if (window.tf?.load) {
+            if (pollInterval) clearInterval(pollInterval);
+            initTypeform();
 
-      // Small delay to ensure DOM is ready
-      initTimeout = setTimeout(initTypeform, 100);
+            // Check if embed loaded after a delay
+            fallbackTimeout = setTimeout(() => {
+              if (!mounted || !container) return;
 
-      // Cleanup function
-      return () => {
-        mounted = false;
-        if (initTimeout) clearTimeout(initTimeout);
-        if (fallbackTimeout) clearTimeout(fallbackTimeout);
-        // Clean up when closing
-        if (containerRef.current) {
-          containerRef.current.innerHTML = "";
-        }
-      };
-    } else {
-      // Clean up when closing
-      setUseIframe(false);
-      setEmbedFailed(false);
-      if (containerRef.current) {
-        containerRef.current.innerHTML = "";
+              const hasTypeformContent =
+                container.querySelector("iframe") ||
+                container.querySelector('[class*="tf-"]') ||
+                container.querySelector('[data-tf-loaded]');
+
+              if (!hasTypeformContent) {
+                setEmbedFailed(true);
+                setUseIframe(true);
+              }
+            }, 4000);
+          } else if (attempts >= 50) {
+            // After 5 seconds, fall back to iframe
+            if (pollInterval) clearInterval(pollInterval);
+            if (mounted) {
+              setEmbedFailed(true);
+              setUseIframe(true);
+            }
+          }
+        }, 100);
       }
-    }
-  }, [isOpen, source]);
+    };
+
+    // Small delay to ensure DOM is ready
+    initTimeout = setTimeout(waitForTypeform, 50);
+
+    // Cleanup function
+    return () => {
+      mounted = false;
+      if (pollInterval) clearInterval(pollInterval);
+      if (initTimeout) clearTimeout(initTimeout);
+      if (fallbackTimeout) clearTimeout(fallbackTimeout);
+      // Clean up when closing
+      if (container) {
+        container.innerHTML = "";
+      }
+    };
+  }, [isOpen]);
 
   const typeformUrl = buildTypeformUrl(source, user);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-5xl h-[90vh] p-0 overflow-hidden">
         <div className="absolute top-4 right-4 z-50">
           <Button
             variant="ghost"
             size="icon"
-            onClick={onClose}
+            onClick={() => handleOpenChange(false)}
             className="h-10 w-10 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background"
             aria-label="Close"
           >
