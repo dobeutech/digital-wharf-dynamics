@@ -2,8 +2,24 @@ import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight, Play } from "lucide-react";
+import { getTypeformDirectUrl } from "@/config/typeform";
+import { trackEvent } from "@/lib/mixpanel";
 
 export function EnhancedHero() {
+  const typeformUrl = getTypeformDirectUrl({
+    utm_source: "dobeu_website",
+    utm_medium: "website",
+    utm_campaign: "hero",
+  });
+
+  const handleStartProject = () => {
+    trackEvent("Typeform Opened", {
+      source: "hero",
+      text: "Start Your Project",
+    });
+    window.open(typeformUrl, "_blank");
+  };
+
   return (
     <section
       className="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
@@ -77,14 +93,12 @@ export function EnhancedHero() {
             transition={{ duration: 0.5, delay: 0.4 }}
           >
             <Button
-              asChild
               size="lg"
-              className="w-full sm:w-auto px-8 py-6 text-base font-medium rounded-lg"
+              onClick={handleStartProject}
+              className="w-full sm:w-auto px-8 py-6 text-base font-medium rounded-lg flex items-center gap-2"
             >
-              <Link to="/contact" className="flex items-center gap-2">
-                Start Your Project
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              Start Your Project
+              <ArrowRight className="w-4 h-4" />
             </Button>
 
             <Button

@@ -1,5 +1,6 @@
-import { useState, useCallback, memo } from "react";
-import { TypeformLightboxNew } from "./TypeformLightboxNew";
+import { useCallback, memo } from "react";
+import { getTypeformDirectUrl } from "@/config/typeform";
+import { trackEvent } from "@/lib/mixpanel";
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
 
@@ -14,15 +15,16 @@ export const WantToLearnMoreLink = memo(function WantToLearnMoreLink({
   className,
   variant = "header",
 }: WantToLearnMoreLinkProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const typeformUrl = getTypeformDirectUrl({
+    utm_source: "dobeu_website",
+    utm_medium: "website",
+    utm_campaign: source,
+  });
 
   const handleOpen = useCallback(() => {
-    setIsOpen(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setIsOpen(false);
-  }, []);
+    trackEvent("Typeform Opened", { source, text: "Want to learn more?" });
+    window.open(typeformUrl, "_blank", "noopener,noreferrer");
+  }, [typeformUrl, source]);
 
   const baseStyles =
     variant === "header"
@@ -33,21 +35,14 @@ export const WantToLearnMoreLink = memo(function WantToLearnMoreLink({
     "bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 text-white shadow-lg hover:shadow-xl";
 
   return (
-    <>
-      <motion.button
-        onClick={handleOpen}
-        className={cn(baseStyles, gradientStyles, className)}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.98 }}
-        aria-label="Want to learn more? Open contact form"
-      >
-        Want to learn more?
-      </motion.button>
-      <TypeformLightboxNew
-        isOpen={isOpen}
-        onClose={handleClose}
-        source={source}
-      />
-    </>
+    <motion.button
+      onClick={handleOpen}
+      className={cn(baseStyles, gradientStyles, className)}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.98 }}
+      aria-label="Want to learn more? Open contact form"
+    >
+      Want to learn more?
+    </motion.button>
   );
 });
