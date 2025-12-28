@@ -56,17 +56,28 @@ export const TypeformLightboxNew = ({
     initAttemptedRef.current = false;
     setIsLoading(true);
 
+    let checkInterval: NodeJS.Timeout | null = null;
+    let timeoutId: NodeJS.Timeout | null = null;
+
     // Wait for both the script and the DOM element to be ready
     const initTypeform = () => {
       // Check if script is loaded
       if (typeof window === "undefined" || !window.tf) {
-        // Retry after a short delay if script not loaded yet
-        setTimeout(initTypeform, 100);
+        // Retry after a short delay if script not loaded yet (max 10 seconds)
+        const retryCount = (initTypeform as any).retryCount || 0;
+        if (retryCount < 100) {
+          (initTypeform as any).retryCount = retryCount + 1;
+          setTimeout(initTypeform, 100);
+        } else {
+          console.error("Typeform script failed to load");
+          setIsLoading(false);
+        }
         return;
       }
 
-      // Check if element is in DOM
-      if (!embedContainerRef.current) {
+      // Check if element is in DOM and visible
+      const container = embedContainerRef.current;
+      if (!container) {
         // Retry after a short delay if element not in DOM yet
         setTimeout(initTypeform, 100);
         return;
@@ -81,42 +92,54 @@ export const TypeformLightboxNew = ({
 
       try {
         // Call load() to initialize all data-tf-live elements
+        // This will automatically find and initialize the div with data-tf-live
         window.tf.load();
 
-        // Wait a bit for Typeform to render, then check if it loaded
-        // Typeform SDK will automatically initialize elements with data-tf-live
-        const checkLoaded = setInterval(() => {
-          const container = embedContainerRef.current;
-          if (container) {
-            // Check if Typeform has rendered content (look for iframe or Typeform elements)
+        // Wait for Typeform to render content
+        // Check periodically if the form has loaded
+        checkInterval = setInterval(() => {
+          const currentContainer = embedContainerRef.current;
+          if (currentContainer) {
+            // Check if Typeform has rendered content
+            // Typeform creates an iframe or wrapper elements
             const hasContent =
-              container.querySelector("iframe") ||
-              container.querySelector('[class*="tf-"]') ||
-              container.children.length > 0;
+              currentContainer.querySelector("iframe") ||
+              currentContainer.querySelector('[class*="tf-"]') ||
+              currentContainer.querySelector('[id*="typeform"]') ||
+              (currentContainer.children.length > 0 &&
+                currentContainer.innerHTML.trim().length > 0);
 
             if (hasContent) {
               setIsLoading(false);
-              clearInterval(checkLoaded);
+              if (checkInterval) clearInterval(checkInterval);
+              if (timeoutId) clearTimeout(timeoutId);
             }
           }
-        }, 200);
+        }, 300);
 
-        // Timeout after 10 seconds
-        setTimeout(() => {
-          clearInterval(checkLoaded);
+        // Timeout after 10 seconds - stop loading indicator even if form didn't load
+        timeoutId = setTimeout(() => {
+          if (checkInterval) clearInterval(checkInterval);
           setIsLoading(false);
+          console.warn("Typeform embed took too long to load");
         }, 10000);
       } catch (error) {
         console.error("Error loading Typeform:", error);
         setIsLoading(false);
+        if (checkInterval) clearInterval(checkInterval);
+        if (timeoutId) clearTimeout(timeoutId);
       }
     };
 
-    // Small delay to ensure DOM is ready and dialog is fully rendered
-    const timer = setTimeout(initTypeform, 100);
+    // Delay to ensure Dialog is fully rendered and element is in DOM
+    // Dialog components often have transition animations
+    const timer = setTimeout(initTypeform, 200);
 
     return () => {
       clearTimeout(timer);
+      if (checkInterval) clearInterval(checkInterval);
+      if (timeoutId) clearTimeout(timeoutId);
+      (initTypeform as any).retryCount = 0;
     };
   }, [isOpen]);
 
