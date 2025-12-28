@@ -23,8 +23,18 @@ function buildTypeformEmbedUrl(
   // Use the widget embed URL format for reliable iframe embedding
   const baseUrl = `https://form.typeform.com/to/${TYPEFORM_EMBED_ID}`;
 
-  // Query parameters for UTM tracking
+  // Get the current hostname for embed source
+  const hostname =
+    typeof window !== "undefined" ? window.location.hostname : "dobeu.net";
+
+  // Query parameters - MUST include typeform embed params for proper iframe rendering
   const params = new URLSearchParams({
+    // Typeform embed parameters (required for iframe to work properly)
+    "typeform-embed": "embed-fullpage",
+    "typeform-source": hostname,
+    "typeform-medium": "embed-sdk",
+    "embed-opacity": "100",
+    // UTM tracking parameters
     utm_source: "dobeu_website",
     utm_medium: "website",
     utm_campaign: source || "lightbox",
