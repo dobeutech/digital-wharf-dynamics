@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { openTypeformPopup } from "@/config/typeform";
+import { getTypeformDirectUrl } from "@/config/typeform";
 import { trackEvent } from "@/lib/mixpanel";
 import { MessageSquare, Calendar } from "lucide-react";
 import { motion } from "motion/react";
@@ -23,9 +23,15 @@ export function TypeformButton({
   className = "",
   fullWidth = false,
 }: TypeformButtonProps) {
+  const typeformUrl = getTypeformDirectUrl({
+    utm_source: "dobeu_website",
+    utm_medium: "website",
+    utm_campaign: source,
+  });
+
   const handleClick = () => {
     trackEvent("Typeform Opened", { source, text });
-    openTypeformPopup(source);
+    window.open(typeformUrl, "_blank");
   };
 
   const IconComponent =
