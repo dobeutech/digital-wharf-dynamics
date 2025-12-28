@@ -13,7 +13,8 @@ interface TypeformLightboxNewProps {
 
 /**
  * Typeform Lightbox Component
- * Uses Typeform embed SDK with data-tf-widget attribute for proper inline embedding
+ * Uses Typeform embed SDK with data-tf-live attribute for live embedding
+ * data-tf-live allows embed settings to update automatically without re-embedding
  * The script is loaded in index.html: https://embed.typeform.com/next/embed.js
  */
 export const TypeformLightboxNew = ({
@@ -89,8 +90,8 @@ export const TypeformLightboxNew = ({
       initAttemptedRef.current = true;
 
       try {
-        // Call load() to initialize all data-tf-widget elements
-        // This will automatically find and initialize the div with data-tf-widget
+        // Call load() to initialize all data-tf-live elements
+        // This will automatically find and initialize the div with data-tf-live
         window.tf.load();
 
         // Wait for Typeform to render content
@@ -169,10 +170,7 @@ export const TypeformLightboxNew = ({
         {isOpen && (
           <div
             ref={embedContainerRef}
-            data-tf-widget={TYPEFORM_EMBED_ID}
-            data-tf-opacity="100"
-            data-tf-inline-on-mobile
-            data-tf-medium="snippet"
+            data-tf-live={TYPEFORM_EMBED_ID}
             style={{ width: "100%", height: "100%", minHeight: "600px" }}
             className="w-full h-full"
           />
