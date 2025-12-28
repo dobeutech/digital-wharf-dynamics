@@ -23,7 +23,7 @@ export const WantToLearnMoreLink = memo(function WantToLearnMoreLink({
 
   const handleOpen = useCallback(() => {
     trackEvent("Typeform Opened", { source, text: "Want to learn more?" });
-    window.open(typeformUrl, "_blank");
+    window.open(typeformUrl, "_blank", "noopener,noreferrer");
   }, [typeformUrl, source]);
 
   const baseStyles =
