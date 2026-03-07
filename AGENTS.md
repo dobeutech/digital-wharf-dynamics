@@ -1045,3 +1045,33 @@ Ona is here to help you be productive. The more context you provide, the better 
 **Last Updated:** December 2024  
 **Project Version:** 1.0.0  
 **Ona Version:** Claude 4.5 Sonnet
+
+## Cursor Cloud specific instructions
+
+### Services overview
+
+This is a React SPA (DOBEU Tech Solutions) with a Vite dev server as the primary local service. The backend is composed of Netlify Functions and cloud-hosted Supabase/Auth0, so there is no local database or backend server to run.
+
+### Running the dev server
+
+- `npm run dev` starts Vite on **port 5000** (not 8080 as some docs suggest; see `vite.config.ts`).
+- The app gracefully degrades without real Supabase/Auth0 credentials — placeholder values in `.env` are sufficient to run the frontend UI.
+
+### Key commands
+
+See `package.json` scripts and the Quick Reference table in this file. The most common:
+
+| Task       | Command              |
+| ---------- | -------------------- |
+| Dev server | `npm run dev`        |
+| Lint       | `npm run lint`       |
+| Unit tests | `npm run test:ci`    |
+| Build      | `npm run build`      |
+| Type check | `npm run type-check` |
+
+### Gotchas
+
+- **Unit test failures are pre-existing.** Several tests in `src/components/forms/__tests__/` fail due to Radix UI (`@radix-ui/react-select`) incompatibility with jsdom (`hasPointerCapture is not a function`). This is not caused by environment setup — 68/105 tests pass, 37 fail.
+- **`postinstall` runs Playwright install.** `npm install` triggers `playwright install --with-deps || true`, which downloads browser binaries. This can take 20-30 seconds but is non-blocking (`|| true`).
+- **No `.env.example` for general setup.** The README documents required env vars but there is no `.env.example` file (only `.env.example.typeform`). A `.env` file with placeholder values is needed for the dev server to start cleanly.
+- **Husky pre-commit hook** runs `lint-staged` (eslint + prettier) and `npm run type-check`. If committing code, expect these to run.
