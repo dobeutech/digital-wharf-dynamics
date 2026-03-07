@@ -1,12 +1,9 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { PageMeta } from "@/components/seo/PageMeta";
 
 const APOLLO_MEETING_URL = "https://app.apollo.io/#/meet/jeremyw";
 
 export default function Schedule() {
-  const navigate = useNavigate();
-
   useEffect(() => {
     // Redirect to Apollo.io meeting scheduler
     window.location.href = APOLLO_MEETING_URL;
