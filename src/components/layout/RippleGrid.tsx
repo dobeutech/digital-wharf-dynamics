@@ -9,7 +9,7 @@ interface RippleGridProps {
 
 export function RippleGrid({
   className = "",
-  dotColor = "hsl(var(--foreground))",
+  dotColor,
   dotSize = 6,
   gap = 16,
 }: RippleGridProps) {
@@ -22,6 +22,18 @@ export function RippleGrid({
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    // Resolve the dot color for canvas usage.
+    // Canvas 2D API cannot resolve CSS custom properties (var()), so we
+    // read the computed value of --foreground from the document element
+    // and build a plain HSL string the canvas can use.
+    let resolvedColor = dotColor;
+    if (!resolvedColor) {
+      const foregroundHsl = getComputedStyle(document.documentElement)
+        .getPropertyValue("--foreground")
+        .trim();
+      resolvedColor = foregroundHsl ? `hsl(${foregroundHsl})` : "hsl(0 0% 9%)";
+    }
 
     let time = 0;
 
@@ -66,7 +78,7 @@ export function RippleGrid({
 
           ctx.beginPath();
           ctx.arc(x, y, (dotSize / 2) * scale, 0, Math.PI * 2);
-          ctx.fillStyle = dotColor
+          ctx.fillStyle = resolvedColor
             .replace(")", ` / ${opacity})`)
             .replace("hsl(", "hsla(");
           ctx.fill();

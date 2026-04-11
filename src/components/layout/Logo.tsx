@@ -6,14 +6,9 @@ interface LogoProps {
   className?: string;
 }
 
-// Try different logo file formats in order of preference
-const LOGO_SOURCES = [
-  "/logo.png",
-  "/logo.svg",
-  "/logo.webp",
-  "/logo.jpg",
-  "/logo.jpeg",
-];
+// Only reference logo files that actually exist in public/.
+// Using non-existent paths causes repeated 404s on every mount.
+const LOGO_SOURCES = ["/icon.svg"];
 
 function SvgTextLogo({
   variant,
@@ -69,12 +64,15 @@ export function Logo({ variant = "default", className }: LogoProps) {
       alt="DOBEU Logo"
       className={cn("h-8 w-auto object-contain", className)}
       onError={() => {
-        // Try next logo source
-        if (currentSrcIndex < LOGO_SOURCES.length - 1) {
-          setCurrentSrcIndex(currentSrcIndex + 1);
-        } else {
+        // Use functional updater to avoid stale closure issues
+        setCurrentSrcIndex((index) => {
+          if (index < LOGO_SOURCES.length - 1) {
+            return index + 1;
+          }
+
           setImageError(true);
-        }
+          return index;
+        });
       }}
     />
   );
