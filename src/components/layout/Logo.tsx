@@ -49,10 +49,9 @@ function SvgTextLogo({
 
 export function Logo({ variant = "default", className }: LogoProps) {
   const [currentSrcIndex, setCurrentSrcIndex] = useState(0);
-  const [imageError, setImageError] = useState(false);
 
   // If all image sources failed, show SVG fallback
-  if (imageError || currentSrcIndex >= LOGO_SOURCES.length) {
+  if (currentSrcIndex >= LOGO_SOURCES.length) {
     return <SvgTextLogo variant={variant} className={className} />;
   }
 
@@ -64,15 +63,9 @@ export function Logo({ variant = "default", className }: LogoProps) {
       alt="DOBEU Logo"
       className={cn("h-8 w-auto object-contain", className)}
       onError={() => {
-        // Use functional updater to avoid stale closure issues
-        setCurrentSrcIndex((index) => {
-          if (index < LOGO_SOURCES.length - 1) {
-            return index + 1;
-          }
-
-          setImageError(true);
-          return index;
-        });
+        // Increment index; the render-time guard (currentSrcIndex >= LOGO_SOURCES.length)
+        // handles the fallback, so no separate setImageError call is needed.
+        setCurrentSrcIndex((index) => index + 1);
       }}
     />
   );
