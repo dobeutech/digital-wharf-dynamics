@@ -7,9 +7,27 @@ interface RippleGridProps {
   gap?: number;
 }
 
+/**
+ * Resolve a CSS color string for use with Canvas 2D API.
+ * If the color contains a CSS custom property (var(--...)), resolve it
+ * via getComputedStyle since Canvas 2D cannot interpret CSS variables.
+ */
+function resolveColor(color: string): string {
+  const varMatch = color.match(/var\(--([^)]+)\)/);
+  if (varMatch) {
+    const resolved = getComputedStyle(document.documentElement)
+      .getPropertyValue(`--${varMatch[1]}`)
+      .trim();
+    if (resolved) {
+      return color.replace(`var(--${varMatch[1]})`, resolved);
+    }
+  }
+  return color;
+}
+
 export function RippleGrid({
   className = "",
-  dotColor = "hsl(248 76% 63%)",
+  dotColor = "hsl(var(--foreground))",
   dotSize = 6,
   gap = 16,
 }: RippleGridProps) {
@@ -34,6 +52,10 @@ export function RippleGrid({
     };
 
     const draw = () => {
+      // Resolve CSS custom properties each frame so the color updates
+      // when the theme toggles (e.g. dark/light mode)
+      const resolvedColor = resolveColor(dotColor);
+
       const rect = canvas.getBoundingClientRect();
       ctx.clearRect(0, 0, rect.width, rect.height);
 
@@ -66,7 +88,7 @@ export function RippleGrid({
 
           ctx.beginPath();
           ctx.arc(x, y, (dotSize / 2) * scale, 0, Math.PI * 2);
-          ctx.fillStyle = dotColor
+          ctx.fillStyle = resolvedColor
             .replace(")", ` / ${opacity})`)
             .replace("hsl(", "hsla(");
           ctx.fill();
