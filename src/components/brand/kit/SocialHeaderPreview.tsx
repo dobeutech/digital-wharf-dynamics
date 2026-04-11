@@ -1,4 +1,3 @@
-import React from "react";
 import { Logo } from "../../layout/Logo";
 import { Twitter, Linkedin, Facebook } from "lucide-react";
 
@@ -16,7 +15,7 @@ export const SocialHeaderPreview = ({
   color,
 }: SocialHeaderPreviewProps) => (
   <div className="space-y-4">
-    <h4 className="text-sm text-gray-500 uppercase tracking-wider flex items-center gap-2">
+    <h4 className="text-sm text-muted-foreground uppercase tracking-wider flex items-center gap-2">
       {platform === "Twitter" && <Twitter size={16} />}
       {platform === "LinkedIn" && <Linkedin size={16} />}
       {platform === "Facebook" && <Facebook size={16} />}
@@ -30,7 +29,7 @@ export const SocialHeaderPreview = ({
       <div className="relative z-10 text-center transform scale-75 md:scale-100">
         <Logo className="mb-4 justify-center scale-150" />
         <p className="text-white font-bold text-xl tracking-tight">
-          Tech is your best friend.
+          Templates and tools for builders.
         </p>
       </div>
     </div>

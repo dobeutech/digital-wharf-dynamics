@@ -10,33 +10,33 @@ import { Lightbulb, Users, Zap, Shield } from "lucide-react";
 const voiceAttributes = [
   {
     icon: Lightbulb,
-    title: "Professional yet Approachable",
+    title: "Builder-First",
     description:
-      "We communicate with expertise while remaining accessible and friendly.",
+      "We speak to creators, developers, and makers. Our tone respects their expertise while remaining welcoming to newcomers.",
     example:
-      "Instead of: 'Utilize our comprehensive digital solutions.' Say: 'Let's build something amazing together.'",
+      "Instead of: 'Leverage our enterprise solutions.' Say: 'Ship faster with production-ready templates.'",
   },
   {
     icon: Users,
     title: "Clear and Confident",
     description:
-      "Direct communication that demonstrates our expertise without unnecessary jargon.",
+      "Direct communication that demonstrates value without unnecessary jargon.",
     example:
-      "Instead of: 'We leverage synergistic paradigms.' Say: 'We create solutions that work.'",
+      "Instead of: 'Comprehensive digital transformation.' Say: 'Tools that save you hours every week.'",
   },
   {
     icon: Zap,
     title: "Action-Oriented",
     description: "Focus on outcomes and results with strong, active language.",
     example:
-      "Instead of: 'Your website will be optimized.' Say: 'We'll boost your website performance.'",
+      "Instead of: 'Browse our offerings.' Say: 'Find your next starter kit.'",
   },
   {
     icon: Shield,
     title: "Trustworthy and Transparent",
-    description: "Honest communication that builds long-term relationships.",
+    description: "Honest communication about what each product delivers.",
     example:
-      "Instead of: 'Best in class solutions.' Say: 'Here's exactly what we'll deliver and when.'",
+      "Instead of: 'Best in class solutions.' Say: 'Here's exactly what's included and how it works.'",
   },
 ];
 
@@ -46,8 +46,8 @@ export function VoiceToneSection() {
       <div>
         <h2 className="text-3xl font-bold mb-2">Voice & Tone</h2>
         <p className="text-muted-foreground">
-          Our brand voice reflects who we are: innovative, reliable, and
-          genuinely invested in our clients' success.
+          Our brand voice reflects who we serve: builders who value quality tools
+          and clear communication.
         </p>
       </div>
 
@@ -88,7 +88,7 @@ export function VoiceToneSection() {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-primary mt-1">•</span>
-              <span>Use contractions to sound more natural</span>
+              <span>Speak to builders — respect their technical literacy</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-primary mt-1">•</span>
@@ -96,7 +96,7 @@ export function VoiceToneSection() {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-primary mt-1">•</span>
-              <span>Be specific with numbers and timelines</span>
+              <span>Be specific about what each product includes</span>
             </li>
           </ul>
         </CardContent>

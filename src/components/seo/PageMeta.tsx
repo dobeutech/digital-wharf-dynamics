@@ -11,10 +11,10 @@ interface PageMetaProps {
 }
 
 const DEFAULT_DESCRIPTION =
-  "DOBEU creates custom websites and software that help businesses grow. Get modern web solutions, consulting, and training from experienced developers.";
+  "Templates and tools for builders. Browse curated digital products, starter kits, and developer tools at dobeu.store.";
 const DEFAULT_KEYWORDS =
-  "web development, custom software, website design, software consulting, web applications, business technology, digital solutions";
-const SITE_NAME = "DOBEU - Web Development & Software Solutions";
+  "templates, tools, builders, developer tools, starter kits, digital products, dobeu, software marketplace";
+const SITE_NAME = "Dobeu Store — Templates and Tools for Builders";
 
 export function PageMeta({
   title,
@@ -26,7 +26,7 @@ export function PageMeta({
   canonical,
 }: PageMetaProps) {
   useEffect(() => {
-    const fullTitle = title ? `${title} | DOBEU` : SITE_NAME;
+    const fullTitle = title ? `${title} | Dobeu Store` : SITE_NAME;
     document.title = fullTitle;
 
     const metaTags: Record<string, string> = {

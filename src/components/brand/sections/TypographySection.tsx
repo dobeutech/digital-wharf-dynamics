@@ -18,9 +18,9 @@ export function TypographySection() {
         <CardContent className="space-y-6">
           <div>
             <p className="text-sm text-muted-foreground mb-2">
-              Primary (Headings)
+              Primary (Headings & Body)
             </p>
-            <p className="text-4xl font-bold">Inter</p>
+            <p className="text-4xl font-bold" style={{ fontFamily: "Nunito, sans-serif" }}>Nunito</p>
             <p className="text-sm text-muted-foreground mt-1">
               ABCDEFGHIJKLMNOPQRSTUVWXYZ
             </p>
@@ -31,12 +31,20 @@ export function TypographySection() {
           </div>
           <div>
             <p className="text-sm text-muted-foreground mb-2">
-              Secondary (Body)
+              Secondary (Alternate)
             </p>
-            <p className="text-2xl">System UI</p>
+            <p className="text-2xl" style={{ fontFamily: "Quicksand, sans-serif" }}>Quicksand</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Fallback: -apple-system, BlinkMacSystemFont, "Segoe UI",
-              sans-serif
+              Fallback: system-ui, -apple-system, sans-serif
+            </p>
+          </div>
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">
+              Monospace (Code)
+            </p>
+            <p className="text-2xl font-mono">JetBrains Mono</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Used for code snippets, technical content, and data displays
             </p>
           </div>
         </CardContent>

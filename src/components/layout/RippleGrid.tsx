@@ -9,7 +9,7 @@ interface RippleGridProps {
 
 export function RippleGrid({
   className = "",
-  dotColor = "hsl(var(--foreground))",
+  dotColor = "hsl(248 76% 63%)",
   dotSize = 6,
   gap = 16,
 }: RippleGridProps) {
