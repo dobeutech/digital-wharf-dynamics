@@ -23,6 +23,23 @@ export function RippleGrid({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    // Resolve CSS custom properties for Canvas 2D compatibility.
+    // Canvas ctx.fillStyle cannot parse CSS var() references, so we
+    // resolve the --foreground variable via getComputedStyle and build
+    // a plain HSL string that the canvas API understands.
+    let resolvedBaseColor = dotColor;
+    if (dotColor.includes("var(")) {
+      const match = dotColor.match(/var\(--([^)]+)\)/);
+      if (match) {
+        const varValue = getComputedStyle(document.documentElement)
+          .getPropertyValue(`--${match[1]}`)
+          .trim();
+        if (varValue) {
+          resolvedBaseColor = `hsl(${varValue})`;
+        }
+      }
+    }
+
     let time = 0;
 
     const resize = () => {
@@ -66,7 +83,7 @@ export function RippleGrid({
 
           ctx.beginPath();
           ctx.arc(x, y, (dotSize / 2) * scale, 0, Math.PI * 2);
-          ctx.fillStyle = dotColor
+          ctx.fillStyle = resolvedBaseColor
             .replace(")", ` / ${opacity})`)
             .replace("hsl(", "hsla(");
           ctx.fill();
