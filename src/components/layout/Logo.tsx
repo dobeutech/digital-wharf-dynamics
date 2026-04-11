@@ -63,15 +63,18 @@ export function Logo({ variant = "default", className }: LogoProps) {
       alt="DOBEU Logo"
       className={cn("h-8 w-auto object-contain", className)}
       onError={() => {
-        // Use functional updater to avoid stale closure issues
-        // when multiple errors fire quickly
+        // Use functional updaters to avoid stale closure issues
+        // when multiple errors fire quickly.
+        // Keep updaters pure (no side effects) per React's contract.
         setCurrentSrcIndex((index) => {
           if (index < LOGO_SOURCES.length - 1) {
             return index + 1;
           }
-          setImageError(true);
           return index;
         });
+        setImageError(
+          (prev) => prev || currentSrcIndex >= LOGO_SOURCES.length - 1,
+        );
       }}
     />
   );
