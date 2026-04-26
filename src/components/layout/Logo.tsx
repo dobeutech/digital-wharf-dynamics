@@ -6,14 +6,9 @@ interface LogoProps {
   className?: string;
 }
 
-// Try different logo file formats in order of preference
-const LOGO_SOURCES = [
-  "/logo.png",
-  "/logo.svg",
-  "/logo.webp",
-  "/logo.jpg",
-  "/logo.jpeg",
-];
+// Only reference logo files that actually exist in public/.
+// Using non-existent paths causes repeated 404s on every mount.
+const LOGO_SOURCES = ["/icon.svg"];
 
 function SvgTextLogo({
   variant,
@@ -54,10 +49,9 @@ function SvgTextLogo({
 
 export function Logo({ variant = "default", className }: LogoProps) {
   const [currentSrcIndex, setCurrentSrcIndex] = useState(0);
-  const [imageError, setImageError] = useState(false);
 
   // If all image sources failed, show SVG fallback
-  if (imageError || currentSrcIndex >= LOGO_SOURCES.length) {
+  if (currentSrcIndex >= LOGO_SOURCES.length) {
     return <SvgTextLogo variant={variant} className={className} />;
   }
 
@@ -69,12 +63,9 @@ export function Logo({ variant = "default", className }: LogoProps) {
       alt="DOBEU Logo"
       className={cn("h-8 w-auto object-contain", className)}
       onError={() => {
-        // Try next logo source
-        if (currentSrcIndex < LOGO_SOURCES.length - 1) {
-          setCurrentSrcIndex(currentSrcIndex + 1);
-        } else {
-          setImageError(true);
-        }
+        // Increment index; the render-time guard (currentSrcIndex >= LOGO_SOURCES.length)
+        // handles the fallback, so no separate setImageError call is needed.
+        setCurrentSrcIndex((index) => index + 1);
       }}
     />
   );
