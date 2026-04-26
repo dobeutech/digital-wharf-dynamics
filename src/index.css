@@ -331,7 +331,7 @@ html {
   }
 
   .card-hover:hover {
-    @apply border-border-strong shadow-clean;
+    @apply border-strong shadow-clean;
   }
 
   /* Primary text highlight */

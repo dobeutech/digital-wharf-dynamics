@@ -6,14 +6,8 @@ interface LogoProps {
   className?: string;
 }
 
-// Try different logo file formats in order of preference
-const LOGO_SOURCES = [
-  "/logo.png",
-  "/logo.svg",
-  "/logo.webp",
-  "/logo.jpg",
-  "/logo.jpeg",
-];
+// Only reference logo files that actually exist in public/
+const LOGO_SOURCES = ["/icon.svg"];
 
 function SvgTextLogo({
   variant,
@@ -69,12 +63,18 @@ export function Logo({ variant = "default", className }: LogoProps) {
       alt="DOBEU Logo"
       className={cn("h-8 w-auto object-contain", className)}
       onError={() => {
-        // Try next logo source
-        if (currentSrcIndex < LOGO_SOURCES.length - 1) {
-          setCurrentSrcIndex(currentSrcIndex + 1);
-        } else {
-          setImageError(true);
-        }
+        // Use functional updaters to avoid stale closure issues
+        // when multiple errors fire quickly.
+        // Keep updaters pure (no side effects) per React's contract.
+        setCurrentSrcIndex((index) => {
+          if (index < LOGO_SOURCES.length - 1) {
+            return index + 1;
+          }
+          return index;
+        });
+        setImageError(
+          (prev) => prev || currentSrcIndex >= LOGO_SOURCES.length - 1,
+        );
       }}
     />
   );
