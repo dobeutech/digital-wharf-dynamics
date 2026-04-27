@@ -123,7 +123,7 @@ If the goal is to have only 1 PR total, we would need to:
 ### Immediate Actions (Do Today)
 1. ✅ Merge PR #88 (bug fixes) - already reviewed and approved by Devin
 2. ❌ Close PR #86 and #87 as duplicates
-3. ❌ Close or merge dependency PRs #80-#84 (they're straightforward)
+3. ✅ Merge PR #84 (security fix) immediately; consolidate PRs #81–#83 (patch/minor) into one PR; review PR #80 (Stripe major bump) separately
 
 ### Short-term (This Week)
 4. ✅ Review and progress Vercel migration PRs #89 and #90 with stakeholders
